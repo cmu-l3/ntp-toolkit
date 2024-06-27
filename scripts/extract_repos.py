@@ -30,6 +30,9 @@ lean_exe full_proof_training_data where
 lean_exe state_comments where
   root := `scripts.state_comments
 
+lean_exe premises where
+  root := `scripts.premises
+
 """ % (name, repo, commit)
     with open(os.path.join(cwd, 'lakefile.lean'), 'w') as f:
         f.write(contents)

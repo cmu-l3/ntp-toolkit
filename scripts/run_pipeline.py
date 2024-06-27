@@ -13,6 +13,7 @@ DIR_NAMES = {
     'state_comments': 'StateComments',
     'full_proof_training_data': 'FullProof',
     'full_proof_training_data_states': 'FullProofWithStates',
+    'premises': 'Premises',
 }
 
 def _get_stem(input_module, input_file_mode):
@@ -52,6 +53,18 @@ def _extract_module(input_module, input_file_mode, output_base_dir, cwd):
         output_file=os.path.join(
             output_base_dir, 
             DIR_NAMES['full_proof_training_data'],
+            _get_stem(input_module, input_file_mode) + '.jsonl'
+        )
+    )
+
+    # Premise analysis
+    _run_cmd(
+        cmd='premises',
+        cwd=cwd,
+        input_file=input_module,
+        output_file=os.path.join(
+            output_base_dir, 
+            DIR_NAMES['premises'],
             _get_stem(input_module, input_file_mode) + '.jsonl'
         )
     )
@@ -115,6 +128,7 @@ if __name__ == '__main__':
     print("Building...")
     subprocess.Popen(['lake build training_data'], shell=True).wait()
     subprocess.Popen(['lake build full_proof_training_data'], shell=True).wait()
+    subprocess.Popen(['lake build premises'], shell=True).wait()
 
     input_modules = []
     if args.input_file is not None:
@@ -158,6 +172,13 @@ if __name__ == '__main__':
 
     subprocess.Popen(
         ['python scripts/data_stats.py --pipeline-output-base-dir %s' % (args.output_base_dir)], 
+        cwd=args.cwd,
+        shell=True
+    ).wait()
+
+    subprocess.Popen(
+        ['python scripts/convert_minictx.py %s %s' %
+            (args.output_base_dir, os.path.join(args.output_base_dir, 'minictx.jsonl'))],
         cwd=args.cwd,
         shell=True
     ).wait()
