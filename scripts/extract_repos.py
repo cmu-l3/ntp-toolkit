@@ -73,7 +73,7 @@ def _run(cwd, name, import_file, old_version, max_workers):
     flags = ''
     if max_workers is not None:
         flags += ' --max-workers %d' % max_workers
-    subprocess.Popen(['python %s/scripts/run_pipeline.py --output-base-dir Examples/%s --cwd %s --import-file %s %s' % (
+    subprocess.Popen(['python3 %s/scripts/run_pipeline.py --output-base-dir Examples/%s --cwd %s --import-file %s %s' % (
         cwd,
         name.capitalize(),
         cwd,

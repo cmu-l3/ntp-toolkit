@@ -5,8 +5,8 @@ package «lean-training-data» {
   -- add any package configuration options here
 }
 
-require htpi from git
-  "https://github.com/hanwenzhu/HTPILeanPackage4.7.git" @ "8eeebaec8d7fa17b5fe9d97589839ca2560e3ce2"
+require mathlib from git
+  "https://github.com/leanprover-community/mathlib4.git" @ "f4b4298bd76b82f7b28f0fb6b5ab92bdf5e5634d"
 
 @[default_target]
 lean_lib TrainingData where

@@ -39,7 +39,7 @@ def _extract_module(input_module, input_file_mode, output_base_dir, cwd):
         cwd=cwd,
         input_file=input_module,
         output_file=os.path.join(
-            output_base_dir, 
+            output_base_dir,
             DIR_NAMES['training_data'],
             _get_stem(input_module, input_file_mode) + '.jsonl'
         )
@@ -51,7 +51,7 @@ def _extract_module(input_module, input_file_mode, output_base_dir, cwd):
         cwd=cwd,
         input_file=input_module,
         output_file=os.path.join(
-            output_base_dir, 
+            output_base_dir,
             DIR_NAMES['full_proof_training_data'],
             _get_stem(input_module, input_file_mode) + '.jsonl'
         )
@@ -63,36 +63,36 @@ def _extract_module(input_module, input_file_mode, output_base_dir, cwd):
         cwd=cwd,
         input_file=input_module,
         output_file=os.path.join(
-            output_base_dir, 
+            output_base_dir,
             DIR_NAMES['premises'],
             _get_stem(input_module, input_file_mode) + '.jsonl'
         )
     )
 
-    #  # State comments
-    # state_comments_output_file = os.path.join(
-    #     output_base_dir, 
-    #     DIR_NAMES['state_comments'],
-    #     _get_stem(input_module, input_file_mode) + '.lean'
-    # )
-    # _run_cmd(
-    #     cmd='state_comments',
-    #     cwd=cwd,
-    #     input_file=input_module,
-    #     output_file=state_comments_output_file
-    # )
+    # State comments
+    state_comments_output_file = os.path.join(
+        output_base_dir,
+        DIR_NAMES['state_comments'],
+        _get_stem(input_module, input_file_mode) + '.lean'
+    )
+    _run_cmd(
+        cmd='state_comments',
+        cwd=cwd,
+        input_file=input_module,
+        output_file=state_comments_output_file
+    )
 
-    # # Full proof generation with state comments
-    # _run_cmd(
-    #     cmd='full_proof_training_data',
-    #     cwd=cwd,
-    #     input_file=state_comments_output_file,
-    #     output_file=os.path.join(
-    #         output_base_dir, 
-    #         DIR_NAMES['full_proof_training_data_states'],
-    #         _get_stem(input_module, input_file_mode) + '.jsonl'
-    #     )
-    # )
+    # Full proof generation with state comments
+    _run_cmd(
+        cmd='full_proof_training_data',
+        cwd=cwd,
+        input_file=state_comments_output_file,
+        output_file=os.path.join(
+            output_base_dir,
+            DIR_NAMES['full_proof_training_data_states'],
+            _get_stem(input_module, input_file_mode) + '.jsonl'
+        )
+    )
 
     print(input_module)
     return 1
