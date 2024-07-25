@@ -52,12 +52,12 @@ def findCommandInfo (t : InfoTree) : List (CommandInfo × ContextInfo) :=
 def ElabDeclInfo := (Range × CommandInfo)
 
 def getElabDeclInfo (trees : List InfoTree) : IO (List ElabDeclInfo) := do
-    let mut out  := []
-    for tree in trees do
-      let infos := findCommandInfo tree
-      for ⟨cmdInfo, ctxInfo⟩ in infos do
-        out := (FileMap.stxRange ctxInfo.fileMap cmdInfo.stx, cmdInfo) :: out
-    return out
+  let mut out  := []
+  for tree in trees do
+    let infos := findCommandInfo tree
+    for ⟨cmdInfo, ctxInfo⟩ in infos do
+      out := (FileMap.stxRange ctxInfo.fileMap cmdInfo.stx, cmdInfo) :: out
+  return out
 
 def ppCommandInfo (info : CommandInfo) : String :=
   info.stx.prettyPrint.pretty
@@ -73,29 +73,28 @@ def makeElabDeclId (info: ElabDeclInfo) (module: Name) (hash: String) : String :
   declId
 
 def getInvocationTrees (module: ModuleName) : IO (List InfoTree) := do
-    let mut trees ← moduleInfoTrees module
-    trees := trees.bind InfoTree.retainTacticInfo
-    trees := trees.bind InfoTree.retainOriginal
-    trees := trees.bind InfoTree.retainSubstantive
-    return trees
-
+  let mut trees ← moduleInfoTrees module
+  trees := trees.bind InfoTree.retainTacticInfo
+  trees := trees.bind InfoTree.retainOriginal
+  trees := trees.bind InfoTree.retainSubstantive
+  return trees
 
 namespace Lean.Elab.TacticInvocation
 
 def tacticPP (module : ModuleName) (i: TacticInvocation) : IO String := do
-   return (Substring.mk (← moduleSource module)
-   (i.info.stx.getPos?.getD 0)
-   (i.info.stx.getTailPos?.getD 0)).toString
+  return (Substring.mk (← moduleSource module)
+  (i.info.stx.getPos?.getD 0)
+  (i.info.stx.getTailPos?.getD 0)).toString
 
 def ppCommandInfo (module: ModuleName) (info : CommandInfo) : IO String :=
-   return (Substring.mk (← moduleSource module)
-   (info.stx.getPos?.getD 0)
-   (info.stx.getTailPos?.getD 0)).toString
+  return (Substring.mk (← moduleSource module)
+  (info.stx.getPos?.getD 0)
+  (info.stx.getTailPos?.getD 0)).toString
 
 def ppDeclWithoutProof (module: ModuleName) (info: CommandInfo) : IO String := do
-    let ppDecl ← ppCommandInfo module info
-    let decl := (ppDecl.splitOn ":=").headD ""
-    return decl
+  let ppDecl ← ppCommandInfo module info
+  let decl := (ppDecl.splitOn ":=").headD ""
+  return decl
 
 /-- Gather all premises that appear in a syntax `s` and return two namesets of names. The first nameset
     contains all hypotheses in the given `lctx` that appear in `s`, and the second nameset contains all
@@ -160,7 +159,7 @@ def trainingDataGivenTactic (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (
   let mainGoalBeforeTactic ← i.runMetaM (fun mvarId => pure mvarId)
   let (lctxBeforeTactic, localInstancesBeforeTactic) ← do
     match i.info.mctxBefore.findDecl? mainGoalBeforeTactic with
-    | none => throw $ IO.userError s!"trainingDataGivenModule' :: Unable to find tactic's main goal"
+    | none => throw $ IO.userError s!"trainingDataGivenTactic :: Unable to find tactic's main goal"
     | some mvarDecl => pure (mvarDecl.lctx, mvarDecl.localInstances)
 
   let (termLemmas, explicitUsedLctxHypotheses, explicitUsedConstants, explicitUsedLemmas, allLemmas) ← i.runMetaMGoalsAfter
@@ -216,51 +215,39 @@ end Lean.Elab.TacticInvocation
 
 def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
-
   let infos ← getElabDeclInfo (← moduleInfoTrees module)
   let trees ← getInvocationTrees module
   let hash ← generateRandomHash
-
   let mut idJsons : List (String × Json) := []
   for t in trees do
     for t in t.tactics do
-
       match getElabDeclOfTacticInvocation infos t with
       | some elabDeclInfo => do
         let json ← t.trainingDataGivenTactic elabDeclInfo module hash
         idJsons := json :: idJsons
       | none => pure ()
-
-  let out := idJsons.reverse.map fun (_, j) => j
-
-  for item in out do
-    IO.println item.compress
-
+  let jsonRes := idJsons.reverse.map fun (_, j) => j
+  for jsonObj in jsonRes do
+    IO.println jsonObj.compress
   return 0
 
 def trainingData (args : Cli.Parsed) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
-
   let module := args.positionalArg! "module" |>.as! ModuleName
   let infos ← getElabDeclInfo (← moduleInfoTrees module)
   let trees ← getInvocationTrees module
   let hash ← generateRandomHash
-
   let mut idJsons : List (String × Json) := []
   for t in trees do
     for t in t.tactics do
-
       match getElabDeclOfTacticInvocation infos t with
       | some elabDeclInfo => do
         let json ← t.trainingDataGivenTactic elabDeclInfo module hash
         idJsons := json :: idJsons
       | none => pure ()
-
-  let out := idJsons.reverse.map fun (_, j) => j
-
-  for item in out do
-    IO.println item.compress
-
+  let jsonRes := idJsons.reverse.map fun (_, j) => j
+  for jsonObj in jsonRes do
+    IO.println jsonObj.compress
   return 0
 
 /-- Setting up command line options and help text for `lake exe training_data`. -/
