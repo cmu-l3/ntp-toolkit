@@ -13,6 +13,8 @@ DIR_NAMES = {
     'state_comments': 'StateComments',
     'full_proof_training_data': 'FullProof',
     'full_proof_training_data_states': 'FullProofWithStates',
+    'premises': 'Premises',
+    'training_data_with_premises' : 'TrainingDataWithPremises'
 }
 
 def _get_stem(input_module, input_file_mode):
@@ -33,32 +35,44 @@ def _run_cmd(cmd, cwd, input_file, output_file):
 
 def _extract_module(input_module, input_file_mode, output_base_dir, cwd):
     # Tactic prediction
-    _run_cmd(
-        cmd='training_data',
-        cwd=cwd,
-        input_file=input_module,
-        output_file=os.path.join(
-            output_base_dir, 
-            DIR_NAMES['training_data'],
-            _get_stem(input_module, input_file_mode) + '.jsonl'
-        )
-    )
+    # _run_cmd(
+    #     cmd='training_data',
+    #     cwd=cwd,
+    #     input_file=input_module,
+    #     output_file=os.path.join(
+    #         output_base_dir,
+    #         DIR_NAMES['training_data'],
+    #         _get_stem(input_module, input_file_mode) + '.jsonl'
+    #     )
+    # )
 
     # Full proof generation
-    _run_cmd(
-        cmd='full_proof_training_data',
-        cwd=cwd,
-        input_file=input_module,
-        output_file=os.path.join(
-            output_base_dir, 
-            DIR_NAMES['full_proof_training_data'],
-            _get_stem(input_module, input_file_mode) + '.jsonl'
-        )
-    )
+    # _run_cmd(
+    #     cmd='full_proof_training_data',
+    #     cwd=cwd,
+    #     input_file=input_module,
+    #     output_file=os.path.join(
+    #         output_base_dir,
+    #         DIR_NAMES['full_proof_training_data'],
+    #         _get_stem(input_module, input_file_mode) + '.jsonl'
+    #     )
+    # )
 
-    #  # State comments
+    # Premise analysis
+    # _run_cmd(
+    #     cmd='premises',
+    #     cwd=cwd,
+    #     input_file=input_module,
+    #     output_file=os.path.join(
+    #         output_base_dir,
+    #         DIR_NAMES['premises'],
+    #         _get_stem(input_module, input_file_mode) + '.jsonl'
+    #     )
+    # )
+
+    # State comments
     # state_comments_output_file = os.path.join(
-    #     output_base_dir, 
+    #     output_base_dir,
     #     DIR_NAMES['state_comments'],
     #     _get_stem(input_module, input_file_mode) + '.lean'
     # )
@@ -69,17 +83,29 @@ def _extract_module(input_module, input_file_mode, output_base_dir, cwd):
     #     output_file=state_comments_output_file
     # )
 
-    # # Full proof generation with state comments
+    # Full proof generation with state comments
     # _run_cmd(
     #     cmd='full_proof_training_data',
     #     cwd=cwd,
     #     input_file=state_comments_output_file,
     #     output_file=os.path.join(
-    #         output_base_dir, 
+    #         output_base_dir,
     #         DIR_NAMES['full_proof_training_data_states'],
     #         _get_stem(input_module, input_file_mode) + '.jsonl'
     #     )
     # )
+
+    # Same as Tactic Prediction but with additional fields documenting premises used
+    _run_cmd(
+        cmd='training_data_with_premises',
+        cwd=cwd,
+        input_file=input_module,
+        output_file=os.path.join(
+            output_base_dir,
+            DIR_NAMES['training_data_with_premises'],
+            _get_stem(input_module, input_file_mode) + '.jsonl'
+        )
+    )
 
     print(input_module)
     return 1
@@ -115,6 +141,8 @@ if __name__ == '__main__':
     print("Building...")
     subprocess.Popen(['lake build training_data'], shell=True).wait()
     subprocess.Popen(['lake build full_proof_training_data'], shell=True).wait()
+    subprocess.Popen(['lake build premises'], shell=True).wait()
+    subprocess.Popen(['lake build training_data_with_premises'], shell=True).wait()
 
     input_modules = []
     if args.input_file is not None:
@@ -158,6 +186,13 @@ if __name__ == '__main__':
 
     subprocess.Popen(
         ['python scripts/data_stats.py --pipeline-output-base-dir %s' % (args.output_base_dir)], 
+        cwd=args.cwd,
+        shell=True
+    ).wait()
+
+    subprocess.Popen(
+        ['python scripts/convert_minictx.py %s %s' %
+            (args.output_base_dir, os.path.join(args.output_base_dir, 'minictx.jsonl'))],
         cwd=args.cwd,
         shell=True
     ).wait()

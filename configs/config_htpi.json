@@ -1,0 +1,10 @@
+[
+    {
+        "repo": "https://github.com/hanwenzhu/HTPILeanPackage4.7",
+        "commit": "8eeebaec8d7fa17b5fe9d97589839ca2560e3ce2",
+        "lean": "leanprover/lean4:v4.7.0",
+        "name": "htpi",
+        "import_file": "HTPILib.lean",
+        "imports": ["HTPILib"]
+    }
+]

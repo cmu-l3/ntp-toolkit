@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Lean.Elab.Frontend
-import Std.Util.TermUnsafe
+-- import Std.Parser.Term
 import Std.Data.MLList.Basic
 
 /-!

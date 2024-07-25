@@ -30,6 +30,12 @@ lean_exe full_proof_training_data where
 lean_exe state_comments where
   root := `scripts.state_comments
 
+lean_exe premises where
+  root := `scripts.premises
+
+lean_exe training_data_with_premises where
+  root := `scripts.training_data_with_premises
+
 """ % (name, repo, commit)
     with open(os.path.join(cwd, 'lakefile.lean'), 'w') as f:
         f.write(contents)
@@ -70,7 +76,7 @@ def _run(cwd, name, import_file, old_version, max_workers):
     flags = ''
     if max_workers is not None:
         flags += ' --max-workers %d' % max_workers
-    subprocess.Popen(['python %s/scripts/run_pipeline.py --output-base-dir Examples/%s --cwd %s --import-file %s %s' % (
+    subprocess.Popen(['python3 %s/scripts/run_pipeline.py --output-base-dir Examples/%s --cwd %s --import-file %s %s' % (
         cwd,
         name.capitalize(),
         cwd,

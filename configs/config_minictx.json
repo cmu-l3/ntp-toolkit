@@ -1,0 +1,26 @@
+[
+    {
+        "repo": "https://github.com/AlexKontorovich/PrimeNumberTheoremAnd",
+        "commit": "23650db830a45c227bd85d25d520725545192333",
+        "lean": "leanprover/lean4:v4.7.0",
+        "name": "PrimeNumberTheoremAnd",
+        "import_file": "PrimeNumberTheoremAnd.lean",
+        "imports": ["PrimeNumberTheoremAnd"]
+    },
+    {
+        "repo": "https://github.com/teorth/pfr",
+        "commit": "6aeed6ddf7dd02470b3196e44527a6f3d32e54cf",
+        "lean": "leanprover/lean4:v4.7.0",
+        "name": "PFR",
+        "import_file": "PFR.lean",
+        "imports": ["PFR"]
+    },
+    {
+        "repo": "https://github.com/leanprover-community/mathlib4",
+        "commit": "f4b4298bd76b82f7b28f0fb6b5ab92bdf5e5634d",
+        "lean": "leanprover/lean4:v4.7.0",
+        "name": "mathlib",
+        "import_file": "Mathlib.lean",
+        "imports": ["Mathlib"]
+    }
+]
