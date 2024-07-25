@@ -9,8 +9,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 import Mathlib.Lean.CoreM
 import Mathlib.Control.Basic
 import Mathlib.Lean.Expr.Basic
-import Std.Lean.HashMap
-import Std.Lean.Util.Path
+import Batteries.Lean.HashMap
+import Batteries.Lean.Util.Path
 
 /-!
 Generate declaration dependencies up to a target file (defaulting to all of Mathlib).
@@ -124,7 +124,7 @@ def main (args : List String) : IO UInt32 := do
     for (n, (d, u)) in allConstants do
       -- We do not do this filtering as we already restrict to the given modules
       -- match n.components with
-      -- -- Note we keep `Std` as it has many lemmas about numbers and data structures.
+      -- -- Note we keep `Batteries` as it has many lemmas about numbers and data structures.
       -- | `Lean :: _
       -- | `Qq :: _
       -- | `Cli :: _
