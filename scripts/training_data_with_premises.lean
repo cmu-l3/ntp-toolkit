@@ -134,14 +134,17 @@ def isAuxLemma : Name → Bool
 | _ => false
 
 /-- Takes in a constant name and checks whether it should be unfolded using `shouldUnfold`. If the constant should be unfolded,
-    then returns all of the constants that appear in the unfolded result as a nameset. Otherwise, returns none. -/
-def unfoldConstantName (constName : Name) (constantsMap : HashMap Name ConstantInfo) (shouldUnfold : Name → Bool) : Option NameSet := Id.run do
+    then returns all of the constants that appear in the unfolded result as a nameset. Otherwise, returns a set just containing
+    the constant name. `unfoldConstantName` should never return any names that are supposed to be unfolded, so if a name is
+    supposed to be unfolded as indicated by `shouldUnfold`, then even if its constant can't actually be unfolded, we do not
+    return the name itself. -/
+def unfoldConstantName (constName : Name) (constantsMap : HashMap Name ConstantInfo) (shouldUnfold : Name → Bool) : NameSet := Id.run do
   if shouldUnfold constName then
     let some constInfo := constantsMap.find? constName
-      | return none -- If `n` cannot be unfolded, then just return `n`
+      | return ∅ -- If `n` cannot be unfolded, then return the empty set because `n` shouldn't appear in the output`
     return constInfo.getUsedConstantsAsSet
   else
-    return none
+    return (∅ : NameSet).insert constName
 
 def trainingDataGivenTactic (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) : IO (String × Json) := do
   let declId := makeElabDeclId elabDeclInfo module hash
@@ -168,9 +171,7 @@ def trainingDataGivenTactic (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (
       -- Replace all auxiliary lemmas in `termConstantNamesNoUnfolding` with the constants that appear in their unfolded definitions
       let mut termConstantsNameSet : NameSet := ∅
       for constName in termConstantNamesNoUnfolding do
-        match unfoldConstantName constName constantsMap isAuxLemma with
-        | none => termConstantsNameSet := termConstantsNameSet.insert constName
-        | some unfoldedSet => termConstantsNameSet := termConstantsNameSet.append unfoldedSet
+        termConstantsNameSet := termConstantsNameSet.append $ unfoldConstantName constName constantsMap isAuxLemma
       let termConstants := termConstantsNameSet.toArray
       -- Filter ``usedConstants` to only included constants that are lemmas (i.e. Prop-typed)
       let termConstantsWithTypes ← termConstants.mapM (fun n => return (n, (← Lean.getConstInfo n).type))
@@ -279,10 +280,3 @@ def main (args : List String) : IO UInt32 :=
 -- #eval trainingDataGivenModule `Mathlib.Data.Prod.Basic
 -- #eval trainingDataGivenModule `Mathlib.Data.Int.Defs
 -- #eval trainingDataGivenModule `Mathlib.Data.Option.Basic
-
--- **TODO** auxLemma still appears in `#eval trainingDataGivenModule Mathlib.Data.Prod.Basic`
-/-
-theorem mk.inj_left {α β : Type*} (a : α) : Function.Injective (Prod.mk a : β → α × β) := by
-  intro b₁ b₂ h
-  show_term simpa only [true_and, Prod.mk.inj_iff, eq_self_iff_true] using h
--/
