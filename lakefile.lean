@@ -25,3 +25,6 @@ lean_exe state_comments where
 lean_exe premises where
   root := `scripts.premises
 
+lean_exe training_data_with_premises where
+  root := `scripts.training_data_with_premises
+

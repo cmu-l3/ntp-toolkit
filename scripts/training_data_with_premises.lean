@@ -9,8 +9,6 @@ import Std.Data.String.Basic
 import Mathlib.Tactic.Change
 import Cli
 
-import Mathlib.Data.Option.Basic
-
 open Lean Elab IO Meta
 open Cli System
 
@@ -99,69 +97,6 @@ def ppDeclWithoutProof (module: ModuleName) (info: CommandInfo) : IO String := d
     let decl := (ppDecl.splitOn ":=").headD ""
     return decl
 
-def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) : IO (String × Json) := do
-  let declId := makeElabDeclId elabDeclInfo module hash
-  let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (i.info.stx.getPos?.getD 0)
-  let declUpToTactic := Substring.mk (← moduleSource module)
-    (elabDeclInfo.snd.stx.getPos?.getD 0) (i.info.stx.getPos?.getD 0)
-
-  let state := (Format.joinSep (← i.goalState) "\n").pretty
-  let nextTactic ← tacticPP module i
-  let decl ← ppDeclWithoutProof module elabDeclInfo.snd
-
-  let json : Json :=
-    Json.mkObj [
-      ("declId", Json.str declId),
-      ("decl", Json.str decl),
-      ("srcUpToTactic", Json.str sourceUpToTactic.toString),
-      ("declUpToTactic", Json.str declUpToTactic.toString),
-      ("state", Json.str state),
-      ("nextTactic", Json.str nextTactic)
-    ]
-  return (declId, json)
-
-end Lean.Elab.TacticInvocation
-
-def trainingData (args : Cli.Parsed) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
-
-  let module := args.positionalArg! "module" |>.as! ModuleName
-  let infos ← getElabDeclInfo (← moduleInfoTrees module)
-  let trees ← getInvocationTrees module
-  let hash ← generateRandomHash
-
-  let mut idJsons : List (String × Json) := []
-  for t in trees do
-    for t in t.tactics do
-
-      match getElabDeclOfTacticInvocation infos t with
-      | some elabDeclInfo => do
-        let json ← t.trainingData' elabDeclInfo module hash
-        idJsons := json :: idJsons
-      | none => pure ()
-
-  let out := idJsons.reverse.map fun (_, j) => j
-
-  for item in out do
-    IO.println item.compress
-
-  return 0
-
-/-- Setting up command line options and help text for `lake exe training_data`. -/
-def training_data : Cmd := `[Cli|
-  training_data VIA trainingData; ["0.0.1"]
-"Export training data from the given file."
-
-  ARGS:
-    module : ModuleName; "Lean module to compile and export training data."
-]
-
-/-- `lake exe training_data` -/
-def main (args : List String) : IO UInt32 :=
-  training_data.validate args
-
-namespace Lean.Elab.TacticInvocation
-
 /-- Gather all premises that appear in a syntax `s` and return two namesets of names. The first nameset
     contains all hypotheses in the given `lctx` that appear in `s`, and the second nameset contains all
     global constants that appear in `s`.
@@ -208,7 +143,7 @@ def unfoldConstantName (constName : Name) (constantsMap : HashMap Name ConstantI
   else
     return none
 
-def trainingDataGivenModule' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) : IO (String × Json) := do
+def trainingDataGivenTactic (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) : IO (String × Json) := do
   let declId := makeElabDeclId elabDeclInfo module hash
   let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (i.info.stx.getPos?.getD 0)
   let declUpToTactic := Substring.mk (← moduleSource module)
@@ -291,7 +226,7 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
 
       match getElabDeclOfTacticInvocation infos t with
       | some elabDeclInfo => do
-        let json ← t.trainingDataGivenModule' elabDeclInfo module hash
+        let json ← t.trainingDataGivenTactic elabDeclInfo module hash
         idJsons := json :: idJsons
       | none => pure ()
 
@@ -302,5 +237,52 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
 
   return 0
 
+def trainingData (args : Cli.Parsed) : IO UInt32 := do
+  searchPathRef.set compile_time_search_path%
+
+  let module := args.positionalArg! "module" |>.as! ModuleName
+  let infos ← getElabDeclInfo (← moduleInfoTrees module)
+  let trees ← getInvocationTrees module
+  let hash ← generateRandomHash
+
+  let mut idJsons : List (String × Json) := []
+  for t in trees do
+    for t in t.tactics do
+
+      match getElabDeclOfTacticInvocation infos t with
+      | some elabDeclInfo => do
+        let json ← t.trainingDataGivenTactic elabDeclInfo module hash
+        idJsons := json :: idJsons
+      | none => pure ()
+
+  let out := idJsons.reverse.map fun (_, j) => j
+
+  for item in out do
+    IO.println item.compress
+
+  return 0
+
+/-- Setting up command line options and help text for `lake exe training_data`. -/
+def training_data : Cmd := `[Cli|
+  training_data VIA trainingData; ["0.0.1"]
+"Export training data from the given file."
+
+  ARGS:
+    module : ModuleName; "Lean module to compile and export training data."
+]
+
+/-- `lake exe training_data` -/
+def main (args : List String) : IO UInt32 :=
+  training_data.validate args
+
+-- Testing:
+-- #eval trainingDataGivenModule `Mathlib.Data.Prod.Basic
 -- #eval trainingDataGivenModule `Mathlib.Data.Int.Defs
-#eval trainingDataGivenModule `Mathlib.Data.Option.Basic
+-- #eval trainingDataGivenModule `Mathlib.Data.Option.Basic
+
+-- **TODO** auxLemma still appears in `#eval trainingDataGivenModule Mathlib.Data.Prod.Basic`
+/-
+theorem mk.inj_left {α β : Type*} (a : α) : Function.Injective (Prod.mk a : β → α × β) := by
+  intro b₁ b₂ h
+  show_term simpa only [true_and, Prod.mk.inj_iff, eq_self_iff_true] using h
+-/
