@@ -1,4 +1,4 @@
-# ntp-training-data
+# ntp-toolkit
 
 This repository is a modified version of Kim Morrison's [lean-training-data](https://github.com/semorrison/lean-training-data).
 
