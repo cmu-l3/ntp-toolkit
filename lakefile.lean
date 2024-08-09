@@ -5,8 +5,8 @@ package «lean-training-data» {
   -- add any package configuration options here
 }
 
-require PFR from git
-  "https://github.com/teorth/pfr.git" @ "71bddfb866c423f3285c6ee186a0d95e62126bb3"
+require mathlib from git
+  "https://github.com/leanprover-community/mathlib4.git" @ "09d33efc68d3ad52db77b731d7253675395a14aa"
 
 @[default_target]
 lean_lib TrainingData where
@@ -21,4 +21,10 @@ lean_exe full_proof_training_data where
 
 lean_exe state_comments where
   root := `scripts.state_comments
+
+lean_exe premises where
+  root := `scripts.premises
+
+lean_exe training_data_with_premises where
+  root := `scripts.training_data_with_premises
 
