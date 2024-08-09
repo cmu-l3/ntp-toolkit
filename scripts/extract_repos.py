@@ -72,8 +72,7 @@ def _import_file(name, import_file, old_version):
     else:
         return os.path.join('.lake', 'packages', name, import_file)
 
-def _run(cwd, name, import_file, old_version, max_workers):
-    flags = ''
+def _run(cwd, name, import_file, old_version, max_workers, flags):
     if max_workers is not None:
         flags += ' --max-workers %d' % max_workers
     subprocess.Popen(['python3 %s/scripts/run_pipeline.py --output-base-dir Examples/%s --cwd %s --import-file %s %s' % (
@@ -99,10 +98,52 @@ if __name__ == '__main__':
         type=int,
         help="maximum number of processes; defaults to number of processors"
     )
+    parser.add_argument(
+        '--skip_setup',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--training_data',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--full_proof_training_data',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--premises',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--state_comments',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--full_proof_training_data_states',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--training_data_with_premises',
+        action='store_true'
+    )
     args = parser.parse_args()
 
     with open(args.config) as f:
         sources = json.load(f)
+
+    flags = ''
+    if args.training_data:
+        flags += ' --training_data'
+    if args.full_proof_training_data:
+        flags += ' --full_proof_training_data'
+    if args.premises:
+        flags += ' --premises'
+    if args.state_comments:
+        flags += ' --state_comments'
+    if args.full_proof_training_data_states:
+        flags += ' --full_proof_training_data_states'
+    if args.training_data_with_premises:
+        flags += ' --training_data_with_premises'
 
     for source in sources:
         print("=== %s ===" % (source['name']))
@@ -121,13 +162,15 @@ if __name__ == '__main__':
             lean=source['lean'],
             cwd=args.cwd
         )
-        _setup(
-            cwd=args.cwd
-        )
+        if not args.skip_setup:
+            _setup(
+                cwd=args.cwd
+            )
         _run(
             cwd=args.cwd,
             name=source['name'],
             import_file=source['import_file'],
             old_version=False if 'old_version' not in source else source['old_version'],
-            max_workers=args.max_workers
+            max_workers=args.max_workers,
+            flags=flags
         )

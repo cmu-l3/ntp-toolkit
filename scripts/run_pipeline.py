@@ -33,79 +33,86 @@ def _run_cmd(cmd, cwd, input_file, output_file):
             stdout=f
         ).wait()
 
-def _extract_module(input_module, input_file_mode, output_base_dir, cwd):
+def _extract_module(input_module, input_file_mode, output_base_dir, cwd, training_data, full_proof_training_data,
+                    premises, state_comments, full_proof_training_data_states, training_data_with_premises):
     # Tactic prediction
-    # _run_cmd(
-    #     cmd='training_data',
-    #     cwd=cwd,
-    #     input_file=input_module,
-    #     output_file=os.path.join(
-    #         output_base_dir,
-    #         DIR_NAMES['training_data'],
-    #         _get_stem(input_module, input_file_mode) + '.jsonl'
-    #     )
-    # )
+    if training_data:
+        _run_cmd(
+            cmd='training_data',
+            cwd=cwd,
+            input_file=input_module,
+            output_file=os.path.join(
+                output_base_dir,
+                DIR_NAMES['training_data'],
+                _get_stem(input_module, input_file_mode) + '.jsonl'
+            )
+        )
 
     # Full proof generation
-    # _run_cmd(
-    #     cmd='full_proof_training_data',
-    #     cwd=cwd,
-    #     input_file=input_module,
-    #     output_file=os.path.join(
-    #         output_base_dir,
-    #         DIR_NAMES['full_proof_training_data'],
-    #         _get_stem(input_module, input_file_mode) + '.jsonl'
-    #     )
-    # )
+    if full_proof_training_data:
+        _run_cmd(
+            cmd='full_proof_training_data',
+            cwd=cwd,
+            input_file=input_module,
+            output_file=os.path.join(
+                output_base_dir,
+                DIR_NAMES['full_proof_training_data'],
+                _get_stem(input_module, input_file_mode) + '.jsonl'
+            )
+        )
 
     # Premise analysis
-    # _run_cmd(
-    #     cmd='premises',
-    #     cwd=cwd,
-    #     input_file=input_module,
-    #     output_file=os.path.join(
-    #         output_base_dir,
-    #         DIR_NAMES['premises'],
-    #         _get_stem(input_module, input_file_mode) + '.jsonl'
-    #     )
-    # )
+    if premises:
+        _run_cmd(
+            cmd='premises',
+            cwd=cwd,
+            input_file=input_module,
+            output_file=os.path.join(
+                output_base_dir,
+                DIR_NAMES['premises'],
+                _get_stem(input_module, input_file_mode) + '.jsonl'
+            )
+        )
 
     # State comments
-    # state_comments_output_file = os.path.join(
-    #     output_base_dir,
-    #     DIR_NAMES['state_comments'],
-    #     _get_stem(input_module, input_file_mode) + '.lean'
-    # )
-    # _run_cmd(
-    #     cmd='state_comments',
-    #     cwd=cwd,
-    #     input_file=input_module,
-    #     output_file=state_comments_output_file
-    # )
+    if state_comments:
+        state_comments_output_file = os.path.join(
+            output_base_dir,
+            DIR_NAMES['state_comments'],
+            _get_stem(input_module, input_file_mode) + '.lean'
+        )
+        _run_cmd(
+            cmd='state_comments',
+            cwd=cwd,
+            input_file=input_module,
+            output_file=state_comments_output_file
+        )
 
     # Full proof generation with state comments
-    # _run_cmd(
-    #     cmd='full_proof_training_data',
-    #     cwd=cwd,
-    #     input_file=state_comments_output_file,
-    #     output_file=os.path.join(
-    #         output_base_dir,
-    #         DIR_NAMES['full_proof_training_data_states'],
-    #         _get_stem(input_module, input_file_mode) + '.jsonl'
-    #     )
-    # )
+    if full_proof_training_data_states:
+        _run_cmd(
+            cmd='full_proof_training_data',
+            cwd=cwd,
+            input_file=state_comments_output_file,
+            output_file=os.path.join(
+                output_base_dir,
+                DIR_NAMES['full_proof_training_data_states'],
+                _get_stem(input_module, input_file_mode) + '.jsonl'
+            )
+        )
 
     # Same as Tactic Prediction but with additional fields documenting premises used
-    _run_cmd(
-        cmd='training_data_with_premises',
-        cwd=cwd,
-        input_file=input_module,
-        output_file=os.path.join(
-            output_base_dir,
-            DIR_NAMES['training_data_with_premises'],
-            _get_stem(input_module, input_file_mode) + '.jsonl'
+    if training_data_with_premises:
+        _run_cmd(
+            cmd='training_data_with_premises',
+            cwd=cwd,
+            input_file=input_module,
+            output_file=os.path.join(
+                output_base_dir,
+                DIR_NAMES['training_data_with_premises'],
+                _get_stem(input_module, input_file_mode) + '.jsonl'
+            )
         )
-    )
 
     print(input_module)
     return 1
@@ -131,8 +138,36 @@ if __name__ == '__main__':
         type=int,
         help="maximum number of processes; defaults to number of processors"
     )
+    parser.add_argument(
+        '--training_data',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--full_proof_training_data',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--premises',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--state_comments',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--full_proof_training_data_states',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--training_data_with_premises',
+        action='store_true'
+    )
     args = parser.parse_args()
-
+    
+    if ((not args.training_data) and (not args.full_proof_training_data) and (not args.premises) and (not args.state_comments)
+        and (not args.full_proof_training_data_states) and (not args.training_data_with_premises)):
+        raise AssertionError('''At least one of the following flags must be set: [--training_data, --full_proof_training_data, 
+                             --premises, --state_comments, --full_proof_training_data_states, --training_data_with_premises]''')
 
     Path(args.output_base_dir).mkdir(parents=True, exist_ok=True)
     for name in DIR_NAMES.values():
@@ -169,7 +204,13 @@ if __name__ == '__main__':
                 input_module=input_module,
                 input_file_mode=input_file_mode,
                 output_base_dir=args.output_base_dir,
-                cwd=args.cwd
+                cwd=args.cwd,
+                training_data=args.training_data,
+                full_proof_training_data=args.full_proof_training_data,
+                premises=args.premises,
+                state_comments=args.state_comments,
+                full_proof_training_data_states=args.full_proof_training_data_states,
+                training_data_with_premises=args.training_data_with_premises
             )
             for input_module in input_modules
         ]
