@@ -194,9 +194,8 @@ structure FirstPassTrainingData where
   nextTacticExplicitPremises : Array Name
   nextTacticExplicitLocalHypotheses : Array Name
   nextTacticAllPremises : Array Name
-  numGoalsBeforeNextTactic : Nat
-  numGoalsAfterNextTactic : Nat
   nextTacticHammerRecommendation : Array Name
+  goalDelta : Int -- `goalDelta` = `numGoalsAfterTactic` - `numGoalsBeforeTactic`. This is used to help determine when the scope of a goal ends.
 deriving Inhabited
 
 /-- This structure stores all of the data to eventually be output in the final JSON file. It contains all of the data in `FirstPassTrainingData`
@@ -227,8 +226,9 @@ def trainingDataGivenTactic (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (
     (elabDeclInfo.snd.stx.getPos?.getD 0) (i.info.stx.getPos?.getD 0)
 
   let state := (Format.joinSep (← i.goalState) "\n").pretty
-  let numGoalsBefore := i.info.goalsBefore.length
-  let numGoalsAfter := i.info.goalsAfter.length
+  let numGoalsBefore : Int := i.info.goalsBefore.length
+  let numGoalsAfter : Int := i.info.goalsAfter.length
+  let goalDelta := numGoalsAfter - numGoalsBefore
 
   let nextTactic ← tacticPP module i
   let decl ← ppDeclWithoutProof module elabDeclInfo.snd
@@ -292,8 +292,7 @@ def trainingDataGivenTactic (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (
       nextTacticExplicitPremises := explicitUsedLemmas,
       nextTacticExplicitLocalHypotheses := explicitUsedLctxHypotheses,
       nextTacticAllPremises := allLemmas,
-      numGoalsBeforeNextTactic := numGoalsBefore,
-      numGoalsAfterNextTactic := numGoalsAfter,
+      goalDelta := goalDelta
       nextTacticIsSimpOrRwVariant := nextTacticIsSimpOrRwVariant,
       nextTacticHammerRecommendation := nextTacticHammerRecommendation
     }
@@ -347,7 +346,8 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
           -/
         }
       )
-  for curTacticData in firstPassData do
+  for i in [:firstPassData.size] do
+    let curTacticData := firstPassData[i]!
     if curTacticData.declId != activeDeclId then -- We've changed declarations
       -- Update all `activeDecl` information to remove duplicates
       activeDeclTermPremises := (RBTree.fromArray activeDeclTermPremises Name.quickCmp : NameSet).toArray
@@ -356,19 +356,20 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
       activeDeclAllPremises := (RBTree.fromArray activeDeclAllPremises Name.quickCmp : NameSet).toArray
       activeDeclHammerRecommendation := (RBTree.fromArray activeDeclHammerRecommendation Name.quickCmp : NameSet).toArray
       -- Update each `secondPassData` entry with `activeDeclId` with all `activeDecl` information
-      for i in [:secondPassData.size] do
-        secondPassData := secondPassData.modify i
-          (fun d =>
-            if d.declId != activeDeclId then d
-            else
-              {d with
-                declTermPremises := activeDeclTermPremises
-                declExplicitConstants := activeDeclExplicitConstants
-                declExplicitPremises := activeDeclExplicitPremises
-                declAllPremises := activeDeclAllPremises
-                declHammerRecommendation := activeDeclHammerRecommendation
-              }
-          )
+      for j in [:i] do
+        -- `idx` starts at the tactic just before `curTacticData` and decrements we find a declId that doesn't match the activeDeclId
+        let idx := i - j - 1
+        let idxTacticData := secondPassData[idx]!
+        if idxTacticData.declId != activeDeclId then
+          break -- Once we find one tactic that doesn't match the activeDeclId, no previous tactic will match the activeDeclId
+        secondPassData := secondPassData.set! idx
+          {idxTacticData with
+            declTermPremises := activeDeclTermPremises
+            declExplicitConstants := activeDeclExplicitConstants
+            declExplicitPremises := activeDeclExplicitPremises
+            declAllPremises := activeDeclAllPremises
+            declHammerRecommendation := activeDeclHammerRecommendation
+          }
       -- Update `activeDeclId` to `curTacticData.declId` and reset all `activeDecl` information
       activeDeclId := curTacticData.declId
       activeDeclTermPremises := #[]
@@ -386,6 +387,7 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
       Json.mkObj [
         ("declId", Json.str d.declId),
         ("decl", Json.str d.decl),
+        ("goalDelta", Json.num d.goalDelta),
         ("srcUpToTactic", Json.str d.srcUpToTactic),
         ("declUpToTactic", Json.str d.declUpToTactic),
         ("state", Json.str d.state),
