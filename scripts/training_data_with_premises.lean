@@ -507,7 +507,7 @@ def main (args : List String) : IO UInt32 :=
   training_data.validate args
 
 -- Testing:
-#eval trainingDataGivenModule `temp
+-- #eval trainingDataGivenModule `temp
 -- #eval trainingDataGivenModule `Mathlib.Data.Prod.Basic
 -- #eval trainingDataGivenModule `Mathlib.Data.Int.Defs
 -- #eval trainingDataGivenModule `Mathlib.Data.Option.Basic
