@@ -206,16 +206,17 @@ structure SecondPassTrainingData extends FirstPassTrainingData where
   declExplicitPremises : Array Name
   declAllPremises : Array Name
   declHammerRecommendation : Array Name
-  /- These fields are for determining constants used from the current state until the "current" goal is closed. These fields are not yet supported
+  /- The following fields are not yet supported **TODO** Resolve issue in current approach where `have` statements close goals but don't open goals
   termPremisesToEndOfGoal : Array Name
   explicitConstantsToEndOfGoal : Array Name
   explicitPremisesToEndOfGoal : Array Name
   allPremisesToEndOfGoal : Array Name
   hammerRecommendationToEndOfGoal : Array Name
-  curGoalCount := 0 -- This is the only field that is not output in the final JSON file. It is used internally to track whether the tactic's goal
+  curGoalCount := 1 -- This is the only field that is not output in the final JSON file. It is used internally to track whether the tactic's goal
                     -- is "currently" open during the loop that builds `SecondPassTrainingData`. If `curGoalCount` is 0, then the goal is not
                     -- currently open. If `curGoalCount > 0`, then `curGoalCount` is the number of goals that need to be closed before the current
-                    -- tactics goal should be considered closed.
+                    -- tactic's goal should be considered closed. A tactic with `curGoalCount` = 1 and `goalDelta` = -1 is both opened and closed
+                    -- by the same tactic (e.g. when a goal is proven in just one tactic)
   -/
 deriving Inhabited
 
@@ -321,7 +322,7 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
   let mut activeDeclExplicitPremises : Array Name := #[]
   let mut activeDeclAllPremises : Array Name := #[]
   let mut activeDeclHammerRecommendation : Array Name := #[]
-  /- **TODO** Reasoning about the active goal is not yet supported
+  /- Reasoning about the active goal is not yet supported
   let mut activeGoalTermPremises : Array Name := #[]
   let mut activeGoalExplicitConstants : Array Name := #[]
   let mut activeGoalExplicitPremises : Array Name := #[]
@@ -337,7 +338,7 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
           declExplicitPremises := #[]
           declAllPremises := #[]
           declHammerRecommendation := #[]
-          /- **TODO** These fields are not yet supported
+          /- The following fields are not yet supported
           termPremisesToEndOfGoal := #[]
           explicitConstantsToEndOfGoal := #[]
           explicitPremisesToEndOfGoal := #[]
@@ -380,8 +381,80 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
     -- Regardless of whether `activeDeclId` changed, update all `activeDecl` information to add information from `curTacticData`
     activeDeclTermPremises := activeDeclTermPremises ++ curTacticData.nextTacticTermPremises
     activeDeclExplicitConstants := activeDeclExplicitConstants ++ curTacticData.nextTacticExplicitConstants
+    activeDeclExplicitPremises := activeDeclExplicitPremises ++ curTacticData.nextTacticExplicitPremises
     activeDeclAllPremises := activeDeclAllPremises ++ curTacticData.nextTacticAllPremises
     activeDeclHammerRecommendation := activeDeclHammerRecommendation ++ curTacticData.nextTacticHammerRecommendation
+    /- **TODO** The following code doesn't quite work because `have` statements close goals but don't open goals (breaking the `goalDelta` approach)
+    -- Check `curTacticData.goalDelta` to determine whether any `ToEndOfGoal` or `curGoalCount` fields need to be updated
+    if curTacticData.goalDelta != 0 then -- This tactic either created or closed goals, so `curGoalCounts` will need to be updated
+      /- Iterate backwards from current tactic through all tactics in the active decl. For each state with a `curGoalCount` > 0, update
+         `curGoalCount` by `curTacticData.goalDelta.natAbs`, and if the result is zero, then populate `ToEndOfGoal` fields. -/
+      activeGoalTermPremises := #[]
+      activeGoalExplicitConstants := #[]
+      activeGoalExplicitPremises := #[]
+      activeGoalAllPremises := #[]
+      activeGoalHammerRecommendation := #[]
+      for j in [:i+1] do
+        -- `idx` starts at `curTacticData` and decrements we find a declId that doesn't match the activeDeclId
+        let idx := i - j
+        let idxTacticData := secondPassData[idx]!
+        -- Update `activeGoal` fields
+        activeGoalTermPremises := activeGoalTermPremises ++ idxTacticData.nextTacticTermPremises
+        activeGoalExplicitConstants := activeGoalExplicitConstants ++ idxTacticData.nextTacticExplicitConstants
+        activeGoalExplicitPremises := activeGoalExplicitPremises ++ idxTacticData.nextTacticExplicitPremises
+        activeGoalAllPremises := activeGoalAllPremises ++ idxTacticData.nextTacticAllPremises
+        activeGoalHammerRecommendation := activeGoalHammerRecommendation ++ idxTacticData.nextTacticHammerRecommendation
+        if idxTacticData.declId != activeDeclId then
+          break -- Once we find one tactic that doesn't match the activeDeclId, no previous tactic will match the activeDeclIds
+        else if idxTacticData.curGoalCount == 0 then
+          continue -- The goal that `idxTacticData` operates on has already been closed
+        else
+          let newIdxTacticDataCurGoalCount :=
+            if curTacticData.goalDelta < 0 then idxTacticData.curGoalCount - curTacticData.goalDelta.natAbs
+            else idxTacticData.curGoalCount + curTacticData.goalDelta.natAbs
+          if newIdxTacticDataCurGoalCount == 0 then
+            -- Update all `activeGoal` information to remove duplicates
+            activeGoalTermPremises := (RBTree.fromArray activeGoalTermPremises Name.quickCmp : NameSet).toArray
+            activeGoalExplicitConstants := (RBTree.fromArray activeGoalExplicitConstants Name.quickCmp : NameSet).toArray
+            activeGoalExplicitPremises := (RBTree.fromArray activeGoalExplicitPremises Name.quickCmp : NameSet).toArray
+            activeGoalAllPremises := (RBTree.fromArray activeGoalAllPremises Name.quickCmp : NameSet).toArray
+            activeGoalHammerRecommendation := (RBTree.fromArray activeGoalHammerRecommendation Name.quickCmp : NameSet).toArray
+            -- Update `secondPassData` with `activeGoal` information
+            secondPassData := secondPassData.set! idx
+              {idxTacticData with
+                curGoalCount := 0
+                termPremisesToEndOfGoal := activeGoalTermPremises
+                explicitConstantsToEndOfGoal := activeGoalExplicitConstants
+                explicitPremisesToEndOfGoal := activeGoalExplicitPremises
+                allPremisesToEndOfGoal := activeGoalAllPremises
+                hammerRecommendationToEndOfGoal := activeGoalHammerRecommendation
+              }
+          else
+            secondPassData := secondPassData.set! idx {idxTacticData with curGoalCount := newIdxTacticDataCurGoalCount}
+    -/
+  -- Update decl information for final declaration
+  -- Update all `activeDecl` information to remove duplicates
+  activeDeclTermPremises := (RBTree.fromArray activeDeclTermPremises Name.quickCmp : NameSet).toArray
+  activeDeclExplicitConstants := (RBTree.fromArray activeDeclExplicitConstants Name.quickCmp : NameSet).toArray
+  activeDeclExplicitPremises := (RBTree.fromArray activeDeclExplicitPremises Name.quickCmp : NameSet).toArray
+  activeDeclAllPremises := (RBTree.fromArray activeDeclAllPremises Name.quickCmp : NameSet).toArray
+  activeDeclHammerRecommendation := (RBTree.fromArray activeDeclHammerRecommendation Name.quickCmp : NameSet).toArray
+  -- Update each `secondPassData` entry with `activeDeclId` with all `activeDecl` information
+  for j in [:firstPassData.size] do
+    -- `idx` starts at the last tactic and decrements we find a declId that doesn't match the activeDeclId
+    let idx := firstPassData.size - j - 1
+    let idxTacticData := secondPassData[idx]!
+    if idxTacticData.declId != activeDeclId then
+      break -- Once we find one tactic that doesn't match the activeDeclId, no previous tactic will match the activeDeclId
+    secondPassData := secondPassData.set! idx
+      {idxTacticData with
+        declTermPremises := activeDeclTermPremises
+        declExplicitConstants := activeDeclExplicitConstants
+        declExplicitPremises := activeDeclExplicitPremises
+        declAllPremises := activeDeclAllPremises
+        declHammerRecommendation := activeDeclHammerRecommendation
+      }
+  -- Convert `secondPassData` to Json
   let jsonRes : Array Json := secondPassData.map
     (fun d =>
       Json.mkObj [
@@ -403,7 +476,13 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
         ("declExplicitConstants", Json.arr (d.declExplicitConstants.map (fun n => s!"{n}"))),
         ("declExplicitPremises", Json.arr (d.declExplicitPremises.map (fun n => s!"{n}"))),
         ("declAllPremises", Json.arr (d.declAllPremises.map (fun n => s!"{n}"))),
-        ("declHammerRecommendation", Json.arr (d.declHammerRecommendation.map (fun n => s!"{n}")))
+        ("declHammerRecommendation", Json.arr (d.declHammerRecommendation.map (fun n => s!"{n}"))),
+        -- ("termPremisesToEndOfGoal", Json.arr (d.termPremisesToEndOfGoal.map (fun n => s!"{n}"))),
+        -- ("explicitConstantsToEndOfGoal", Json.arr (d.explicitConstantsToEndOfGoal.map (fun n => s!"{n}"))),
+        -- ("explicitPremisesToEndOfGoal", Json.arr (d.explicitPremisesToEndOfGoal.map (fun n => s!"{n}"))),
+        -- ("allPremisesToEndOfGoal", Json.arr (d.allPremisesToEndOfGoal.map (fun n => s!"{n}"))),
+        -- ("hammerRecommendationToEndOfGoal", Json.arr (d.hammerRecommendationToEndOfGoal.map (fun n => s!"{n}")))
+        -- ("curGoalCount", Json.num d.curGoalCount)
       ]
     )
   for jsonObj in jsonRes do
@@ -428,6 +507,7 @@ def main (args : List String) : IO UInt32 :=
   training_data.validate args
 
 -- Testing:
+#eval trainingDataGivenModule `temp
 -- #eval trainingDataGivenModule `Mathlib.Data.Prod.Basic
 -- #eval trainingDataGivenModule `Mathlib.Data.Int.Defs
 -- #eval trainingDataGivenModule `Mathlib.Data.Option.Basic

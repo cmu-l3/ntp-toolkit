@@ -11,6 +11,8 @@ require mathlib from git
 @[default_target]
 lean_lib TrainingData where
 
+lean_lib temp where
+
 lean_lib Examples where
 
 lean_exe training_data where
@@ -27,4 +29,3 @@ lean_exe premises where
 
 lean_exe training_data_with_premises where
   root := `scripts.training_data_with_premises
-
