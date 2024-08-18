@@ -5,6 +5,8 @@ import Mathlib.Tactic.Common
 import Mathlib.Tactic.ToExpr
 import Aesop
 import Lean.Util.Trace
+import Duper
+import QuerySMT.QuerySMT
 import Cli
 
 open Lean Core Elab IO Meta Term Tactic -- All the monads!
@@ -101,12 +103,13 @@ def runTacticAtDecls (mod : Name) (decls : ConstantInfo → CoreM Bool) (tac : T
         | some true => pure .success
     return some ⟨type, seconds, heartbeats⟩
 
-
 def useAesop : TacticM Unit := do evalTactic (← `(tactic| aesop))
 def useExact? : TacticM Unit := do evalTactic (← `(tactic| exact?))
 def useRfl : TacticM Unit := do evalTactic (← `(tactic| intros; rfl))
 def useSimpAll : TacticM Unit := do evalTactic (← `(tactic| intros; simp_all))
 def useOmega : TacticM Unit := do evalTactic (← `(tactic| intros; omega))
+def useDuper : TacticM Unit := do evalTactic (← `(tactic| duper [*]))
+def useQuerySMT : TacticM Unit := do evalTactic (← `(tactic| querySMT))
 
 open Cli System
 
@@ -152,4 +155,8 @@ def main (args : List String) : IO UInt32 :=
 
 -- See `scripts/tactic_benchmark.sh` for a script to run this on all of Mathlib.
 
--- #eval tacticBenchmarkFromModule `temp useRfl
+-- #eval tacticBenchmarkFromModule `temp useQuerySMT
+-- Note: `tacticBenchmarkFromModule` requires that the tactic we want be imported in the module
+/- **TODO** Figure out heartbeat issue (querySMT can solve list_eq_self and zero_eq_zero) plenty quickly,
+   but `tacticBenchmarkFromModule` says it doesn't solve the former and takes significantly longer to
+   solve the latter -/

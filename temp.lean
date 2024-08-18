@@ -1,3 +1,7 @@
+import QuerySMT.QuerySMT
+import Duper
+import Aesop
+
 def p := True
 def q := True
 axiom p_eq_true : p = True
