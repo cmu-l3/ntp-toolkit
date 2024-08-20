@@ -1,5 +1,4 @@
-import QuerySMT.QuerySMT
-import Duper
+import QuerySMT
 import Aesop
 
 def p := True

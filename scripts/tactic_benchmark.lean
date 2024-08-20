@@ -125,6 +125,8 @@ def tacticBenchmarkFromModule (module : ModuleName) (tac : TacticM Unit) : IO UI
 def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
   let module := args.positionalArg! "module" |>.as! ModuleName
   let tac ←
+    if args.hasFlag "duper" then pure useDuper else
+    if args.hasFlag "querySMT" then pure useQuerySMT else
     if args.hasFlag "aesop" then pure useAesop else
     if args.hasFlag "exact" then pure useExact? else
     if args.hasFlag "rfl" then pure useRfl else
@@ -144,6 +146,8 @@ def tactic_benchmark : Cmd := `[Cli|
     "rfl";         "Use `intros; rfl`."
     "simp_all";    "Use `intros; simp_all`."
     "omega";       "Use `intros; omega`."
+    "duper";       "Use `duper [*]`."
+    "querySMT";    "Use `querySMT`."
 
   ARGS:
     module : ModuleName; "Lean module to compile and export InfoTrees."
@@ -160,3 +164,6 @@ def main (args : List String) : IO UInt32 :=
 /- **TODO** Figure out heartbeat issue (querySMT can solve list_eq_self and zero_eq_zero) plenty quickly,
    but `tacticBenchmarkFromModule` says it doesn't solve the former and takes significantly longer to
    solve the latter -/
+/- Interestingly, `useDuper` doesn't seem to (obviously) run into the same issue as `useQuerySMT`.
+   I think this is because Duper has precompiledModules enabled whereas QuerySMT doesn't, but that's
+   something to investigate further -/
