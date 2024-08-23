@@ -189,13 +189,15 @@ structure FirstPassTrainingData where
   state : String
   nextTactic : String
   nextTacticIsSimpOrRwVariant : Bool
+  numNewGoalsOpened : Int -- Counts the number of ` by `s in `nextTactic` to determine the number of new goals created not captured by `numGoalsAfterTactic`
   nextTacticTermPremises : Array Name
   nextTacticExplicitConstants : Array Name
   nextTacticExplicitPremises : Array Name
   nextTacticExplicitLocalHypotheses : Array Name
   nextTacticAllPremises : Array Name
   nextTacticHammerRecommendation : Array Name
-  goalDelta : Int -- `goalDelta` = `numGoalsAfterTactic` - `numGoalsBeforeTactic`. This is used to help determine when the scope of a goal ends.
+  goalDelta : Int -- `goalDelta` = `numNewGoalsOpened + numGoalsAfterTactic` - `numGoalsBeforeTactic`.
+                  -- This is used to help determine when the scope of a goal ends.
 deriving Inhabited
 
 /-- This structure stores all of the data to eventually be output in the final JSON file. It contains all of the data in `FirstPassTrainingData`
@@ -206,7 +208,6 @@ structure SecondPassTrainingData extends FirstPassTrainingData where
   declExplicitPremises : Array Name
   declAllPremises : Array Name
   declHammerRecommendation : Array Name
-  /- The following fields are not yet supported **TODO** Resolve issue in current approach where `have` statements close goals but don't open goals
   termPremisesToEndOfGoal : Array Name
   explicitConstantsToEndOfGoal : Array Name
   explicitPremisesToEndOfGoal : Array Name
@@ -217,7 +218,6 @@ structure SecondPassTrainingData extends FirstPassTrainingData where
                     -- currently open. If `curGoalCount > 0`, then `curGoalCount` is the number of goals that need to be closed before the current
                     -- tactic's goal should be considered closed. A tactic with `curGoalCount` = 1 and `goalDelta` = -1 is both opened and closed
                     -- by the same tactic (e.g. when a goal is proven in just one tactic)
-  -/
 deriving Inhabited
 
 def trainingDataGivenTactic (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) : IO FirstPassTrainingData := do
@@ -229,12 +229,14 @@ def trainingDataGivenTactic (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (
   let state := (Format.joinSep (← i.goalState) "\n").pretty
   let numGoalsBefore : Int := i.info.goalsBefore.length
   let numGoalsAfter : Int := i.info.goalsAfter.length
-  let goalDelta := numGoalsAfter - numGoalsBefore
 
   let nextTactic ← tacticPP module i
   let decl ← ppDeclWithoutProof module elabDeclInfo.snd
 
   let nextTacticIsSimpOrRwVariant := nextTacticIsSimpOrRwVariant nextTactic
+  let numNewGoalsOpened : Int := (nextTactic.findAllSubstr " by ").size + (nextTactic.findAllSubstr ":=by ").size + (nextTactic.findAllSubstr "\nby ").size
+
+  let goalDelta := numNewGoalsOpened + numGoalsAfter - numGoalsBefore
 
   let mainGoalBeforeTactic ← i.runMetaM (fun mvarId => pure mvarId)
   let (lctxBeforeTactic, localInstancesBeforeTactic) ← do
@@ -295,6 +297,7 @@ def trainingDataGivenTactic (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (
       nextTacticAllPremises := allLemmas,
       goalDelta := goalDelta
       nextTacticIsSimpOrRwVariant := nextTacticIsSimpOrRwVariant,
+      numNewGoalsOpened := numNewGoalsOpened,
       nextTacticHammerRecommendation := nextTacticHammerRecommendation
     }
   return data
@@ -322,13 +325,11 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
   let mut activeDeclExplicitPremises : Array Name := #[]
   let mut activeDeclAllPremises : Array Name := #[]
   let mut activeDeclHammerRecommendation : Array Name := #[]
-  /- Reasoning about the active goal is not yet supported
   let mut activeGoalTermPremises : Array Name := #[]
   let mut activeGoalExplicitConstants : Array Name := #[]
   let mut activeGoalExplicitPremises : Array Name := #[]
   let mut activeGoalAllPremises : Array Name := #[]
   let mut activeGoalHammerRecommendation : Array Name := #[]
-  -/
   let mut secondPassData : Array SecondPassTrainingData :=
     firstPassData.map
       (fun data =>
@@ -338,13 +339,11 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
           declExplicitPremises := #[]
           declAllPremises := #[]
           declHammerRecommendation := #[]
-          /- The following fields are not yet supported
           termPremisesToEndOfGoal := #[]
           explicitConstantsToEndOfGoal := #[]
           explicitPremisesToEndOfGoal := #[]
           allPremisesToEndOfGoal := #[]
           hammerRecommendationToEndOfGoal := #[]
-          -/
         }
       )
   for i in [:firstPassData.size] do
@@ -384,7 +383,6 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
     activeDeclExplicitPremises := activeDeclExplicitPremises ++ curTacticData.nextTacticExplicitPremises
     activeDeclAllPremises := activeDeclAllPremises ++ curTacticData.nextTacticAllPremises
     activeDeclHammerRecommendation := activeDeclHammerRecommendation ++ curTacticData.nextTacticHammerRecommendation
-    /- **TODO** The following code doesn't quite work because `have` statements close goals but don't open goals (breaking the `goalDelta` approach)
     -- Check `curTacticData.goalDelta` to determine whether any `ToEndOfGoal` or `curGoalCount` fields need to be updated
     if curTacticData.goalDelta != 0 then -- This tactic either created or closed goals, so `curGoalCounts` will need to be updated
       /- Iterate backwards from current tactic through all tactics in the active decl. For each state with a `curGoalCount` > 0, update
@@ -431,7 +429,6 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
               }
           else
             secondPassData := secondPassData.set! idx {idxTacticData with curGoalCount := newIdxTacticDataCurGoalCount}
-    -/
   -- Update decl information for final declaration
   -- Update all `activeDecl` information to remove duplicates
   activeDeclTermPremises := (RBTree.fromArray activeDeclTermPremises Name.quickCmp : NameSet).toArray
@@ -460,12 +457,13 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
       Json.mkObj [
         ("declId", Json.str d.declId),
         ("decl", Json.str d.decl),
-        ("goalDelta", Json.num d.goalDelta),
+        -- ("goalDelta", Json.num d.goalDelta), -- Used internally but not output to JSON
         ("srcUpToTactic", Json.str d.srcUpToTactic),
         ("declUpToTactic", Json.str d.declUpToTactic),
         ("state", Json.str d.state),
         ("nextTactic", Json.str d.nextTactic),
         ("nextTacticIsSimpOrRwVariant", Json.bool d.nextTacticIsSimpOrRwVariant),
+        -- ("numNewGoalsOpened", Json.num d.numNewGoalsOpened), -- Only for testing and to compute goalDelta
         ("nextTacticTermPremises", Json.arr (d.nextTacticTermPremises.map (fun n => s!"{n}"))),
         ("nextTacticExplicitConstants", Json.arr (d.nextTacticExplicitConstants.map (fun n => s!"{n}"))),
         ("nextTacticExplicitPremises", Json.arr (d.nextTacticExplicitPremises.map (fun n => s!"{n}"))),
@@ -477,12 +475,12 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
         ("declExplicitPremises", Json.arr (d.declExplicitPremises.map (fun n => s!"{n}"))),
         ("declAllPremises", Json.arr (d.declAllPremises.map (fun n => s!"{n}"))),
         ("declHammerRecommendation", Json.arr (d.declHammerRecommendation.map (fun n => s!"{n}"))),
-        -- ("termPremisesToEndOfGoal", Json.arr (d.termPremisesToEndOfGoal.map (fun n => s!"{n}"))),
-        -- ("explicitConstantsToEndOfGoal", Json.arr (d.explicitConstantsToEndOfGoal.map (fun n => s!"{n}"))),
-        -- ("explicitPremisesToEndOfGoal", Json.arr (d.explicitPremisesToEndOfGoal.map (fun n => s!"{n}"))),
-        -- ("allPremisesToEndOfGoal", Json.arr (d.allPremisesToEndOfGoal.map (fun n => s!"{n}"))),
-        -- ("hammerRecommendationToEndOfGoal", Json.arr (d.hammerRecommendationToEndOfGoal.map (fun n => s!"{n}")))
-        -- ("curGoalCount", Json.num d.curGoalCount)
+        ("termPremisesToEndOfGoal", Json.arr (d.termPremisesToEndOfGoal.map (fun n => s!"{n}"))),
+        ("explicitConstantsToEndOfGoal", Json.arr (d.explicitConstantsToEndOfGoal.map (fun n => s!"{n}"))),
+        ("explicitPremisesToEndOfGoal", Json.arr (d.explicitPremisesToEndOfGoal.map (fun n => s!"{n}"))),
+        ("allPremisesToEndOfGoal", Json.arr (d.allPremisesToEndOfGoal.map (fun n => s!"{n}"))),
+        ("hammerRecommendationToEndOfGoal", Json.arr (d.hammerRecommendationToEndOfGoal.map (fun n => s!"{n}")))
+        -- ("curGoalCount", Json.num d.curGoalCount) -- Only for testing
       ]
     )
   for jsonObj in jsonRes do

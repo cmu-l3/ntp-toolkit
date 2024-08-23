@@ -12,7 +12,7 @@ theorem list_eq_self (l : List α) : l = l := by
   cases l
   . have : p = True := by exact p_eq_true
     rfl
-  . have : q = True := by exact q_eq_true
+  . have : q = True := q_eq_true
     rfl
 
 theorem zero_eq_zero : 0 = 0 := by omega
