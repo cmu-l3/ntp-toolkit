@@ -455,7 +455,7 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
   let jsonRes : Array Json := secondPassData.map
     (fun d =>
       Json.mkObj [
-        ("declId", Json.str d.declId),
+        -- ("declId", Json.str d.declId), -- Used internally
         ("decl", Json.str d.decl),
         -- ("goalDelta", Json.num d.goalDelta), -- Used internally but not output to JSON
         ("srcUpToTactic", Json.str d.srcUpToTactic),
