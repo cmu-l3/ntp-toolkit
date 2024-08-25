@@ -85,7 +85,7 @@
   {"url": "https://github.com/JOSHCLUNE/LeanSMTParser.git",
    "type": "git",
    "subDir": null,
-   "rev": "3c2e0926e2be7a2bb513c9acb85586dc92082193",
+   "rev": "279975cf6977508a6eb4643eebceb8636f85ea33",
    "name": "QuerySMT",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",

@@ -37,3 +37,8 @@ lean_exe training_data_with_premises where
 @[default_target]
 lean_exe tactic_benchmark where
   root := `scripts.tactic_benchmark
+
+@[default_target]
+lean_exe add_imports where
+  root := `scripts.add_imports
+

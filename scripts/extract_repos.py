@@ -16,8 +16,13 @@ package «lean-training-data» {
 require %s from git
   "%s.git" @ "%s"
 
+require QuerySMT from git
+  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "main"
+
 @[default_target]
 lean_lib TrainingData where
+
+lean_lib temp where
 
 lean_lib Examples where
 
@@ -33,8 +38,17 @@ lean_exe state_comments where
 lean_exe premises where
   root := `scripts.premises
 
+@[default_target]
 lean_exe training_data_with_premises where
   root := `scripts.training_data_with_premises
+
+@[default_target]
+lean_exe tactic_benchmark where
+  root := `scripts.tactic_benchmark
+
+@[default_target]
+lean_exe add_imports where
+  root := `scripts.add_imports
 
 """ % (name, repo, commit)
     with open(os.path.join(cwd, 'lakefile.lean'), 'w') as f:
@@ -126,6 +140,10 @@ if __name__ == '__main__':
         '--training_data_with_premises',
         action='store_true'
     )
+    parser.add_argument(
+        '--add_imports',
+        action='store_true'
+    )
     args = parser.parse_args()
 
     with open(args.config) as f:
@@ -144,6 +162,8 @@ if __name__ == '__main__':
         flags += ' --full_proof_training_data_states'
     if args.training_data_with_premises:
         flags += ' --training_data_with_premises'
+    if args.add_imports:
+        flags += ' --add_imports'
 
     for source in sources:
         print("=== %s ===" % (source['name']))

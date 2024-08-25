@@ -6,7 +6,7 @@ import Mathlib.Tactic.ToExpr
 import Aesop
 import Lean.Util.Trace
 import Duper
-import QuerySMT.QuerySMT
+import QuerySMT
 import Cli
 
 open Lean Core Elab IO Meta Term Tactic -- All the monads!
@@ -19,8 +19,7 @@ with the `Environment` as it was *before* the command which created that declara
 
 (Internal declarations according to `Name.isBlackListed` are skipped.)
 -/
-def runAtDecls (mod : Name) (tac : ConstantInfo → MetaM (Option α)) :
-    MLList IO (ConstantInfo × α) := do
+def runAtDecls (mod : Name) (tac : ConstantInfo → MetaM (Option α)) : MLList IO (ConstantInfo × α) := do
   let fileName := (← findLean mod).toString
   let steps := compileModule' mod
   let targets := steps.bind fun c => (MLList.ofList c.diff).map fun i => (c, i)
@@ -79,7 +78,7 @@ def runTacticAtDecls (mod : Name) (decls : ConstantInfo → CoreM Bool) (tac : T
     if ! (← decls ci) then return none
     let g ← mkFreshExprMVar ci.type
     -- From `MetaM` to `TermElabM`
-    let ((gs, seconds), heartbeats) ← withHeartbeats <| withSeconds <|
+    let ((gs, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
       try? <| TermElabM.run' do
         -- From `TermElabM` to `TacticM`!
         Tactic.run g.mvarId! tac
@@ -159,7 +158,9 @@ def main (args : List String) : IO UInt32 :=
 
 -- See `scripts/tactic_benchmark.sh` for a script to run this on all of Mathlib.
 
+-- #eval tacticBenchmarkFromModule `temp useDuper
 -- #eval tacticBenchmarkFromModule `temp useQuerySMT
+
 -- Note: `tacticBenchmarkFromModule` requires that the tactic we want be imported in the module
 /- **TODO** Figure out heartbeat issue (querySMT can solve list_eq_self and zero_eq_zero) plenty quickly,
    but `tacticBenchmarkFromModule` says it doesn't solve the former and takes significantly longer to
