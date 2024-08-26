@@ -14,24 +14,24 @@ DIR_NAMES = {
     'full_proof_training_data': 'FullProof',
     'full_proof_training_data_states': 'FullProofWithStates',
     'premises': 'Premises',
-    'training_data_with_premises' : 'TrainingDataWithPremises'
+    'training_data_with_premises': 'TrainingDataWithPremises',
 }
 
 def _get_stem(input_module, input_file_mode):
     if input_file_mode:
-        stem = Path(input_module).stem.replace('.', '_')
+        stem = Path(input_module).stem
     else:
-        stem = input_module.replace('.', '_')
+        stem = input_module
     return stem
 
 def _run_cmd(cmd, cwd, input_file, output_file):
     with open(output_file, 'w') as f:
-        subprocess.Popen(
-            ['lake exe %s %s' % (cmd, input_file)], 
+        subprocess.run(
+            ['lake', 'exe', cmd, input_file],
             cwd=cwd,
-            shell=True,
+            check=True,
             stdout=f
-        ).wait()
+        )
 
 def _extract_module(input_module, input_file_mode, output_base_dir, cwd, training_data, full_proof_training_data,
                     premises, state_comments, full_proof_training_data_states, training_data_with_premises):
@@ -174,10 +174,10 @@ if __name__ == '__main__':
         Path(os.path.join(args.output_base_dir, name)).mkdir(parents=True, exist_ok=True)
 
     print("Building...")
-    subprocess.Popen(['lake build training_data'], shell=True).wait()
-    subprocess.Popen(['lake build full_proof_training_data'], shell=True).wait()
-    subprocess.Popen(['lake build premises'], shell=True).wait()
-    subprocess.Popen(['lake build training_data_with_premises'], shell=True).wait()
+    subprocess.run(['lake', 'build', 'training_data'], check=True)
+    subprocess.run(['lake', 'build', 'full_proof_training_data'], check=True)
+    subprocess.run(['lake', 'build', 'premises'], check=True)
+    subprocess.run(['lake', 'build', 'training_data_with_premises'], check=True)
 
     input_modules = []
     if args.input_file is not None:
@@ -210,7 +210,7 @@ if __name__ == '__main__':
                 premises=args.premises,
                 state_comments=args.state_comments,
                 full_proof_training_data_states=args.full_proof_training_data_states,
-                training_data_with_premises=args.training_data_with_premises
+                training_data_with_premises=args.training_data_with_premises,
             )
             for input_module in input_modules
         ]
@@ -225,15 +225,14 @@ if __name__ == '__main__':
     end = time.time()
     print("Elapsed %.2f" % (round(end - start, 2)))
 
-    subprocess.Popen(
-        ['python scripts/data_stats.py --pipeline-output-base-dir %s' % (args.output_base_dir)], 
+    subprocess.run(
+        ['python', 'scripts/data_stats.py', '--pipeline-output-base-dir', args.output_base_dir],
         cwd=args.cwd,
-        shell=True
-    ).wait()
+        check=True
+    )
 
-    subprocess.Popen(
-        ['python scripts/convert_minictx.py %s %s' %
-            (args.output_base_dir, os.path.join(args.output_base_dir, 'minictx.jsonl'))],
+    subprocess.run(
+        ['python', 'scripts/convert_minictx.py', args.output_base_dir, os.path.join(args.output_base_dir, 'minictx.jsonl')],
         cwd=args.cwd,
-        shell=True
-    ).wait()
+        check=True
+    )
