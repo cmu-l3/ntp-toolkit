@@ -145,16 +145,98 @@ def unfoldConstantName (constName : Name) (constantsMap : HashMap Name ConstantI
   else
     return (∅ : NameSet).insert constName
 
-def trainingDataGivenTactic (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) : IO (String × Json) := do
+def simpVariants : List String := [
+  "simp",
+  "simp?",
+  "simp!?",
+  "simp?!",
+  "simp_all",
+  "simp_all?",
+  "simp_all!",
+  "simp_all?!",
+  "simp_arith",
+  "simp_arith!",
+  "simp_wf",
+  "simpa",
+  "simpa?",
+  "simpa!",
+  "simpa?!"
+]
+
+def rewriteVariants : List String := [
+  "rw",
+  "rw?",
+  "rwa",
+  "rewrite",
+  "rw_mod_cast",
+  "erw"
+]
+
+def nextTacticIsSimpOrRwVariant (t : String) : Bool :=
+  simpVariants.any (fun p => (p ++ " ").isPrefixOf t) ||
+  simpVariants.any (fun p => (p ++ "[").isPrefixOf t) ||
+  rewriteVariants.any (fun p => (p ++ " ").isPrefixOf t) ||
+  rewriteVariants.any (fun p => (p ++ "[").isPrefixOf t)
+
+/-- This structure stores all of the data that can easily be obtained from a single tactic information. It contains a subset of the total
+    data output by `trainingDataGivenModule` and `trainingData` (because these also provide fields containing information that spans across
+    multiple tactics) -/
+structure FirstPassTrainingData where
+  declId : String
+  decl : String
+  srcUpToTactic : String
+  declUpToTactic : String
+  state : String
+  nextTactic : String
+  nextTacticIsSimpOrRwVariant : Bool
+  numNewGoalsOpened : Int -- Counts the number of ` by `s in `nextTactic` to determine the number of new goals created not captured by `numGoalsAfterTactic`
+  nextTacticTermPremises : Array Name
+  nextTacticExplicitConstants : Array Name
+  nextTacticExplicitPremises : Array Name
+  nextTacticExplicitLocalHypotheses : Array Name
+  nextTacticAllPremises : Array Name
+  nextTacticHammerRecommendation : Array Name
+  goalDelta : Int -- `goalDelta` = `numNewGoalsOpened + numGoalsAfterTactic` - `numGoalsBeforeTactic`.
+                  -- This is used to help determine when the scope of a goal ends.
+deriving Inhabited
+
+/-- This structure stores all of the data to eventually be output in the final JSON file. It contains all of the data in `FirstPassTrainingData`
+    along with some fields containing containing information that span across multiple tactics. -/
+structure SecondPassTrainingData extends FirstPassTrainingData where
+  declTermPremises : Array Name
+  declExplicitConstants : Array Name
+  declExplicitPremises : Array Name
+  declAllPremises : Array Name
+  declHammerRecommendation : Array Name
+  termPremisesToEndOfGoal : Array Name
+  explicitConstantsToEndOfGoal : Array Name
+  explicitPremisesToEndOfGoal : Array Name
+  allPremisesToEndOfGoal : Array Name
+  hammerRecommendationToEndOfGoal : Array Name
+  curGoalCount := 1 -- This is the only field that is not output in the final JSON file. It is used internally to track whether the tactic's goal
+                    -- is "currently" open during the loop that builds `SecondPassTrainingData`. If `curGoalCount` is 0, then the goal is not
+                    -- currently open. If `curGoalCount > 0`, then `curGoalCount` is the number of goals that need to be closed before the current
+                    -- tactic's goal should be considered closed. A tactic with `curGoalCount` = 1 and `goalDelta` = -1 is both opened and closed
+                    -- by the same tactic (e.g. when a goal is proven in just one tactic)
+deriving Inhabited
+
+def trainingDataGivenTactic (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) : IO FirstPassTrainingData := do
   let declId := makeElabDeclId elabDeclInfo module hash
   let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (i.info.stx.getPos?.getD 0)
   let declUpToTactic := Substring.mk (← moduleSource module)
     (elabDeclInfo.snd.stx.getPos?.getD 0) (i.info.stx.getPos?.getD 0)
 
   let state := (Format.joinSep (← i.goalState) "\n").pretty
+  let numGoalsBefore : Int := i.info.goalsBefore.length
+  let numGoalsAfter : Int := i.info.goalsAfter.length
 
   let nextTactic ← tacticPP module i
   let decl ← ppDeclWithoutProof module elabDeclInfo.snd
+
+  let nextTacticIsSimpOrRwVariant := nextTacticIsSimpOrRwVariant nextTactic
+  let numNewGoalsOpened : Int := (nextTactic.findAllSubstr " by ").size + (nextTactic.findAllSubstr ":=by ").size + (nextTactic.findAllSubstr "\nby ").size
+
+  let goalDelta := numNewGoalsOpened + numGoalsAfter - numGoalsBefore
 
   let mainGoalBeforeTactic ← i.runMetaM (fun mvarId => pure mvarId)
   let (lctxBeforeTactic, localInstancesBeforeTactic) ← do
@@ -195,60 +277,219 @@ def trainingDataGivenTactic (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (
       let allLemmas := explicitUsedLemmas.foldl (fun acc l => if !acc.contains l then acc.push l else acc) termLemmas
       return (termLemmas, explicitUsedLctxHypotheses, explicitUsedConstants, explicitUsedLemmas, allLemmas))
 
-  let json : Json :=
-    Json.mkObj [
-      ("declId", Json.str declId),
-      ("decl", Json.str decl),
-      ("srcUpToTactic", Json.str sourceUpToTactic.toString),
-      ("declUpToTactic", Json.str declUpToTactic.toString),
-      ("state", Json.str state),
-      ("nextTactic", Json.str nextTactic),
-      ("nextTacticTermPremises", Json.str s!"{termLemmas}"), -- Prop-typed constants that appear in the proof term generated by the tactic
-      ("nextTacticExplicitConstants", Json.str s!"{explicitUsedConstants}"), -- Constants that appear in tactic syntax
-      ("nextTacticExplicitPremises", Json.str s!"{explicitUsedLemmas}"), -- Prop-typed constants that appear in tactic syntax
-      ("nextTacticExplicitLocalHypotheses", Json.str s!"{explicitUsedLctxHypotheses}"), -- Local context Prop-typed hypotheses that appear in tactic syntax
-      ("nextTacticAllPremises", Json.str s!"{allLemmas}") -- The union of `termLemmas` and `nextTacticExplicitPremises`
-    ]
-  return (declId, json)
+  let nextTacticHammerRecommendation :=
+    if nextTacticIsSimpOrRwVariant then
+      explicitUsedConstants.foldl (fun acc c => if acc.contains c then acc else acc.push c) allLemmas
+    else
+      allLemmas
+
+  let data := {
+      declId := declId,
+      decl := decl,
+      srcUpToTactic := sourceUpToTactic.toString,
+      declUpToTactic := declUpToTactic.toString,
+      state := state,
+      nextTactic := nextTactic,
+      nextTacticTermPremises := termLemmas,
+      nextTacticExplicitConstants := explicitUsedConstants,
+      nextTacticExplicitPremises := explicitUsedLemmas,
+      nextTacticExplicitLocalHypotheses := explicitUsedLctxHypotheses,
+      nextTacticAllPremises := allLemmas,
+      goalDelta := goalDelta
+      nextTacticIsSimpOrRwVariant := nextTacticIsSimpOrRwVariant,
+      numNewGoalsOpened := numNewGoalsOpened,
+      nextTacticHammerRecommendation := nextTacticHammerRecommendation
+    }
+  return data
 
 end Lean.Elab.TacticInvocation
+
+open TacticInvocation
 
 def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
   let infos ← getElabDeclInfo (← moduleInfoTrees module)
   let trees ← getInvocationTrees module
   let hash ← generateRandomHash
-  let mut idJsons : List (String × Json) := []
+  let mut firstPassData : Array FirstPassTrainingData := #[]
   for t in trees do
     for t in t.tactics do
       match getElabDeclOfTacticInvocation infos t with
       | some elabDeclInfo => do
-        let json ← t.trainingDataGivenTactic elabDeclInfo module hash
-        idJsons := json :: idJsons
+        let data ← t.trainingDataGivenTactic elabDeclInfo module hash
+        firstPassData := firstPassData.push data
       | none => pure ()
-  let jsonRes := idJsons.reverse.map fun (_, j) => j
+  let mut activeDeclId : String := firstPassData[0]!.1
+  let mut activeDeclTermPremises : Array Name := #[]
+  let mut activeDeclExplicitConstants : Array Name := #[]
+  let mut activeDeclExplicitPremises : Array Name := #[]
+  let mut activeDeclAllPremises : Array Name := #[]
+  let mut activeDeclHammerRecommendation : Array Name := #[]
+  let mut activeGoalTermPremises : Array Name := #[]
+  let mut activeGoalExplicitConstants : Array Name := #[]
+  let mut activeGoalExplicitPremises : Array Name := #[]
+  let mut activeGoalAllPremises : Array Name := #[]
+  let mut activeGoalHammerRecommendation : Array Name := #[]
+  let mut secondPassData : Array SecondPassTrainingData :=
+    firstPassData.map
+      (fun data =>
+        {data with
+          declTermPremises := #[]
+          declExplicitConstants := #[]
+          declExplicitPremises := #[]
+          declAllPremises := #[]
+          declHammerRecommendation := #[]
+          termPremisesToEndOfGoal := #[]
+          explicitConstantsToEndOfGoal := #[]
+          explicitPremisesToEndOfGoal := #[]
+          allPremisesToEndOfGoal := #[]
+          hammerRecommendationToEndOfGoal := #[]
+        }
+      )
+  for i in [:firstPassData.size] do
+    let curTacticData := firstPassData[i]!
+    if curTacticData.declId != activeDeclId then -- We've changed declarations
+      -- Update all `activeDecl` information to remove duplicates
+      activeDeclTermPremises := (RBTree.fromArray activeDeclTermPremises Name.quickCmp : NameSet).toArray
+      activeDeclExplicitConstants := (RBTree.fromArray activeDeclExplicitConstants Name.quickCmp : NameSet).toArray
+      activeDeclExplicitPremises := (RBTree.fromArray activeDeclExplicitPremises Name.quickCmp : NameSet).toArray
+      activeDeclAllPremises := (RBTree.fromArray activeDeclAllPremises Name.quickCmp : NameSet).toArray
+      activeDeclHammerRecommendation := (RBTree.fromArray activeDeclHammerRecommendation Name.quickCmp : NameSet).toArray
+      -- Update each `secondPassData` entry with `activeDeclId` with all `activeDecl` information
+      for j in [:i] do
+        -- `idx` starts at the tactic just before `curTacticData` and decrements we find a declId that doesn't match the activeDeclId
+        let idx := i - j - 1
+        let idxTacticData := secondPassData[idx]!
+        if idxTacticData.declId != activeDeclId then
+          break -- Once we find one tactic that doesn't match the activeDeclId, no previous tactic will match the activeDeclId
+        secondPassData := secondPassData.set! idx
+          {idxTacticData with
+            declTermPremises := activeDeclTermPremises
+            declExplicitConstants := activeDeclExplicitConstants
+            declExplicitPremises := activeDeclExplicitPremises
+            declAllPremises := activeDeclAllPremises
+            declHammerRecommendation := activeDeclHammerRecommendation
+          }
+      -- Update `activeDeclId` to `curTacticData.declId` and reset all `activeDecl` information
+      activeDeclId := curTacticData.declId
+      activeDeclTermPremises := #[]
+      activeDeclExplicitConstants := #[]
+      activeDeclExplicitPremises := #[]
+      activeDeclAllPremises := #[]
+      activeDeclHammerRecommendation := #[]
+    -- Regardless of whether `activeDeclId` changed, update all `activeDecl` information to add information from `curTacticData`
+    activeDeclTermPremises := activeDeclTermPremises ++ curTacticData.nextTacticTermPremises
+    activeDeclExplicitConstants := activeDeclExplicitConstants ++ curTacticData.nextTacticExplicitConstants
+    activeDeclExplicitPremises := activeDeclExplicitPremises ++ curTacticData.nextTacticExplicitPremises
+    activeDeclAllPremises := activeDeclAllPremises ++ curTacticData.nextTacticAllPremises
+    activeDeclHammerRecommendation := activeDeclHammerRecommendation ++ curTacticData.nextTacticHammerRecommendation
+    -- Check `curTacticData.goalDelta` to determine whether any `ToEndOfGoal` or `curGoalCount` fields need to be updated
+    if curTacticData.goalDelta != 0 then -- This tactic either created or closed goals, so `curGoalCounts` will need to be updated
+      /- Iterate backwards from current tactic through all tactics in the active decl. For each state with a `curGoalCount` > 0, update
+         `curGoalCount` by `curTacticData.goalDelta.natAbs`, and if the result is zero, then populate `ToEndOfGoal` fields. -/
+      activeGoalTermPremises := #[]
+      activeGoalExplicitConstants := #[]
+      activeGoalExplicitPremises := #[]
+      activeGoalAllPremises := #[]
+      activeGoalHammerRecommendation := #[]
+      for j in [:i+1] do
+        -- `idx` starts at `curTacticData` and decrements we find a declId that doesn't match the activeDeclId
+        let idx := i - j
+        let idxTacticData := secondPassData[idx]!
+        -- Update `activeGoal` fields
+        activeGoalTermPremises := activeGoalTermPremises ++ idxTacticData.nextTacticTermPremises
+        activeGoalExplicitConstants := activeGoalExplicitConstants ++ idxTacticData.nextTacticExplicitConstants
+        activeGoalExplicitPremises := activeGoalExplicitPremises ++ idxTacticData.nextTacticExplicitPremises
+        activeGoalAllPremises := activeGoalAllPremises ++ idxTacticData.nextTacticAllPremises
+        activeGoalHammerRecommendation := activeGoalHammerRecommendation ++ idxTacticData.nextTacticHammerRecommendation
+        if idxTacticData.declId != activeDeclId then
+          break -- Once we find one tactic that doesn't match the activeDeclId, no previous tactic will match the activeDeclIds
+        else if idxTacticData.curGoalCount == 0 then
+          continue -- The goal that `idxTacticData` operates on has already been closed
+        else
+          let newIdxTacticDataCurGoalCount :=
+            if curTacticData.goalDelta < 0 then idxTacticData.curGoalCount - curTacticData.goalDelta.natAbs
+            else idxTacticData.curGoalCount + curTacticData.goalDelta.natAbs
+          if newIdxTacticDataCurGoalCount == 0 then
+            -- Update all `activeGoal` information to remove duplicates
+            activeGoalTermPremises := (RBTree.fromArray activeGoalTermPremises Name.quickCmp : NameSet).toArray
+            activeGoalExplicitConstants := (RBTree.fromArray activeGoalExplicitConstants Name.quickCmp : NameSet).toArray
+            activeGoalExplicitPremises := (RBTree.fromArray activeGoalExplicitPremises Name.quickCmp : NameSet).toArray
+            activeGoalAllPremises := (RBTree.fromArray activeGoalAllPremises Name.quickCmp : NameSet).toArray
+            activeGoalHammerRecommendation := (RBTree.fromArray activeGoalHammerRecommendation Name.quickCmp : NameSet).toArray
+            -- Update `secondPassData` with `activeGoal` information
+            secondPassData := secondPassData.set! idx
+              {idxTacticData with
+                curGoalCount := 0
+                termPremisesToEndOfGoal := activeGoalTermPremises
+                explicitConstantsToEndOfGoal := activeGoalExplicitConstants
+                explicitPremisesToEndOfGoal := activeGoalExplicitPremises
+                allPremisesToEndOfGoal := activeGoalAllPremises
+                hammerRecommendationToEndOfGoal := activeGoalHammerRecommendation
+              }
+          else
+            secondPassData := secondPassData.set! idx {idxTacticData with curGoalCount := newIdxTacticDataCurGoalCount}
+  -- Update decl information for final declaration
+  -- Update all `activeDecl` information to remove duplicates
+  activeDeclTermPremises := (RBTree.fromArray activeDeclTermPremises Name.quickCmp : NameSet).toArray
+  activeDeclExplicitConstants := (RBTree.fromArray activeDeclExplicitConstants Name.quickCmp : NameSet).toArray
+  activeDeclExplicitPremises := (RBTree.fromArray activeDeclExplicitPremises Name.quickCmp : NameSet).toArray
+  activeDeclAllPremises := (RBTree.fromArray activeDeclAllPremises Name.quickCmp : NameSet).toArray
+  activeDeclHammerRecommendation := (RBTree.fromArray activeDeclHammerRecommendation Name.quickCmp : NameSet).toArray
+  -- Update each `secondPassData` entry with `activeDeclId` with all `activeDecl` information
+  for j in [:firstPassData.size] do
+    -- `idx` starts at the last tactic and decrements we find a declId that doesn't match the activeDeclId
+    let idx := firstPassData.size - j - 1
+    let idxTacticData := secondPassData[idx]!
+    if idxTacticData.declId != activeDeclId then
+      break -- Once we find one tactic that doesn't match the activeDeclId, no previous tactic will match the activeDeclId
+    secondPassData := secondPassData.set! idx
+      {idxTacticData with
+        declTermPremises := activeDeclTermPremises
+        declExplicitConstants := activeDeclExplicitConstants
+        declExplicitPremises := activeDeclExplicitPremises
+        declAllPremises := activeDeclAllPremises
+        declHammerRecommendation := activeDeclHammerRecommendation
+      }
+  -- Convert `secondPassData` to Json
+  let jsonRes : Array Json := secondPassData.map
+    (fun d =>
+      Json.mkObj [
+        -- ("declId", Json.str d.declId), -- Used internally
+        ("decl", Json.str d.decl),
+        -- ("goalDelta", Json.num d.goalDelta), -- Used internally but not output to JSON
+        ("srcUpToTactic", Json.str d.srcUpToTactic),
+        ("declUpToTactic", Json.str d.declUpToTactic),
+        ("state", Json.str d.state),
+        ("nextTactic", Json.str d.nextTactic),
+        ("nextTacticIsSimpOrRwVariant", Json.bool d.nextTacticIsSimpOrRwVariant),
+        -- ("numNewGoalsOpened", Json.num d.numNewGoalsOpened), -- Only for testing and to compute goalDelta
+        ("nextTacticTermPremises", Json.arr (d.nextTacticTermPremises.map (fun n => s!"{n}"))),
+        ("nextTacticExplicitConstants", Json.arr (d.nextTacticExplicitConstants.map (fun n => s!"{n}"))),
+        ("nextTacticExplicitPremises", Json.arr (d.nextTacticExplicitPremises.map (fun n => s!"{n}"))),
+        ("nextTacticExplicitLocalHypotheses", Json.arr (d.nextTacticExplicitLocalHypotheses.map (fun n => s!"{n}"))),
+        ("nextTacticAllPremises", Json.arr (d.nextTacticAllPremises.map (fun n => s!"{n}"))),
+        ("nextTacticHammerRecommendation", Json.arr (d.nextTacticHammerRecommendation.map (fun n => s!"{n}"))),
+        ("declTermPremises", Json.arr (d.declTermPremises.map (fun n => s!"{n}"))),
+        ("declExplicitConstants", Json.arr (d.declExplicitConstants.map (fun n => s!"{n}"))),
+        ("declExplicitPremises", Json.arr (d.declExplicitPremises.map (fun n => s!"{n}"))),
+        ("declAllPremises", Json.arr (d.declAllPremises.map (fun n => s!"{n}"))),
+        ("declHammerRecommendation", Json.arr (d.declHammerRecommendation.map (fun n => s!"{n}"))),
+        ("termPremisesToEndOfGoal", Json.arr (d.termPremisesToEndOfGoal.map (fun n => s!"{n}"))),
+        ("explicitConstantsToEndOfGoal", Json.arr (d.explicitConstantsToEndOfGoal.map (fun n => s!"{n}"))),
+        ("explicitPremisesToEndOfGoal", Json.arr (d.explicitPremisesToEndOfGoal.map (fun n => s!"{n}"))),
+        ("allPremisesToEndOfGoal", Json.arr (d.allPremisesToEndOfGoal.map (fun n => s!"{n}"))),
+        ("hammerRecommendationToEndOfGoal", Json.arr (d.hammerRecommendationToEndOfGoal.map (fun n => s!"{n}")))
+        -- ("curGoalCount", Json.num d.curGoalCount) -- Only for testing
+      ]
+    )
   for jsonObj in jsonRes do
     IO.println jsonObj.compress
   return 0
 
-def trainingData (args : Cli.Parsed) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+def trainingData (args : Cli.Parsed) : IO UInt32 :=
   let module := args.positionalArg! "module" |>.as! ModuleName
-  let infos ← getElabDeclInfo (← moduleInfoTrees module)
-  let trees ← getInvocationTrees module
-  let hash ← generateRandomHash
-  let mut idJsons : List (String × Json) := []
-  for t in trees do
-    for t in t.tactics do
-      match getElabDeclOfTacticInvocation infos t with
-      | some elabDeclInfo => do
-        let json ← t.trainingDataGivenTactic elabDeclInfo module hash
-        idJsons := json :: idJsons
-      | none => pure ()
-  let jsonRes := idJsons.reverse.map fun (_, j) => j
-  for jsonObj in jsonRes do
-    IO.println jsonObj.compress
-  return 0
+  trainingDataGivenModule module
 
 /-- Setting up command line options and help text for `lake exe training_data`. -/
 def training_data : Cmd := `[Cli|
@@ -264,6 +505,7 @@ def main (args : List String) : IO UInt32 :=
   training_data.validate args
 
 -- Testing:
+-- #eval trainingDataGivenModule `temp
 -- #eval trainingDataGivenModule `Mathlib.Data.Prod.Basic
 -- #eval trainingDataGivenModule `Mathlib.Data.Int.Defs
 -- #eval trainingDataGivenModule `Mathlib.Data.Option.Basic
