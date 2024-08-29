@@ -96,7 +96,12 @@ def constantInfoToJson (cinfo : ConstantInfo) : MetaM Json := do
     ("type", Json.str info.type.stripTags),
     ("doc", match info.doc with
       | some doc => Json.str doc
-      | none => Json.null)
+      | none => Json.null),
+    ("pos", match info.declarationRange.pos.line with
+      -- if 0, probably generated from the getD default in Info.ofConstantVal'
+      -- so we don't know the position
+      | 0 => Json.null
+      | l => l)
   ]
 
 /--

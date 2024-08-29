@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 
-def _lakefile(repo, commit, name, cwd, require_docgen):
+def _lakefile(repo, commit, name, cwd):
     contents = """import Lake
 open Lake DSL
 
@@ -16,7 +16,8 @@ package «lean-training-data» {
 require %s from git
   "%s.git" @ "%s"
 
-%s
+require «doc-gen4» from git
+  "https://github.com/leanprover/doc-gen4.git" @ "v4.9.0"
 
 @[default_target]
 lean_lib TrainingData where
@@ -41,10 +42,7 @@ lean_exe training_data_with_premises where
 lean_exe declarations where
   root := `scripts.declarations
 
-""" % (name, repo, commit, """
-require «doc-gen4» from git
-  "https://github.com/leanprover/doc-gen4.git" @ "v4.9.0"
-""" if require_docgen else '')
+""" % (name, repo, commit)
     with open(os.path.join(cwd, 'lakefile.lean'), 'w') as f:
         f.write(contents)
 
@@ -168,8 +166,7 @@ if __name__ == '__main__':
             repo=source['repo'],
             commit=source['commit'],
             name=source['name'],
-            cwd=args.cwd,
-            require_docgen=args.declarations
+            cwd=args.cwd
         )
         _examples(
             imports=source['imports'],

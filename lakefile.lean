@@ -8,13 +8,11 @@ package «lean-training-data» {
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git" @ "09d33efc68d3ad52db77b731d7253675395a14aa"
 
-require QuerySMT from git
-  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "main"
+require «doc-gen4» from git
+  "https://github.com/leanprover/doc-gen4.git" @ "v4.9.0"
 
 @[default_target]
 lean_lib TrainingData where
-
-lean_lib temp where
 
 lean_lib Examples where
 
@@ -30,10 +28,9 @@ lean_exe state_comments where
 lean_exe premises where
   root := `scripts.premises
 
-@[default_target]
 lean_exe training_data_with_premises where
   root := `scripts.training_data_with_premises
 
-@[default_target]
-lean_exe tactic_benchmark where
-  root := `scripts.tactic_benchmark
+lean_exe declarations where
+  root := `scripts.declarations
+
