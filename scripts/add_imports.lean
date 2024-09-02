@@ -26,11 +26,12 @@ def addImports (args : Cli.Parsed) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
   let module := args.positionalArg! "module" |>.as! ModuleName
   let mut importPkgs := []
+  if args.hasFlag "hammer" then importPkgs := `Hammer :: importPkgs
   if args.hasFlag "querySMT" then importPkgs := `QuerySMT :: importPkgs
   if args.hasFlag "aesop" then importPkgs := `Aesop :: importPkgs
-  if args.hasFlag "duper" && !args.hasFlag "querySMT" then importPkgs := `Duper :: importPkgs
+  if args.hasFlag "duper" && !args.hasFlag "querySMT" && !args.hasFlag "hammer" then importPkgs := `Duper :: importPkgs
   if importPkgs.isEmpty then
-    importPkgs := [`QuerySMT] -- Default behavior if no flags are included
+    importPkgs := [`Hammer] -- Default behavior if no flags are included
   addImportsToModule module importPkgs
 
 /-- Setting up command line options and help text for `lake exe add_imports`. -/
@@ -42,8 +43,9 @@ def add_imports : Cmd := `[Cli|
   FLAGS:
     "duper";  "Add `import Duper` if the file does not already import Duper"
     "aesop"; "Add `import Aesop` if the file does not already import Aesop"
-    "querySMT"; "Add `import QuerySMT` if the file does not already import QuerySMT. " ++
-                "This flag is included by default if no other flags are added"
+    "querySMT"; "Add `import QuerySMT` if the file does not already import QuerySMT"
+    "hammer"; "Add `import Hammer` if the file does not already import Hammer. " ++
+              "This flag is included by default if no other flags are added"
 
   ARGS:
     module : ModuleName; "Lean module to add the import to."

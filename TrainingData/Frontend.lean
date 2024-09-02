@@ -196,9 +196,24 @@ def findLean (mod : Name) : IO FilePath := do
   catch _ =>
     return FilePath.mk ((← findOLean mod).toString.replace ".lake/build/lib/" "") |>.withExtension "lean"
 
+/-- Like `findLean` but produces the version of the file in `Examples/WithImports` -/
+def findLeanWithImports (mod : Name) (withImportsPath : String): IO FilePath := do
+  let withImportsPathPrefix := withImportsPath ++ "/"
+  try
+    -- Prior to Lean v4.3
+    let oldLeanFilePath := FilePath.mk ((← findOLean mod).toString.replace "build/lib/" withImportsPathPrefix) |>.withExtension "lean"
+    _ ← IO.FS.readFile oldLeanFilePath
+    return oldLeanFilePath
+  catch _ =>
+    return FilePath.mk ((← findOLean mod).toString.replace ".lake/build/lib/" withImportsPathPrefix) |>.withExtension "lean"
+
 /-- Implementation of `moduleSource`, which is the cached version of this function. -/
 def moduleSource' (mod : Name) : IO String := do
   IO.FS.readFile (← findLean mod)
+
+/-- Like `moduleSource'` but uses the version of the module that appears in the `Examples/WithImports` directory -/
+def moduleSourceWithImports' (mod : Name) (withImportsPath : String) : IO String := do
+  IO.FS.readFile (← findLeanWithImports mod withImportsPath)
 
 initialize sourceCache : IO.Ref <| HashMap Name String ←
   IO.mkRef .empty
@@ -213,9 +228,24 @@ def moduleSource (mod : Name) : IO String := do
     sourceCache.set (m.insert mod v)
     return v
 
+/-- Like `moduleSource` but uses the version of the module that appears in the `Examples/WithImports` directory -/
+def moduleSourceWithImports (mod : Name) (withImportsPath : String) : IO String := do
+  let m ← sourceCache.get
+  match m.find? mod with
+  | some r => return r
+  | none => do
+    let v ← moduleSourceWithImports' mod withImportsPath
+    sourceCache.set (m.insert mod v)
+    return v
+
 /-- Implementation of `compileModule`, which is the cached version of this function. -/
 def compileModule' (mod : Name) : MLList IO CompilationStep := do
   Lean.Elab.IO.processInput' (← moduleSource mod) none {} (← findLean mod).toString
+
+/-- Like `compileModule'` but compiles the version of the module that appears in the `Examples/WithImports` directory -/
+def compileModuleWithImports' (mod : Name) (withImportsPath : String) : MLList IO CompilationStep := do
+  let modSource ← moduleSourceWithImports mod withImportsPath
+  Lean.Elab.IO.processInput' modSource none {} (← findLeanWithImports mod withImportsPath).toString
 
 initialize compilationCache : IO.Ref <| HashMap Name (List CompilationStep) ←
   IO.mkRef .empty

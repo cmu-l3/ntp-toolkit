@@ -7,6 +7,7 @@ import Aesop
 import Lean.Util.Trace
 import Duper
 import QuerySMT
+import Hammer
 import Cli
 
 open Lean Core Elab IO Meta Term Tactic -- All the monads!
@@ -109,6 +110,9 @@ def useSimpAll : TacticM Unit := do evalTactic (← `(tactic| intros; simp_all))
 def useOmega : TacticM Unit := do evalTactic (← `(tactic| intros; omega))
 def useDuper : TacticM Unit := do evalTactic (← `(tactic| duper [*]))
 def useQuerySMT : TacticM Unit := do evalTactic (← `(tactic| querySMT))
+def useHammer (mod : Name) (withImportsPath : String) : TacticM Unit := do
+  let fileName := (← findLeanWithImports mod withImportsPath).toString
+  dbg_trace s!"fileName: {fileName}"
 
 open Cli System
 
