@@ -220,7 +220,7 @@ structure SecondPassTrainingData extends FirstPassTrainingData where
                     -- by the same tactic (e.g. when a goal is proven in just one tactic)
 deriving Inhabited
 
-def trainingDataGivenTactic (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) : IO FirstPassTrainingData := do
+def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) : IO FirstPassTrainingData := do
   let declId := makeElabDeclId elabDeclInfo module hash
   let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (i.info.stx.getPos?.getD 0)
   let declUpToTactic := Substring.mk (← moduleSource module)
@@ -509,3 +509,4 @@ def main (args : List String) : IO UInt32 :=
 -- #eval trainingDataGivenModule `Mathlib.Data.Prod.Basic
 -- #eval trainingDataGivenModule `Mathlib.Data.Int.Defs
 -- #eval trainingDataGivenModule `Mathlib.Data.Option.Basic
+-- #eval trainingDataGivenModule `Mathlib.Data.Set.Basic

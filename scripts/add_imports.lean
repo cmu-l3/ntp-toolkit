@@ -22,17 +22,31 @@ def addImportsToModule (module : ModuleName) (importPkgs : List Name) : IO UInt3
   IO.println out
   return 0
 
+/-- Like `addImportsToModule` but doesn't worry about potentially duplicating imports. -/
+def addImportsToModuleWithoutChecking (module : ModuleName) (importPkgs : List Name) : IO UInt32 := do
+  let src ← moduleSource module
+  let mut additionalImports := ""
+  for pkg in importPkgs do
+    additionalImports := additionalImports ++ s!"import {pkg}\n"
+  let out := additionalImports ++ src
+  IO.println out
+  return 0
+
 def addImports (args : Cli.Parsed) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
   let module := args.positionalArg! "module" |>.as! ModuleName
+  let mut needToCheck := false -- Only bother checking for duplicate imports if that is possible
   let mut importPkgs := []
   if args.hasFlag "hammer" then importPkgs := `Hammer :: importPkgs
   if args.hasFlag "querySMT" then importPkgs := `QuerySMT :: importPkgs
-  if args.hasFlag "aesop" then importPkgs := `Aesop :: importPkgs
+  if args.hasFlag "aesop" then
+    importPkgs := `Aesop :: importPkgs
+    needToCheck := true
   if args.hasFlag "duper" && !args.hasFlag "querySMT" && !args.hasFlag "hammer" then importPkgs := `Duper :: importPkgs
   if importPkgs.isEmpty then
     importPkgs := [`Hammer] -- Default behavior if no flags are included
-  addImportsToModule module importPkgs
+  if needToCheck then addImportsToModule module importPkgs
+  else addImportsToModuleWithoutChecking module importPkgs
 
 /-- Setting up command line options and help text for `lake exe add_imports`. -/
 def add_imports : Cmd := `[Cli|

@@ -14,15 +14,40 @@ open Lean Core Elab IO Meta Term Tactic -- All the monads!
 
 set_option autoImplicit true
 
+def useAesop : TacticM Unit := do evalTactic (← `(tactic| aesop))
+def useExact? : TacticM Unit := do evalTactic (← `(tactic| exact?))
+def useRfl : TacticM Unit := do evalTactic (← `(tactic| intros; rfl))
+def useSimpAll : TacticM Unit := do evalTactic (← `(tactic| intros; simp_all))
+def useOmega : TacticM Unit := do evalTactic (← `(tactic| intros; omega))
+def useDuper : TacticM Unit := do evalTactic (← `(tactic| duper [*]))
+def useQuerySMT : TacticM Unit := do evalTactic (← `(tactic| querySMT))
+def useHammer (hammerRecommendation : Array String) : TacticM Unit := do
+  dbg_trace "About to convert hammerRecommendation to names"
+  let hammerRecommendation : Array Name := hammerRecommendation.map String.toName
+  dbg_trace "About to convert hammerRecommendation to constants"
+  let hammerRecommendation : Array Expr ← hammerRecommendation.mapM (fun n => mkConstWithLevelParams n)
+  dbg_trace "About to convert hammerRecommendation to terms"
+  let hammerRecommendation : Array Term ← hammerRecommendation.mapM (fun e => withOptions Auto.ppOptionsSetting $ PrettyPrinter.delab e)
+  dbg_trace "hammerRecommendation after transforming to terms: {hammerRecommendation}"
+  evalTactic (← `(tactic| hammer [$(hammerRecommendation),*])) -- **TODO** Add `*` so that local hypotheses will be available
+
 /--
 Compile the designated module, and run a monadic function with each new `ConstantInfo`,
 with the `Environment` as it was *before* the command which created that declaration.
 
 (Internal declarations according to `Name.isBlackListed` are skipped.)
+
+If `withImportsDir` is provided, then `runAtDecls` uses the version of the file contained in the `WithImports` directory
 -/
-def runAtDecls (mod : Name) (tac : ConstantInfo → MetaM (Option α)) : MLList IO (ConstantInfo × α) := do
-  let fileName := (← findLean mod).toString
-  let steps := compileModule' mod
+def runAtDecls (mod : Name) (withImportsDir : Option String := none) (tac : ConstantInfo → MetaM (Option α)) : MLList IO (ConstantInfo × α) := do
+  let fileName ←
+    match withImportsDir with
+    | none => pure (← findLean mod).toString
+    | some withImportsDir => pure (← findLeanWithImports mod "mathlib" withImportsDir).toString
+  let steps :=
+    match withImportsDir with
+    | none => compileModule' mod
+    | some withImportsDir => compileModuleWithImports' mod "mathlib" withImportsDir
   let targets := steps.bind fun c => (MLList.ofList c.diff).map fun i => (c, i)
 
   targets.filterMapM fun (cmd, ci) => do
@@ -49,6 +74,7 @@ inductive ResultType
 | subgoals
 | notDefEq
 | success
+| notApplicable -- Used when attempting to evaluate the hammer on a declaration that doesn't enter tactic mode
 deriving Repr, BEq
 
 instance : ToString ResultType where
@@ -57,6 +83,7 @@ instance : ToString ResultType where
   | .subgoals => "subgoals"
   | .notDefEq => "notDefEq"
   | .success => "success"
+  | .notApplicable => "notApplicable"
 
 structure Result where
   type : ResultType
@@ -74,14 +101,12 @@ Compile the designated module, select declarations satisfying a predicate,
 and run a tactic on the type of each declaration.
 -/
 def runTacticAtDecls (mod : Name) (decls : ConstantInfo → CoreM Bool) (tac : TacticM Unit) :
-    MLList IO (ConstantInfo × Result) := do
-  runAtDecls mod fun ci => do
+  MLList IO (ConstantInfo × Result) := do
+  runAtDecls mod none fun ci => do
     if ! (← decls ci) then return none
     let g ← mkFreshExprMVar ci.type
-    -- From `MetaM` to `TermElabM`
     let ((gs, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
       try? <| TermElabM.run' do
-        -- From `TermElabM` to `TacticM`!
         Tactic.run g.mvarId! tac
     let type : ResultType ← match gs with
     | none => pure .failure
@@ -103,22 +128,75 @@ def runTacticAtDecls (mod : Name) (decls : ConstantInfo → CoreM Bool) (tac : T
         | some true => pure .success
     return some ⟨type, seconds, heartbeats⟩
 
-def useAesop : TacticM Unit := do evalTactic (← `(tactic| aesop))
-def useExact? : TacticM Unit := do evalTactic (← `(tactic| exact?))
-def useRfl : TacticM Unit := do evalTactic (← `(tactic| intros; rfl))
-def useSimpAll : TacticM Unit := do evalTactic (← `(tactic| intros; simp_all))
-def useOmega : TacticM Unit := do evalTactic (← `(tactic| intros; omega))
-def useDuper : TacticM Unit := do evalTactic (← `(tactic| duper [*]))
-def useQuerySMT : TacticM Unit := do evalTactic (← `(tactic| querySMT))
-def useHammer (mod : Name) (withImportsPath : String) : TacticM Unit := do
-  let fileName := (← findLeanWithImports mod withImportsPath).toString
-  dbg_trace s!"fileName: {fileName}"
+def runHammerAtDecls (mod : Name) (decls : ConstantInfo → CoreM Bool) (withImportsPath : String) (jsonDir : String) :
+  MLList IO (ConstantInfo × Result) := do
+  runAtDecls mod (some withImportsPath) fun ci => do
+    if ! (← decls ci) then return none
+    let g ← mkFreshExprMVar ci.type
+    -- Find JSON file corresponding to current `mod`
+    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let jsonObjects ← IO.FS.lines fileName
+    let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
+    -- Find `declHammerRecommendation` corresponding to current `ci`
+    /- We take just the string suffix rather than the whole name because whole name may include the namespace
+       which might not appear in `decl`. This approach is a hack though and should be replaced before attempting
+       anything beyond testing individual files -/
+    let ciNameSuffix ←
+      match ci.name with
+      | .str _ s => pure s
+      | _ => throwError "runHammerAtDecls :: Error processing constant name {ci.name}"
+    let mut ciEntry := Json.null
+    for jsonEntry in json do
+      let jsonDecl ← IO.ofExcept $ jsonEntry.getObjVal? "decl"
+      let curDecl ← IO.ofExcept $ jsonDecl.getStr?
+      /- **TODO** This approach is not reliable for a variety of reasons. The biggest issue is that comments
+         referring to other theorems can appear in the declaration. -/
+      if curDecl.containsSubstr ciNameSuffix then
+        ciEntry := jsonEntry
+        break
+    if ciEntry.isNull then
+      return some ⟨.notApplicable, 0.0, 0⟩
+    let hammerRecommendation ← IO.ofExcept $ ciEntry.getObjVal? "declHammerRecommendation"
+    let hammerRecommendation ← IO.ofExcept $ hammerRecommendation.getArr?
+    let hammerRecommendation ← IO.ofExcept $ hammerRecommendation.mapM Json.getStr?
+    let ((gs, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
+      try? <| TermElabM.run' do
+        dbg_trace "About to use hammer for {ci.name} (recommendation: {hammerRecommendation})"
+        Tactic.run g.mvarId! $ useHammer hammerRecommendation
+    let type : ResultType ← match gs with
+    | none => pure .failure
+    | some (_ :: _) => pure .subgoals
+    | some [] =>
+      match ci.value? with
+      | none => pure .success
+      | some v =>
+        if ← isProp ci.type then
+          pure .success
+        else
+        match ← try? (isDefEq g v) with
+        | none
+          -- In this case we should perhaps return an "uncertain" value.
+          -- The problem is that `v` may contain constants generated by the simplifier
+          -- during elaboration of the original proof,
+          -- and which aren't in the current environment, so we can't really compare `g` and `v`
+        | some false => pure .notDefEq
+        | some true => pure .success
+    return some ⟨type, seconds, heartbeats⟩
 
 open Cli System
 
 def tacticBenchmarkFromModule (module : ModuleName) (tac : TacticM Unit) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
   let result := runTacticAtDecls module (fun _ => pure true) tac
+  IO.println s!"{module}"
+  for (ci, ⟨type, seconds, heartbeats⟩) in result do
+    IO.println <| (if type == .success then checkEmoji else crossEmoji) ++ " " ++ ci.name.toString ++
+      s!" ({seconds}s) ({heartbeats} heartbeats)"
+  return 0
+
+def hammerBenchmarkFromModule (module : ModuleName) (withImportsDir : String) (jsonDir : String) : IO UInt32 := do
+  searchPathRef.set compile_time_search_path%
+  let result := runHammerAtDecls module (fun _ => pure true) withImportsDir jsonDir
   IO.println s!"{module}"
   for (ci, ⟨type, seconds, heartbeats⟩) in result do
     IO.println <| (if type == .success then checkEmoji else crossEmoji) ++ " " ++ ci.name.toString ++
