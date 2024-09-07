@@ -34,3 +34,5 @@ lean_exe training_data_with_premises where
 lean_exe declarations where
   root := `scripts.declarations
 
+lean_exe all_constants where
+  root := `scripts.all_constants

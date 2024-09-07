@@ -42,6 +42,11 @@ lean_exe training_data_with_premises where
 lean_exe declarations where
   root := `scripts.declarations
 
+lean_exe all_imports where
+  root := `scrips.all_imports
+
+lean_exe all_constants where
+  root := `scripts.all_constants
 """ % (name, repo, commit)
     with open(os.path.join(cwd, 'lakefile.lean'), 'w') as f:
         f.write(contents)

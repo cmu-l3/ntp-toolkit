@@ -1,18 +1,10 @@
-/-
-Adapted from lean-training-data/scripts/premises.lean
-(Changed: output declarations restricted to the input module(s).)
-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
--/
-
 import Mathlib.Lean.CoreM
 import Mathlib.Control.Basic
 import Mathlib.Lean.Expr.Basic
 import Batteries.Lean.HashMap
 import Batteries.Lean.Util.Path
-
 import DocGen4.Process
+import Qq
 
 /-!
 Generate declaration names and types.
@@ -35,17 +27,38 @@ namespace DocGen4.Process
 
 open DocGen4 DocGen4.Process DocGen4.Process.DocInfo
 
--- #check ofConstant
+/--
+Modified version of `prettyPrintTerm` (changed width to 1000000000)
+-/
+def prettyPrintTerm' (expr : Expr) : MetaM Widget.CodeWithInfos := do
+  let ⟨fmt, infos⟩ ← PrettyPrinter.ppExprWithInfos expr
+  let tt := Widget.TaggedText.prettyTagged fmt (w := 1000000000)
+  let ctx := {
+    env := ← getEnv
+    mctx := ← getMCtx
+    options := ← getOptions
+    currNamespace := ← getCurrNamespace
+    openDecls := ← getOpenDecls
+    fileMap := default,
+    ngen := ← getNGen
+  }
+  return Widget.tagCodeInfos ctx infos tt
+
+/-- Modified version of `NameInfo.ofTypedName` (changed pretty printing) -/
+def NameInfo.ofTypedName' (n : Name) (t : Expr) : MetaM NameInfo := do
+  let env ← getEnv
+  return { name := n, type := ← prettyPrintTerm' t, doc := ← findDocString? env n}
+
 /--
 Modified version of `Info.ofConstantVal`:
+* Changed rendering width to 1000000000
 * Suppressed error when declaration range is none
 -/
 def Info.ofConstantVal' (v : ConstantVal) : MetaM Info := do
   argTypeTelescope v.type fun args type => do
-    let args ← args.mapM (fun (n, e, b) => do return Arg.mk n (← prettyPrintTerm e) b)
-    let nameInfo ← NameInfo.ofTypedName v.name type
+    let args ← args.mapM (fun (n, e, b) => do return Arg.mk n (← prettyPrintTerm' e) b)
+    let nameInfo ← NameInfo.ofTypedName' v.name type
     let range := (← findDeclarationRanges? v.name).getD default
-    -- TODO: Maybe selection range is more relevant? Figure this out in the future
     return {
       toNameInfo := nameInfo,
       args,
@@ -79,12 +92,13 @@ def infoOfConstant (cinfo : ConstantInfo) : MetaM (String × Info) := do
     | .ctorInfo _ => "def"
     | .recInfo _ => "def"
     | .quotInfo _ => "def"
+  -- TODO: record if it is e.g. ctor, opaque, induct etc (not accepted by duper)
   return (kind, ← Info.ofConstantVal' cinfo.toConstantVal)
 
 end DocGen4.Process
 
 /-- Pretty-prints a constant to JSON -/
-def constantInfoToJson (cinfo : ConstantInfo) : MetaM Json := do
+def constantInfoToJson (cinfo : ConstantInfo) (moduleName : Name) : MetaM Json := do
   let (kind, info) ← infoOfConstant cinfo
   return Json.mkObj [
     ("name", Json.str cinfo.name.toString),
@@ -99,54 +113,60 @@ def constantInfoToJson (cinfo : ConstantInfo) : MetaM Json := do
       -- so we don't know the position
       | 0 => Json.null
       | l => l),
+    ("module", Json.str moduleName.toString)
   ]
+
+/-- If a constant should not be included. -/
+def isBlackListedName (name : Name) : Bool :=
+  -- We should do this during postprocessing?
+  -- match name.components with
+  -- | `Lean :: _ => true
+  -- | `Lake :: _ => true
+  -- | `Qq :: _ => true
+  -- | `Aesop :: _ => true
+  -- | `Cli :: _ => true
+  -- | _ =>
+  name.isInternalDetail
+
+/-- If a constant from this module should not be included. -/
+def isBlacklistedModule (moduleName : Name) : Bool :=
+  -- We should do this during postprocessing?
+  -- match moduleName.components with
+  -- | `Lean :: _ => true
+  -- | `Lake :: _ => true
+  -- | `Qq :: _ => true
+  -- | `Aesop :: _ => true
+  -- | `Cli :: _ => true
+  -- | `ImportGraph :: _ => true
+  -- | `DocGen4 :: _ => true
+  -- | `ProofWidgets :: _ => true
+  -- | `UnicodeBasic :: _ => true
+  -- | `MD4Lean :: _ => true
+  -- | _ =>
+  false
 
 /--
 Traverse all constants from imported files,
 collecting prettified declarations
 -/
-def allConstantDeclarations (moduleNames : Array Name) :
-    MetaM (Array Json) := do
+def allConstants (callback : Name → Json → MetaM Unit) :
+    MetaM Unit := do
   let env ← getEnv
   let constantsMap := env.constants.map₁
-  let moduleIdxs := moduleNames.filterMap env.getModuleIdx?
-  let mut result : Array Json := ∅
-  for (n, c) in constantsMap do
+  for (name, cinfo) in constantsMap do
     -- We omit all internal details (Name.isInternalDetail)
     -- We restrict to declarations in the module
-    if let some modIdx := env.getModuleIdxFor? n then
-      if moduleIdxs.contains modIdx && !n.isInternalDetail then
-        let json ← constantInfoToJson c
-        result := result.push json
-  return result
-
--- #check Mathlib.Meta.NormNum.invertibleOfMul'
--- #eval show MetaM Unit from do
---   let name := ``Mathlib.Meta.NormNum.invertibleOfMul'
---   if let some cinfo := (← getEnv).constants.find? name then
---     IO.println <| cinfo.getUsedConstantsAsSet.toList
-
--- #eval show MetaM Unit from do
---   IO.withStderr (← IO.getStdin) <| do
---   let constantsMap := (← getEnv).constants.map₁
---   let name := ``Mathlib.Meta.Positivity.evalAscFactorial
---   let cinfo := constantsMap.find! name
---   IO.println <| ← constantInfoToJson cinfo
-
--- #check Nat.casesAuxOn
--- #eval show MetaM Unit from do
---   let mut cnt := 0
---   let constantsMap := (← getEnv).constants.map₁
---   IO.println <| ← (``Nat.casesAuxOn).isBlackListed
---   for (name, cinfo) in constantsMap do
---     if cnt > 100 then return ()
---     -- if !(← name.isBlackListed) && !(`injEq).isSuffixOf name then
---     --   match ← findDeclarationRanges? name with
---     --   | some _ => continue
---     --   | none =>
---     if !name.isInternalDetail && (← findDeclarationRanges? name).isNone then
---           cnt := cnt + 1
---           IO.println name
+    if !isBlackListedName name then
+      if let some moduleIdx := env.getModuleIdxFor? name then
+        if let some moduleName := env.header.moduleNames[moduleIdx.toNat]? then
+          if !isBlacklistedModule moduleName then
+            try
+              let json ← constantInfoToJson cinfo moduleName
+              callback name json
+            catch _ =>
+              -- Extremely rare cases (e.g. Qq.Quoted.unsafeMk)
+              IO.eprintln s!"\nFailed to extract {name}"
+              continue
 
 def main (args : List String) : IO UInt32 := do
   let options := Options.empty.insert `maxHeartbeats (0 : Nat)
@@ -155,7 +175,8 @@ def main (args : List String) : IO UInt32 := do
   | args => args.toArray.map fun s => s.toName
   searchPathRef.set compile_time_search_path%
   CoreM.withImportModules modules (options := options) do
-    let allDeclarations ← MetaM.run' (allConstantDeclarations modules)
-    for json in allDeclarations do
+    MetaM.run' <| allConstants fun name json ↦ do
+      IO.eprint s!"\x1B[2K\rProcessing {name.toString.take 60}"
       IO.println json.compress
+    IO.eprintln ""
   return 0
