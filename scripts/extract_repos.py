@@ -16,6 +16,9 @@ package «lean-training-data» {
 require %s from git
   "%s.git" @ "%s"
 
+require «doc-gen4» from git
+  "https://github.com/leanprover/doc-gen4.git" @ "v4.9.0"
+
 @[default_target]
 lean_lib TrainingData where
 
@@ -36,6 +39,14 @@ lean_exe premises where
 lean_exe training_data_with_premises where
   root := `scripts.training_data_with_premises
 
+lean_exe declarations where
+  root := `scripts.declarations
+
+lean_exe all_imports where
+  root := `scrips.all_imports
+
+lean_exe all_constants where
+  root := `scripts.all_constants
 """ % (name, repo, commit)
     with open(os.path.join(cwd, 'lakefile.lean'), 'w') as f:
         f.write(contents)
@@ -128,6 +139,10 @@ if __name__ == '__main__':
         '--training_data_with_premises',
         action='store_true'
     )
+    parser.add_argument(
+        '--declarations',
+        action='store_true'
+    )
     args = parser.parse_args()
 
     with open(args.config) as f:
@@ -146,6 +161,8 @@ if __name__ == '__main__':
         flags.append('--full_proof_training_data_states')
     if args.training_data_with_premises:
         flags.append('--training_data_with_premises')
+    if args.declarations:
+        flags.append('--declarations')
 
     for source in sources:
         print("=== %s ===" % (source['name']))

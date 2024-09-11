@@ -13,14 +13,7 @@ import Batteries.Lean.HashMap
 import Batteries.Lean.Util.Path
 
 /-!
-Generate declaration dependencies up to a target file (defaulting to all of Mathlib).
-
-* Declarations are separated by `---`.
-* In each block the first declaration is the theorem or definition we are analyzing,
-* Subsequent indented declarations are those used in its proof or definition.
-* Declarations prefixed with a `* ` appear in explicit arguments.
-  (This approximates "is visible in the pretty printed form".)
-* Declarations prefixed with a `s ` are used by the simplifier.
+Generate declaration dependencies up to a target file.
 
 -/
 
