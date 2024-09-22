@@ -22,14 +22,10 @@ def useOmega : TacticM Unit := do evalTactic (← `(tactic| intros; omega))
 def useDuper : TacticM Unit := do evalTactic (← `(tactic| duper [*]))
 def useQuerySMT : TacticM Unit := do evalTactic (← `(tactic| querySMT))
 def useHammer (hammerRecommendation : Array String) : TacticM Unit := do
-  dbg_trace "About to convert hammerRecommendation to names"
   let hammerRecommendation : Array Name := hammerRecommendation.map String.toName
-  dbg_trace "About to convert hammerRecommendation to constants"
-  let hammerRecommendation : Array Expr ← hammerRecommendation.mapM (fun n => mkConstWithLevelParams n)
-  dbg_trace "About to convert hammerRecommendation to terms"
-  let hammerRecommendation : Array Term ← hammerRecommendation.mapM (fun e => withOptions Auto.ppOptionsSetting $ PrettyPrinter.delab e)
-  dbg_trace "hammerRecommendation after transforming to terms: {hammerRecommendation}"
-  evalTactic (← `(tactic| hammer [$(hammerRecommendation),*])) -- **TODO** Add `*` so that local hypotheses will be available
+  let hammerRecommendation : Array Ident := hammerRecommendation.map mkIdent
+  let hammerRecommendation : Array Term := hammerRecommendation.map (fun i => ⟨i.raw⟩)
+  evalTactic (← `(tactic| hammer [*, $(hammerRecommendation),*])) -- **TODO** Check that this syntax includes `*` so that local hypotheses will be available
 
 /--
 Compile the designated module, and run a monadic function with each new `ConstantInfo`,
@@ -128,6 +124,7 @@ def runTacticAtDecls (mod : Name) (decls : ConstantInfo → CoreM Bool) (tac : T
         | some true => pure .success
     return some ⟨type, seconds, heartbeats⟩
 
+-- **TODO** Only run Hammer on actual theorems/lemmas (i.e. Prop-typed constants)
 def runHammerAtDecls (mod : Name) (decls : ConstantInfo → CoreM Bool) (withImportsPath : String) (jsonDir : String) :
   MLList IO (ConstantInfo × Result) := do
   runAtDecls mod (some withImportsPath) fun ci => do
