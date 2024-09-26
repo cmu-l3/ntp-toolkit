@@ -16,6 +16,9 @@ package «lean-training-data» {
 require %s from git
   "%s.git" @ "%s"
 
+require «doc-gen4» from git
+  "https://github.com/leanprover/doc-gen4.git" @ "a34d3c1f7b72654c08abe5741d94794db40dbb2e"
+
 @[default_target]
 lean_lib TrainingData where
 
@@ -32,6 +35,15 @@ lean_exe state_comments where
 
 lean_exe premises where
   root := `scripts.premises
+
+lean_exe training_data_with_premises where
+  root := `scripts.training_data_with_premises
+
+lean_exe declarations where
+  root := `scripts.declarations
+
+lean_exe all_modules where
+  root := `scripts.all_modules
 
 """ % (name, repo, commit)
     with open(os.path.join(cwd, 'lakefile.lean'), 'w') as f:
@@ -63,43 +75,92 @@ def _setup(cwd):
     subprocess.Popen(['lake build'], shell=True).wait()
 
 def _import_file(name, import_file, old_version):
-    name = name.replace('«', '').replace('»', '') 
+    name = name.replace('«', '').replace('»', '')
     if old_version:
         return os.path.join('lake-packages', name, import_file)
     else:
         return os.path.join('.lake', 'packages', name, import_file)
 
-def _run(cwd, name, import_file, old_version, max_workers):
-    flags = ''
+def _run(cwd, name, import_module, max_workers, flags):
     if max_workers is not None:
-        flags += ' --max-workers %d' % max_workers
-    subprocess.Popen(['python %s/scripts/run_pipeline.py --output-base-dir Examples/%s --cwd %s --import-file %s %s' % (
-        cwd,
-        name.capitalize(),
-        cwd,
-        _import_file(name, import_file, old_version),
-        flags
-    )], shell=True).wait()
+        flags.append('--max-workers')
+        flags.append(str(max_workers))
+    subprocess.run([
+        'python3',
+        '%s/scripts/run_pipeline.py' % cwd,
+        '--output-base-dir', 'Examples/%s' % name.capitalize(),
+        '--cwd', cwd,
+        '--import-module', *import_module,
+        *flags
+    ], check=True)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--cwd', default='/Users/wellecks/projects/ntp-training-data/')
     parser.add_argument(
-        '--config', 
-        default='configs/config.json', 
+        '--config',
+        default='configs/config.json',
         help='config file'
     )
     parser.add_argument(
-        '--max-workers', 
-        default=None, 
+        '--max-workers',
+        default=None,
         type=int,
         help="maximum number of processes; defaults to number of processors"
+    )
+    parser.add_argument(
+        '--skip_setup',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--training_data',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--full_proof_training_data',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--premises',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--state_comments',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--full_proof_training_data_states',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--training_data_with_premises',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--declarations',
+        action='store_true'
     )
     args = parser.parse_args()
 
     with open(args.config) as f:
         sources = json.load(f)
+
+    flags = []
+    if args.training_data:
+        flags.append('--training_data')
+    if args.full_proof_training_data:
+        flags.append('--full_proof_training_data')
+    if args.premises:
+        flags.append('--premises')
+    if args.state_comments:
+        flags.append('--state_comments')
+    if args.full_proof_training_data_states:
+        flags.append('--full_proof_training_data_states')
+    if args.training_data_with_premises:
+        flags.append('--training_data_with_premises')
+    if args.declarations:
+        flags.append('--declarations')
 
     for source in sources:
         print("=== %s ===" % (source['name']))
@@ -108,7 +169,7 @@ if __name__ == '__main__':
             repo=source['repo'],
             commit=source['commit'],
             name=source['name'],
-            cwd=args.cwd
+            cwd=args.cwd,
         )
         _examples(
             imports=source['imports'],
@@ -118,13 +179,16 @@ if __name__ == '__main__':
             lean=source['lean'],
             cwd=args.cwd
         )
-        _setup(
-            cwd=args.cwd
-        )
+        if not args.skip_setup:
+            _setup(
+                cwd=args.cwd
+            )
         _run(
             cwd=args.cwd,
             name=source['name'],
-            import_file=source['import_file'],
-            old_version=False if 'old_version' not in source else source['old_version'],
-            max_workers=args.max_workers
+            import_module=source['imports'],
+            # import_file=source['import_file'],
+            # old_version=False if 'old_version' not in source else source['old_version'],
+            max_workers=args.max_workers,
+            flags=flags
         )

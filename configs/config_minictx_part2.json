@@ -1,0 +1,26 @@
+[
+    {
+        "repo": "https://github.com/hanwenzhu/HepLean-v4.7",
+        "commit": "7448822afced644bd61f0bdcf4dc438f455f9890",
+        "lean": "leanprover/lean4:v4.7.0",
+        "name": "hep_lean",
+        "import_file": "HepLean.lean",
+        "imports": ["HepLean"]
+    },
+    {
+        "repo": "https://github.com/RemyDegenne/kolmogorov_extension4",
+        "commit": "e206d383b46524303c6f83af41999b8eae2ad030",
+        "lean": "leanprover/lean4:v4.7.0",
+        "name": "kolmogorov_extension4",
+        "import_file": "KolmogorovExtension4.lean",
+        "imports": ["KolmogorovExtension4"]
+    },
+    {
+        "repo": "https://github.com/lecopivo/SciLean",
+        "commit": "e03a8e439a558840118319a6c8a47106e1445e53",
+        "lean": "leanprover/lean4:v4.7.0",
+        "name": "scilean",
+        "import_file": "SciLean.lean",
+        "imports": ["SciLean"]
+    }
+]

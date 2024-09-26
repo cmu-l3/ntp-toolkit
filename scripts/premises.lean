@@ -112,6 +112,10 @@ def allExplicitConstants (moduleNames : Array Name) : MetaM (NameMap NameSet) :=
         result := result.insert n (← c.explicitConstants)
   return result
 
+def allImportedModules (moduleNames : Array Name) : MetaM (Array Name) := do
+  let names := (← getEnv).allImportedModuleNames
+  return names.filter fun n ↦ !moduleNames.contains n
+
 def main (args : List String) : IO UInt32 := do
   let options := Options.empty.insert `maxHeartbeats (0 : Nat)
   let modules := match args with
@@ -121,6 +125,7 @@ def main (args : List String) : IO UInt32 := do
   CoreM.withImportModules modules (options := options) do
     let allConstants ← allUsedConstants modules
     let explicitConstants ← MetaM.run' (allExplicitConstants modules)
+    let importedModules ← MetaM.run' (allImportedModules modules)
     for (n, (d, u)) in allConstants do
       -- We do not do this filtering as we already restrict to the given modules
       -- match n.components with
@@ -138,7 +143,9 @@ def main (args : List String) : IO UInt32 := do
       ]
       let json := Json.mkObj [
         ("name", Json.str n.toString),
-        ("dependents", Json.arr dependents.toArray)
+        ("dependents", Json.arr dependents.toArray),
+        ("importedModules", Json.arr <|
+          importedModules.map fun m ↦ Json.str m.toString)
       ]
       IO.println json.compress
   return 0

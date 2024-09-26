@@ -26,12 +26,12 @@ for filename in glob.glob(os.path.join(args.input_dir, 'Premises/*.jsonl')):
 
 theorems = []
 for filename in glob.glob(os.path.join(args.input_dir, 'FullProof/*.jsonl')):
-    dependency_map = {}
+    premises_map = {}
     premises_filename = filename.replace('FullProof', 'Premises', 1)
     with open(premises_filename) as premises_file:
         for line in premises_file:
             data = json.loads(line)
-            dependency_map[data['name']] = data['dependents']
+            premises_map[data['name']] = data
     with open(filename) as file:
         for i, line in enumerate(file):
             data = json.loads(line)
@@ -39,14 +39,22 @@ for filename in glob.glob(os.path.join(args.input_dir, 'FullProof/*.jsonl')):
             name = data['declName']
             proof = data['proof']
 
-            if name in dependency_map:
-                dependents = dependency_map[name]
-                has_in_file_dependency = any(d['name'] in dependency_map for d in dependents)
-                has_repo_dependency = any(d['name'] in repo_premises for d in dependents)
+            if name in premises_map:
+                premise_info = premises_map[name]
+                has_in_file_dependency = any(d['name'] in premises_map for d in premise_info['dependents'])
+                has_repo_dependency = any(d['name'] in repo_premises for d in premise_info['dependents'])
+                num_repo_dependencies = sum(d['name'] in repo_premises for d in premise_info['dependents'])
+                num_in_file_dependencies = sum(d['name'] in premises_map for d in premise_info['dependents'])
+                num_dependencies = len(premise_info['dependents'])
+                imported_modules = premise_info['importedModules']
             else:
                 # not available (because of some probably fixable error)
                 has_in_file_dependency = None
                 has_repo_dependency = None
+                imported_modules = None
+                num_repo_dependencies = None
+                num_in_file_dependencies = None
+                num_dependencies = None
 
             theorems.append({
                 'srcContext': context,
@@ -68,7 +76,11 @@ for filename in glob.glob(os.path.join(args.input_dir, 'FullProof/*.jsonl')):
                 },
                 'dependencyMetadata': {
                     'inFilePremises': has_in_file_dependency,
+                    'numInFilePremises': num_in_file_dependencies,
                     'repositoryPremises': has_repo_dependency,
+                    'numRepositoryPremises': num_repo_dependencies,
+                    'numPremises': num_dependencies,
+                    'importedModules': imported_modules,
                 },
                 'proofMetadata': {
                     'hasProof': 'sorry' not in proof,
