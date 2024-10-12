@@ -2,6 +2,7 @@ import TrainingData.Frontend
 import TrainingData.InfoTree.ToJson
 import TrainingData.InfoTree.TacticInvocation.Basic
 import TrainingData.Utils.Range
+import TrainingData.Utils.HammerBlacklist
 import Mathlib.Data.String.Defs
 import Mathlib.Lean.CoreM
 import Batteries.Lean.Util.Path
@@ -279,9 +280,9 @@ def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) 
 
   let nextTacticHammerRecommendation :=
     if nextTacticIsSimpOrRwVariant then
-      explicitUsedConstants.foldl (fun acc c => if acc.contains c then acc else acc.push c) allLemmas
+      (explicitUsedConstants.foldl (fun acc c => if acc.contains c then acc else acc.push c) allLemmas).filter (fun n => !isBlackListed s!"{n}")
     else
-      allLemmas
+      allLemmas.filter (fun n => !isBlackListed s!"{n}")
 
   let data := {
       declId := declId,

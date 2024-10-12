@@ -85,4 +85,10 @@ def tactics (t : InfoTree) : List TacticInvocation :=
   t.findTacticNodes.map (fun ⟨i, ctx, children⟩ => ⟨i, ctx, children⟩)
     |>.filter fun i => i.info.isSubstantive
 
+/-- Finds all tactic invocations in an `InfoTree`, ignoring structuring tactics (e.g. `by`, `;`, multiline tactics,
+    parenthesized tactics). Additionally, finds all top-level proof terms used to complete top-level declarations and
+    treats the proof term `t` as the tactic `by exact t`. -/
+def tacticsAndTerms (t : InfoTree) : List TacticInvocation :=
+  sorry
+
 end Lean.Elab.InfoTree

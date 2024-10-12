@@ -1,5 +1,4 @@
 import Scripts.Tactic_benchmark
-import QuerySMT
 
 set_option linter.setOption false
 
@@ -9,6 +8,7 @@ set_option linter.setOption false
 #eval tacticBenchmarkFromModule `temp useQuerySMT
 #eval tacticBenchmarkFromModule `temp useAesop
 -/
+-- #eval tacticBenchmarkFromModule `temp2 useQuerySMT
 
 ------------------------------------------------------------------------------------------------------------------------
 -- For testing in general
@@ -28,34 +28,13 @@ def testRunTacticAtSpecificDecl (tac : TacticM Unit) (t : Expr) : MetaM Bool := 
 def withImportsDir := "Examples/Mathlib/WithImports"
 def jsonDir := "Examples/Mathlib/TrainingDataWithPremises"
 
-/- This still doesn't work 100% as intended (e.g. `ite_left` fails even though we know `hammer`
-   can solve it using the recommendation lemmas with no issue). But it doesn't fail 100% of
-   everything so there's that at least.
-
-   The reason this is failing is because after we convert the hammer recommendation to terms,
-   we get things like `@Set.ite` which is NOT acceptable input for `hammer` even though `Set.ite` is.
-   Currently, it appears that discrepancies between `hammerBenchmarkFromModule` performance and actual
-   hammer performance comes from places where the premise to term conversion is creating issues.
-
-   Additionally, there are some cases where `useHammer` is failing even before calling the actual
-   hammer. This happens when the process of converting the hammer recommendation to terms fails.
-   Currently, I see instances where the hammerRecommendation can be converted to names but not
-   constants (I suspect the offending fact is `Set.ite.eq_1`) -/
+/- Current reaons for failure:
+  - `Set.ite.eq_1` (e.g. `Set.inter_self`)
+  - Theorems which are proven using proof terms without entering tactic mode (e.g. `Set.union_diff_self`) -/
 -- #eval hammerBenchmarkFromModule `Mathlib.Data.Set.Basic withImportsDir jsonDir
 -- #eval tacticBenchmarkFromModule `Mathlib.Data.Set.Basic useDuper
 
-/-
-theorem ite_left (s t : Set α) : s.ite s t = s ∪ t := by
-  hammer [Set.ite, congrArg, Set.inter_self, eq_self, of_eq_true, Set.union_diff_self, Eq.trans]
-
-The above works (when placed in WithImports/Mathlib.Data.Set.Basic.lean)
--/
-
--- #eval hammerBenchmarkFromModule `Mathlib.Data.Option.Basic withImportsDir jsonDir
--- #eval hammerBenchmarkFromModule `Mathlib.Data.Int.Defs withImportsDir jsonDir
-
 ------------------------------------------------------------------------------------------------------------------------
-/-
 -- For testing `useQuerySMT` (and specifically debugging the error caused by the anonymous constructors used to build selectors)
 def myExpr1 : Expr :=
   Expr.forallE `α (Expr.sort 1)
@@ -84,16 +63,7 @@ def myExpr2 : Expr :=
 
 syntax (name := myTestTactic) "myTestTactic" : tactic
 
-open Auto QuerySMT
-
-/-- Copied from Lean.Meta.Tactic.Intro.lean -/
-private partial def getIntrosSize : Expr → Nat
-  | .forallE _ _ b _ => getIntrosSize b + 1
-  | .letE _ _ _ b _  => getIntrosSize b + 1
-  | .mdata _ b       => getIntrosSize b
-  | e                =>
-    if let some (_, _, _, b) := e.letFun? then getIntrosSize b + 1
-    else 0
+open Auto QuerySMT Duper
 
 @[tactic myTestTactic]
 def evalMyTestTactic : Tactic
@@ -170,4 +140,3 @@ example (p q : Prop) : True := by
   have h : ∃ x : p, q := sorry
   match h with
   | Exists.intro a b => sorry
--/

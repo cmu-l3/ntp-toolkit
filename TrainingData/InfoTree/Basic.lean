@@ -168,4 +168,11 @@ def findTacticNodes (t : InfoTree) : List (TacticInfo × ContextInfo × Persiste
   | (.ofTacticInfo i, some ctx, children) => (i, ctx, children)
   | _ => none
 
+/-- Return all `TacticInfo` nodes in an `InfoTree` corresponding to tactics,
+    each equipped with its relevant `ContextInfo`, and any children info trees.
+    Additionally, return all term nodes which close top-level declarations and return
+    them as though they were produced by the `exact` tactic (e.g. `t` becomes `by exact t`) -/
+def findTacticAndTermNotes (t : InfoTree) : List (TacticInfo × ContextInfo × PersistentArray InfoTree) :=
+  sorry
+
 end Lean.Elab.InfoTree
