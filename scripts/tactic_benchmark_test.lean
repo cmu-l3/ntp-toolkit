@@ -36,6 +36,7 @@ def jsonDir := "Examples/Mathlib/TrainingDataWithPremises"
 
 ------------------------------------------------------------------------------------------------------------------------
 -- For testing `useQuerySMT` (and specifically debugging the error caused by the anonymous constructors used to build selectors)
+/-
 def myExpr1 : Expr :=
   Expr.forallE `α (Expr.sort 1)
     (Expr.forallE `x (Expr.bvar 0)
@@ -140,3 +141,4 @@ example (p q : Prop) : True := by
   have h : ∃ x : p, q := sorry
   match h with
   | Exists.intro a b => sorry
+-/

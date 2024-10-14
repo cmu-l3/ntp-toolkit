@@ -5,8 +5,8 @@ import TrainingData.Utils.Range
 import TrainingData.Utils.HammerBlacklist
 import Mathlib.Data.String.Defs
 import Mathlib.Lean.CoreM
-import Batteries.Lean.Util.Path
 import Batteries.Data.String.Basic
+import Batteries.Data.String.Matcher
 import Mathlib.Tactic.Change
 import Cli
 
