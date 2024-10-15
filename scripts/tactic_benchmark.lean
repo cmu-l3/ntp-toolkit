@@ -249,9 +249,3 @@ def main (args : List String) : IO UInt32 :=
 -- #eval tacticBenchmarkFromModule `temp useQuerySMT
 
 -- Note: `tacticBenchmarkFromModule` requires that the tactic we want be imported in the module
-/- **TODO** Figure out heartbeat issue (querySMT can solve list_eq_self and zero_eq_zero) plenty quickly,
-   but `tacticBenchmarkFromModule` says it doesn't solve the former and takes significantly longer to
-   solve the latter -/
-/- Interestingly, `useDuper` doesn't seem to (obviously) run into the same issue as `useQuerySMT`.
-   I think this is because Duper has precompiledModules enabled whereas QuerySMT doesn't, but that's
-   something to investigate further -/
