@@ -68,7 +68,7 @@
    "rev": "20c73142afa995ac9c8fb80a9bb585a55ca38308",
    "name": "mathlib",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "v4.11.0",
+   "inputRev": "20c73142afa995ac9c8fb80a9bb585a55ca38308",
    "inherited": false,
    "configFile": "lakefile.lean"},
   {"url": "https://github.com/leanprover-community/lean-auto.git",

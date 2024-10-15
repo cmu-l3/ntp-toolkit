@@ -184,6 +184,7 @@ def nextTacticIsSimpOrRwVariant (t : String) : Bool :=
     multiple tactics) -/
 structure FirstPassTrainingData where
   declId : String
+  declName : String
   decl : String
   srcUpToTactic : String
   declUpToTactic : String
@@ -221,7 +222,7 @@ structure SecondPassTrainingData extends FirstPassTrainingData where
                     -- by the same tactic (e.g. when a goal is proven in just one tactic)
 deriving Inhabited
 
-def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) : IO FirstPassTrainingData := do
+def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) (declName : String) : IO FirstPassTrainingData := do
   let declId := makeElabDeclId elabDeclInfo module hash
   let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (i.info.stx.getPos?.getD 0)
   let declUpToTactic := Substring.mk (← moduleSource module)
@@ -286,6 +287,7 @@ def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) 
 
   let data := {
       declId := declId,
+      declName := declName,
       decl := decl,
       srcUpToTactic := sourceUpToTactic.toString,
       declUpToTactic := declUpToTactic.toString,
@@ -317,7 +319,11 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
     for t in t.tactics do
       match getElabDeclOfTacticInvocation infos t with
       | some elabDeclInfo => do
-        let data ← t.trainingDataGivenTactic elabDeclInfo module hash
+        let tDeclName :=
+          match t.ctx.parentDecl? with
+          | some n => s!"{n}"
+          | none => ""
+        let data ← t.trainingDataGivenTactic elabDeclInfo module hash tDeclName
         firstPassData := firstPassData.push data
       | none => pure ()
   let mut activeDeclId : String := firstPassData[0]!.1
@@ -459,6 +465,7 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
         -- ("declId", Json.str d.declId), -- Used internally
         ("decl", Json.str d.decl),
         -- ("goalDelta", Json.num d.goalDelta), -- Used internally but not output to JSON
+        ("declName", Json.str d.declName),
         ("srcUpToTactic", Json.str d.srcUpToTactic),
         ("declUpToTactic", Json.str d.declUpToTactic),
         ("state", Json.str d.state),
