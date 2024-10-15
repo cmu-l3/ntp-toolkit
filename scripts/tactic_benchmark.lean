@@ -66,20 +66,28 @@ def runAtDecls (mod : Name) (withImportsDir : Option String := none) (tac : Cons
           | none => pure none
 
 inductive ResultType
-| failure
-| subgoals
-| notDefEq
 | success
-| notApplicable -- Used when attempting to evaluate the hammer on a declaration that doesn't enter tactic mode
+| failure -- Generic failure result used for `runTacticAtDecls` but not `runHammerAtDecls`
+| noJSON -- For declarations that the JSON file doesn't have data for (currently, these are declarations that are proven without entering tactic mode)
+| tptpTranslationFailure -- For declarations that cannot be translated to the external prover's format (currently TPTP's higher-order logic format)
+| externalProverFailure -- For declarations that can be successfully translated but cannot be proven by the external prover (currently Zipperposition)
+| duperFailure -- For declarations successfully translated and proven by the external prover but return proofs that Duper can't reconstruct
+| miscFailure -- For hammer failures that don't fall into one of the previous four categories
+| subgoals -- For declarations that are partially proven but have remaining subgoals even after the tactic is run
+| notDefEq -- For declarations for which a proof is found but the proof is not definitionally equal to the expected proof
 deriving Repr, BEq
 
 instance : ToString ResultType where
   toString := fun
+  | .success => "success"
   | .failure => "failure"
+  | .noJSON => "noJSON"
+  | .tptpTranslationFailure => "tptpTranslationFailure"
+  | .externalProverFailure => "externalProverFailure"
+  | .duperFailure => "duperFailure"
+  | .miscFailure => "miscFailure"
   | .subgoals => "subgoals"
   | .notDefEq => "notDefEq"
-  | .success => "success"
-  | .notApplicable => "notApplicable"
 
 structure Result where
   type : ResultType
@@ -124,8 +132,7 @@ def runTacticAtDecls (mod : Name) (decls : ConstantInfo → CoreM Bool) (tac : T
         | some true => pure .success
     return some ⟨type, seconds, heartbeats⟩
 
--- **TODO** Only run Hammer on actual theorems/lemmas (i.e. Prop-typed constants)
-def runHammerAtDecls (mod : Name) (decls : ConstantInfo → CoreM Bool) (withImportsPath : String) (jsonDir : String) :
+def runHammerAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String) :
   MLList IO (ConstantInfo × Result) := do
   runAtDecls mod (some withImportsPath) fun ci => do
     if ! (← decls ci) then return none
@@ -135,52 +142,53 @@ def runHammerAtDecls (mod : Name) (decls : ConstantInfo → CoreM Bool) (withImp
     let jsonObjects ← IO.FS.lines fileName
     let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
     -- Find `declHammerRecommendation` corresponding to current `ci`
-    /- We take just the string suffix rather than the whole name because whole name may include the namespace
-       which might not appear in `decl`. This approach is a hack though and should be replaced before attempting
-       anything beyond testing individual files -/
-    let ciNameSuffix ←
-      match ci.name with
-      | .str _ s => pure s
-      | _ => throwError "runHammerAtDecls :: Error processing constant name {ci.name}"
     let mut ciEntry := Json.null
     for jsonEntry in json do
-      let jsonDecl ← IO.ofExcept $ jsonEntry.getObjVal? "decl"
-      let curDecl ← IO.ofExcept $ jsonDecl.getStr?
-      /- **TODO** This approach is not reliable for a variety of reasons. The biggest issue is that comments
-         referring to other theorems can appear in the declaration. -/
-      if curDecl.containsSubstr ciNameSuffix then
+      let jsonDeclName ← IO.ofExcept $ jsonEntry.getObjVal? "declName"
+      let curDeclName ← IO.ofExcept $ jsonDeclName.getStr?
+      if curDeclName == s!"{ci.name}" then
         ciEntry := jsonEntry
         break
     if ciEntry.isNull then
-      return some ⟨.notApplicable, 0.0, 0⟩
+      return some ⟨.noJSON, 0.0, 0⟩
     let hammerRecommendation ← IO.ofExcept $ ciEntry.getObjVal? "declHammerRecommendation"
     let hammerRecommendation ← IO.ofExcept $ hammerRecommendation.getArr?
     let hammerRecommendation ← IO.ofExcept $ hammerRecommendation.mapM Json.getStr?
-    let ((gs, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
-      try? <| TermElabM.run' do
+    let ((res, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
+      try TermElabM.run' do
         dbg_trace "About to use hammer for {ci.name} (recommendation: {hammerRecommendation})"
-        Tactic.run g.mvarId! $ useHammer hammerRecommendation
-    let type : ResultType ← match gs with
-    | none => pure .failure
-    | some (_ :: _) => pure .subgoals
-    | some [] =>
-      match ci.value? with
-      | none => pure .success
-      | some v =>
-        if ← isProp ci.type then
-          pure .success
-        else
-        match ← try? (isDefEq g v) with
-        | none
-          -- In this case we should perhaps return an "uncertain" value.
-          -- The problem is that `v` may contain constants generated by the simplifier
-          -- during elaboration of the original proof,
-          -- and which aren't in the current environment, so we can't really compare `g` and `v`
-        | some false => pure .notDefEq
-        | some true => pure .success
-    return some ⟨type, seconds, heartbeats⟩
+        let gs ← Tactic.run g.mvarId! $ useHammer hammerRecommendation
+        match gs with
+        | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate the hammer on Prop declarations
+        | _ :: _ => pure .subgoals
+      catch e =>
+        if ← Hammer.hammerErrorIsTranslationError e then pure .tptpTranslationFailure
+        else if ← Hammer.hammerErrorIsExternalSolverError e then pure .externalProverFailure
+        else if ← Hammer.hammerErrorIsDuperSolverError e then pure .duperFailure
+        else if ← Hammer.hammerErrorIsProofFitError e then pure .miscFailure
+        else pure .miscFailure
+    return some ⟨res, seconds, heartbeats⟩
 
 open Cli System
+
+/-- Gives a string of 5 emojis indicating the success of the following hammer stages:
+    - Finding premises relating to the current declaration (this can currently fail when the original declaration
+      is proven without entering tactic mode)
+    - Translating the goal (and all of the premises needed to prove it) to TPTP
+    - Receiving a proof from an external prover
+    - Reconstructing the external proof with Duper
+    - Applying Duper's proof to the goal state (all errors that don't fall into one of the previous four categories go here) -/
+def resultTypeToEmojiString (res : ResultType) : String :=
+  match res with
+  | .success => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji
+  | .failure => bombEmoji -- `runHammerAtDecls` should not output this
+  | .noJSON => bombEmoji ++ crossEmoji ++ crossEmoji ++ crossEmoji ++ crossEmoji
+  | .tptpTranslationFailure => checkEmoji ++ bombEmoji ++ crossEmoji ++ crossEmoji ++ crossEmoji
+  | .externalProverFailure => checkEmoji ++ checkEmoji ++ bombEmoji ++ crossEmoji ++ crossEmoji
+  | .duperFailure => checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji ++ crossEmoji
+  | .miscFailure => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji
+  | .subgoals => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji
+  | .notDefEq => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji
 
 def tacticBenchmarkFromModule (module : ModuleName) (tac : TacticM Unit) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
@@ -193,10 +201,10 @@ def tacticBenchmarkFromModule (module : ModuleName) (tac : TacticM Unit) : IO UI
 
 def hammerBenchmarkFromModule (module : ModuleName) (withImportsDir : String) (jsonDir : String) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
-  let result := runHammerAtDecls module (fun _ => pure true) withImportsDir jsonDir
+  let result := runHammerAtDecls module (fun ci => isProp ci.type) withImportsDir jsonDir
   IO.println s!"{module}"
   for (ci, ⟨type, seconds, heartbeats⟩) in result do
-    IO.println <| (if type == .success then checkEmoji else crossEmoji) ++ " " ++ ci.name.toString ++
+    IO.println <| (resultTypeToEmojiString type) ++ " " ++ ci.name.toString ++
       s!" ({seconds}s) ({heartbeats} heartbeats)"
   return 0
 

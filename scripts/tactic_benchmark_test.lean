@@ -1,7 +1,5 @@
 import Scripts.Tactic_benchmark
 
-set_option linter.setOption false
-
 /-
 #eval tacticBenchmarkFromModule `temp useRfl
 #eval tacticBenchmarkFromModule `temp useDuper
@@ -28,11 +26,16 @@ def testRunTacticAtSpecificDecl (tac : TacticM Unit) (t : Expr) : MetaM Bool := 
 def withImportsDir := "Examples/Mathlib/WithImports"
 def jsonDir := "Examples/Mathlib/TrainingDataWithPremises"
 
-/- Current reaons for failure:
-  - `Set.ite.eq_1` (e.g. `Set.inter_self`)
-  - Theorems which are proven using proof terms without entering tactic mode (e.g. `Set.union_diff_self`) -/
+/- Note: Some there still seem to be some discrepancies between `hammerBenchmarkFromModule`'s performance
+   and the actual hammer's performance. One example is `Set.disjoint_right` which `hammer` handles fine
+   when you actually run it but appears to have Duper's proof reconstruction fail for in
+   `hammerBenchmarkFromModule` -/
 -- #eval hammerBenchmarkFromModule `Mathlib.Data.Set.Basic withImportsDir jsonDir
 -- #eval tacticBenchmarkFromModule `Mathlib.Data.Set.Basic useDuper
+
+/- Note: `subset_insert_diff_singleton` is an example where the evaluation faithfully represents what the hammer
+   does, but the hammer's behavior requires investigation. The external prover can solve this example, and Duper
+   itself can solve this example, but Duper's reconstruction in the hammer can't solve the example -/
 
 ------------------------------------------------------------------------------------------------------------------------
 -- For testing `useQuerySMT` (and specifically debugging the error caused by the anonymous constructors used to build selectors)

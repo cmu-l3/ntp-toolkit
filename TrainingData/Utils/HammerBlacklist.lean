@@ -140,6 +140,7 @@ def hammerRecommendationBlackList : Array String := #[
   "rfl",
   "id_eq",
   "Eq.subst",
+  "Eq.refl",
   "Eq.symm",
   "Eq.trans",
   "congrArg",
