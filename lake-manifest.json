@@ -95,7 +95,7 @@
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "06a1a362af31c003a370662000807ae8515b71f4",
+   "rev": "2deebaa37554d033dbb038b6f6cca3c32f32fdf6",
    "name": "QuerySMT",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
