@@ -1,9 +1,12 @@
 # ntp-toolkit
 
-This repository is a modified version of Kim Morrison's [lean-training-data](https://github.com/semorrison/lean-training-data).
+The neural theorem proving toolkit transforms Lean repositories into datasets for training and evaluating machine learning models.
+
+<img width="900" alt="ntp-toolkit" src="https://github.com/user-attachments/assets/61441106-722c-4187-a505-c0d438760582">
 
 
-We provide tools for extracting training data based on Lean source code, and for creating instruction-tuning data for language models.
+The toolkit is originally a fork of Kim Morrison's [lean-training-data](https://github.com/semorrison/lean-training-data) and developed in [miniCTX](https://cmu-l3.github.io/minictx/). 
+
 
 
 ## Running extraction
@@ -114,3 +117,40 @@ curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf 
 * Run `lake build`
 * Run `lake exe <tool>`, where `<tool>` is one of the programs documented below.
 
+
+## Projects
+
+Projects that use or build upon `ntp-toolkit`:
+- [miniCTX: Neural Theorem Proving with (Long-)Contexts](https://cmu-l3.github.io/minictx/)
+- [ImProver: Agent-Based Automated Proof Optimization](https://arxiv.org/abs/2410.04753)
+
+Submit a PR to add your project or paper here!
+
+
+## Citation
+
+The toolkit is originally a fork of Kim Morrison's [lean-training-data](https://github.com/semorrison/lean-training-data):
+
+```bibtex
+@misc{lean-training-data,
+  author = {Kim Morrison},
+  title = {lean-training-data},
+  year = {2023},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/semorrison/lean-training-data}},
+}
+```
+
+The `ntp-toolkit` was initially developed in [miniCTX](https://cmu-l3.github.io/minictx/):
+```bibtex
+@misc{hu2024minictxneuraltheoremproving,
+      title={miniCTX: Neural Theorem Proving with (Long-)Contexts}, 
+      author={Jiewen Hu and Thomas Zhu and Sean Welleck},
+      year={2024},
+      eprint={2408.03350},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2408.03350}, 
+}
+```
