@@ -9,19 +9,8 @@ import Scripts.Tactic_benchmark
 -- #eval tacticBenchmarkFromModule `temp2 useQuerySMT
 
 ------------------------------------------------------------------------------------------------------------------------
--- For testing in general
+-- Hammer testing
 open Lean Core Elab IO Meta Term Tactic -- All the monads!
-
-def testRunTacticAtSpecificDecl (tac : TacticM Unit) (t : Expr) : MetaM Bool := do
-  let g ← mkFreshExprMVar t
-  let ((gs, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
-    try
-      TermElabM.run' do
-        return some $ ← Tactic.run g.mvarId! tac
-    catch e =>
-      dbg_trace "Error in trying to solve specific decl (type: {t}) {← e.toMessageData.format}"
-      return none
-  return gs.isSome
 
 def withImportsDir := "Examples/Mathlib/WithImports"
 def jsonDir := "Examples/Mathlib/TrainingDataWithPremises"
@@ -38,8 +27,35 @@ def jsonDir := "Examples/Mathlib/TrainingDataWithPremises"
    itself can solve this example, but Duper's reconstruction in the hammer can't solve the example -/
 
 ------------------------------------------------------------------------------------------------------------------------
--- For testing `useQuerySMT` (and specifically debugging the error caused by the anonymous constructors used to build selectors)
+-- QuerySMT testing
+
+-- #eval querySMTBenchmarkFromModule `temp
+
+------------------------------------------------------------------------------------------------------------------------
+-- For testing in general
 /-
+def testRunTacticAtSpecificDecl (tac : TacticM Unit) (t : Expr) : MetaM Bool := do
+  let g ← mkFreshExprMVar t
+  let ((gs, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
+    try
+      TermElabM.run' do
+        return some $ ← Tactic.run g.mvarId! tac
+    catch e =>
+      dbg_trace "Error in trying to solve specific decl (type: {t}) {← e.toMessageData.format}"
+      return none
+  return gs.isSome
+
+theorem test (p q : Prop) : True := by
+  have ⟨h1, h2⟩ : ∃ x : p, q := sorry
+  sorry
+
+theorem test2 (p q : Prop) : True := by
+  have h : ∃ x : p, q := sorry
+  rcases h with ⟨h, h2⟩
+  sorry
+
+------------------------------------------------------------------------------------------------------------------------
+-- For testing `useQuerySMT` (and specifically debugging the error caused by the anonymous constructors used to build selectors)
 def myExpr1 : Expr :=
   Expr.forallE `α (Expr.sort 1)
     (Expr.forallE `x (Expr.bvar 0)
@@ -122,9 +138,11 @@ def evalMyTestTactic : Tactic
         let existsIntroStx ← withOptions ppOptionsSetting $ PrettyPrinter.delab (mkConst ``Exists.intro)
         -- **TODO** Bug is arising here specifically due to
         -- `⟨$(mkIdent (.str .anonymous selName)), $(mkIdent (.str .anonymous selFactName))⟩` part of have statement
+        dbg_trace "selectorFact: {selectorFact}"
+        dbg_trace "selectorFactStx: {selectorFactStx}"
         evalTactic $ -- Eval to add selector and its corresponding fact to lctx
           ← `(tactic|
-              have /- ⟨$(mkIdent (.str .anonymous selName)), $(mkIdent (.str .anonymous selFactName))⟩ -/ : $selectorFactStx:term := by
+              have ⟨$(mkIdent (.str .anonymous selName)), $(mkIdent (.str .anonymous selFactName))⟩ : $selectorFactStx:term := by
                 apply $existsIntroStx:term $selectorStx:term
                 intros
                 rfl
@@ -136,12 +154,7 @@ def useMyTestTactic : TacticM Unit := do evalTactic (← `(tactic| myTestTactic)
 
 #eval testRunTacticAtSpecificDecl useMyTestTactic myExpr2
 
-#check Exists.intro
-
-example (p q : Prop) : True := by
-  have (a, b) : Nat × Nat := (1, 2)
-  have ⟨h1, h2⟩ : ∃ x : p, q := sorry
-  have h : ∃ x : p, q := sorry
-  match h with
-  | Exists.intro a b => sorry
+theorem list_eq_self1 (l : List α) : l = l := by
+  myTestTactic
+  sorry
 -/

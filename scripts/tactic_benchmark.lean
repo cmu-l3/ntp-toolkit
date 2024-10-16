@@ -169,6 +169,23 @@ def runHammerAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withImp
         else pure .miscFailure
     return some ⟨res, seconds, heartbeats⟩
 
+/-- **TODO** Add optional `jsonDir` String to add premises -/
+def runQuerySMTAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) :
+  MLList IO (ConstantInfo × Result) := do
+  runAtDecls mod none fun ci => do
+    if ! (← decls ci) then return none
+    let g ← mkFreshExprMVar ci.type
+    let ((res, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
+      try TermElabM.run' do
+        let gs ← Tactic.run g.mvarId! $ useQuerySMT
+        match gs with
+        | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate the hammer on Prop declarations
+        | _ :: _ => pure .subgoals
+      catch e =>
+        dbg_trace "QuerySMT encountered error when trying to prove {ci.type}: {← e.toMessageData.toString}"
+        pure .failure
+    return some ⟨res, seconds, heartbeats⟩
+
 open Cli System
 
 /-- Gives a string of 5 emojis indicating the success of the following hammer stages:
@@ -202,6 +219,15 @@ def tacticBenchmarkFromModule (module : ModuleName) (tac : TacticM Unit) : IO UI
 def hammerBenchmarkFromModule (module : ModuleName) (withImportsDir : String) (jsonDir : String) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
   let result := runHammerAtDecls module (fun ci => isProp ci.type) withImportsDir jsonDir
+  IO.println s!"{module}"
+  for (ci, ⟨type, seconds, heartbeats⟩) in result do
+    IO.println <| (resultTypeToEmojiString type) ++ " " ++ ci.name.toString ++
+      s!" ({seconds}s) ({heartbeats} heartbeats)"
+  return 0
+
+def querySMTBenchmarkFromModule (module : ModuleName) : IO UInt32 := do
+  searchPathRef.set compile_time_search_path%
+  let result := runQuerySMTAtDecls module (fun ci => isProp ci.type)
   IO.println s!"{module}"
   for (ci, ⟨type, seconds, heartbeats⟩) in result do
     IO.println <| (resultTypeToEmojiString type) ++ " " ++ ci.name.toString ++
