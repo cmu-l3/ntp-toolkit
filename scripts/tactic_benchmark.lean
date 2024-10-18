@@ -69,6 +69,7 @@ inductive ResultType
 | success
 | failure -- Generic failure result used for `runTacticAtDecls` but not `runHammerAtDecls`
 | noJSON -- For declarations that the JSON file doesn't have data for (currently, these are declarations that are proven without entering tactic mode)
+| simpPreprocessingFailure -- For declarations where `hammer` encounters an error during the simp preprocessing stage
 | tptpTranslationFailure -- For declarations that cannot be translated to the external prover's format (currently TPTP's higher-order logic format)
 | externalProverFailure -- For declarations that can be successfully translated but cannot be proven by the external prover (currently Zipperposition)
 | duperFailure -- For declarations successfully translated and proven by the external prover but return proofs that Duper can't reconstruct
@@ -82,6 +83,7 @@ instance : ToString ResultType where
   | .success => "success"
   | .failure => "failure"
   | .noJSON => "noJSON"
+  | .simpPreprocessingFailure => "simpPreprocessingFailure"
   | .tptpTranslationFailure => "tptpTranslationFailure"
   | .externalProverFailure => "externalProverFailure"
   | .duperFailure => "duperFailure"
@@ -191,21 +193,24 @@ open Cli System
 /-- Gives a string of 5 emojis indicating the success of the following hammer stages:
     - Finding premises relating to the current declaration (this can currently fail when the original declaration
       is proven without entering tactic mode)
+    - Successfully performing simp preprocessing without encountering any errors (errors that could arise from `simp_all` not changing
+      the tactic state are suppressed)
     - Translating the goal (and all of the premises needed to prove it) to TPTP
     - Receiving a proof from an external prover
     - Reconstructing the external proof with Duper
     - Applying Duper's proof to the goal state (all errors that don't fall into one of the previous four categories go here) -/
 def resultTypeToEmojiString (res : ResultType) : String :=
   match res with
-  | .success => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji
+  | .success => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji
   | .failure => bombEmoji -- `runHammerAtDecls` should not output this
-  | .noJSON => bombEmoji ++ crossEmoji ++ crossEmoji ++ crossEmoji ++ crossEmoji
-  | .tptpTranslationFailure => checkEmoji ++ bombEmoji ++ crossEmoji ++ crossEmoji ++ crossEmoji
-  | .externalProverFailure => checkEmoji ++ checkEmoji ++ bombEmoji ++ crossEmoji ++ crossEmoji
-  | .duperFailure => checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji ++ crossEmoji
-  | .miscFailure => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji
-  | .subgoals => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji
-  | .notDefEq => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji
+  | .noJSON => bombEmoji ++ crossEmoji ++ crossEmoji ++ crossEmoji ++ crossEmoji ++ crossEmoji
+  | .simpPreprocessingFailure => checkEmoji ++ bombEmoji ++ crossEmoji ++ crossEmoji ++ crossEmoji ++ crossEmoji
+  | .tptpTranslationFailure => checkEmoji ++ checkEmoji ++ bombEmoji ++ crossEmoji ++ crossEmoji ++ crossEmoji
+  | .externalProverFailure => checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji ++ crossEmoji ++ crossEmoji
+  | .duperFailure => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji ++ crossEmoji
+  | .miscFailure => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji
+  | .subgoals => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji
+  | .notDefEq => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji
 
 def tacticBenchmarkFromModule (module : ModuleName) (tac : TacticM Unit) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%

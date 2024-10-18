@@ -130,12 +130,13 @@ An example of an invocation of this function (which takes ~5 minutes on my lapto
 ```
 
 This function outputs every (Prop-valued) declaration in the given module along a string of five icons indicating the outcome of attempting to use the `hammer` tactic to prove said declaration (using the premises indicated by the JSON file in the `TrainingDataWithPremisesDirectory`). The interpretation of the icons is as follows:
-- 💥❌❌❌❌ indicates that the given declaration has no entry in the JSON file associated with the current module. This primarily occurs when the declaration was proven without entering tactic mode in the original file (meaning the data extraction script did not collect the ground truth for this declaration).
-- ✅💥❌❌❌ indicates that the given declaration does have an entry in the JSON file but could not be translated to the TPTP format (usually because the declaration itself or one of the premises used to prove it are outside the scope of the current translation procedure).
-- ✅✅💥❌❌ indicates that the given declaration could be translated to the TPTP format but that the external prover (currently Zipperposition) was unable to solve the goal. This generally occurs when the translation did not preserve enough information (e.g. because the translation did not unfold some necessary constant).
-- ✅✅✅💥❌ indicates that the given declaration was successfully translated and the external prover successfully proved the goal, but Duper was unable to reconstruct the external prover's proof.
-- ✅✅✅✅💥 indicates that both the external prover and Duper were able to prove the goal, but some error occurred in the process of applying the proof to the goal.
-- ✅✅✅✅✅ indicates that the `hammer` tactic was fully successful in proving the goal.
+- 💥❌❌❌❌❌ indicates that the given declaration has no entry in the JSON file associated with the current module. This primarily occurs when the declaration was proven without entering tactic mode in the original file (meaning the data extraction script did not collect the ground truth for this declaration).
+- ✅💥❌❌❌❌ indicates that the hammer tactic encountered an error before beginning the procedure to translate to the TPTP format (this can happen when the `simp_all` preprocessing step encounters an error).
+- ✅✅💥❌❌❌ indicates that the given declaration does have an entry in the JSON file but could not be translated to the TPTP format (usually because the declaration itself or one of the premises used to prove it are outside the scope of the current translation procedure).
+- ✅✅✅💥❌❌ indicates that the given declaration could be translated to the TPTP format but that the external prover (currently Zipperposition) was unable to solve the goal. This generally occurs when the translation did not preserve enough information (e.g. because the translation did not unfold some necessary constant).
+- ✅✅✅✅💥❌ indicates that the given declaration was successfully translated and the external prover successfully proved the goal, but Duper was unable to reconstruct the external prover's proof.
+- ✅✅✅✅✅💥 indicates that both the external prover and Duper were able to prove the goal, but some error occurred in the process of applying the proof to the goal.
+- ✅✅✅✅✅✅ indicates that the `hammer` tactic was fully successful in proving the goal.
 
 *Note: Currently, there are some inconsistencies between how the `hammer` tactic actually performs and how the evaluation indicates that it performs. These inconsistencies are still being debugged and resolved, but the current known inconsistencies concern distinguishing between the last three cases. So the tool should still be reliable in determining whether a goal can be translated to TPTP and proven by an external prover.*
 
