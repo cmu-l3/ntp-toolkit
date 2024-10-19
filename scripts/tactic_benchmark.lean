@@ -164,10 +164,13 @@ def runHammerAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withImp
         | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate the hammer on Prop declarations
         | _ :: _ => pure .subgoals
       catch e =>
-        if ← Hammer.hammerErrorIsTranslationError e then pure .tptpTranslationFailure
+        if ← Hammer.hammerErrorIsSimpPreprocessingError e then pure .simpPreprocessingFailure
+        else if ← Hammer.hammerErrorIsTranslationError e then pure .tptpTranslationFailure
         else if ← Hammer.hammerErrorIsExternalSolverError e then pure .externalProverFailure
         else if ← Hammer.hammerErrorIsDuperSolverError e then pure .duperFailure
         else if ← Hammer.hammerErrorIsProofFitError e then pure .miscFailure
+        else if "tactic 'simp' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
+        else if "tactic 'simp_all' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
         else pure .miscFailure
     return some ⟨res, seconds, heartbeats⟩
 

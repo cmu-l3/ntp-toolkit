@@ -168,6 +168,7 @@ def hammerRecommendationBlackList : Array String := #[
   "Iff.mp",
   "Iff.mpr",
   "Exists.intro",
+  "Exists.casesOn",
   "mt",
   "not_false",
   "not_not_intro",
