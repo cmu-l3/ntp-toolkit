@@ -137,6 +137,7 @@ This function outputs every (Prop-valued) declaration in the given module along 
 - ✅✅✅✅💥❌ indicates that the given declaration was successfully translated and the external prover successfully proved the goal, but Duper was unable to reconstruct the external prover's proof.
 - ✅✅✅✅✅💥 indicates that both the external prover and Duper were able to prove the goal, but some error occurred in the process of applying the proof to the goal.
 - ✅✅✅✅✅✅ indicates that the `hammer` tactic was fully successful in proving the goal.
+- 💥💥💥💥💥💥 indicates there was some unknown error that does not fit into any of the above categories.
 
 *Note: Currently, there are some inconsistencies between how the `hammer` tactic actually performs and how the evaluation indicates that it performs. These inconsistencies are still being debugged and resolved, but the current known inconsistencies concern distinguishing between the last three cases. So the tool should still be reliable in determining whether a goal can be translated to TPTP and proven by an external prover.*
 

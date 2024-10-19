@@ -73,7 +73,8 @@ inductive ResultType
 | tptpTranslationFailure -- For declarations that cannot be translated to the external prover's format (currently TPTP's higher-order logic format)
 | externalProverFailure -- For declarations that can be successfully translated but cannot be proven by the external prover (currently Zipperposition)
 | duperFailure -- For declarations successfully translated and proven by the external prover but return proofs that Duper can't reconstruct
-| miscFailure -- For hammer failures that don't fall into one of the previous four categories
+| proofFitFailure -- For declarations successfully proven by Duper's proof reconstruction, but returns proofs that yield some sort of error when applied
+| miscFailure -- For hammer failures that don't fall into one of the previous five categories
 | subgoals -- For declarations that are partially proven but have remaining subgoals even after the tactic is run
 | notDefEq -- For declarations for which a proof is found but the proof is not definitionally equal to the expected proof
 deriving Repr, BEq
@@ -87,6 +88,7 @@ instance : ToString ResultType where
   | .tptpTranslationFailure => "tptpTranslationFailure"
   | .externalProverFailure => "externalProverFailure"
   | .duperFailure => "duperFailure"
+  | .proofFitFailure => "proofFitFailure"
   | .miscFailure => "miscFailure"
   | .subgoals => "subgoals"
   | .notDefEq => "notDefEq"
@@ -168,7 +170,7 @@ def runHammerAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withImp
         else if ← Hammer.hammerErrorIsTranslationError e then pure .tptpTranslationFailure
         else if ← Hammer.hammerErrorIsExternalSolverError e then pure .externalProverFailure
         else if ← Hammer.hammerErrorIsDuperSolverError e then pure .duperFailure
-        else if ← Hammer.hammerErrorIsProofFitError e then pure .miscFailure
+        else if ← Hammer.hammerErrorIsProofFitError e then pure .proofFitFailure
         else if "tactic 'simp' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
         else if "tactic 'simp_all' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
         else pure .miscFailure
@@ -211,7 +213,8 @@ def resultTypeToEmojiString (res : ResultType) : String :=
   | .tptpTranslationFailure => checkEmoji ++ checkEmoji ++ bombEmoji ++ crossEmoji ++ crossEmoji ++ crossEmoji
   | .externalProverFailure => checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji ++ crossEmoji ++ crossEmoji
   | .duperFailure => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji ++ crossEmoji
-  | .miscFailure => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji
+  | .proofFitFailure => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji
+  | .miscFailure => bombEmoji ++ bombEmoji ++ bombEmoji ++ bombEmoji ++ bombEmoji ++ bombEmoji
   | .subgoals => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji
   | .notDefEq => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji
 
