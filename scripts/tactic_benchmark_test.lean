@@ -6,7 +6,7 @@ import Scripts.Tactic_benchmark
 #eval tacticBenchmarkFromModule `temp useQuerySMT
 #eval tacticBenchmarkFromModule `temp useAesop
 -/
--- #eval tacticBenchmarkFromModule `temp2 useQuerySMT
+-- #eval tacticBenchmarkFromModule `temp useQuerySMT
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Hammer testing

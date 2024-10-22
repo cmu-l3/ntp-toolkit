@@ -7,6 +7,7 @@ import Mathlib.Data.String.Defs
 import Mathlib.Lean.CoreM
 import Batteries.Data.String.Basic
 import Batteries.Data.String.Matcher
+import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Change
 import Cli
 
@@ -63,10 +64,13 @@ def getElabDeclInfo (trees : List InfoTree) : IO (List ElabDeclInfo) := do
 def ppCommandInfo (info : CommandInfo) : String :=
   info.stx.prettyPrint.pretty
 
-def getElabDeclOfTacticInvocation (elabDeclInfo : List ElabDeclInfo) (ti: TacticInvocation) :
-  Option ElabDeclInfo := do
+def getElabDeclOfTacticInvocation (elabDeclInfo : List ElabDeclInfo) (ti : TacticInvocation)
+  : Option ElabDeclInfo := do
     let ⟨s, e⟩ := FileMap.stxRange ti.ctx.fileMap ti.info.stx
     elabDeclInfo.find? fun ⟨⟨s', e'⟩, _⟩ => s' <= s && e <= e'
+
+def getElabDeclOfCompilationStep (elabDeclInfo : List ElabDeclInfo) (cmd : CompilationStep)
+  : Option ElabDeclInfo := elabDeclInfo.find? (fun ⟨_, cmd'⟩ => cmd'.stx == cmd.stx)
 
 def makeElabDeclId (info: ElabDeclInfo) (module: Name) (hash: String) : String :=
   let ⟨x, y⟩ := info.fst.fst
@@ -222,6 +226,7 @@ structure SecondPassTrainingData extends FirstPassTrainingData where
                     -- by the same tactic (e.g. when a goal is proven in just one tactic)
 deriving Inhabited
 
+/-- Creates a `FirstPassTrainingData` object based on the provided tactic invocation -/
 def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) (declName : String) : IO FirstPassTrainingData := do
   let declId := makeElabDeclId elabDeclInfo module hash
   let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (i.info.stx.getPos?.getD 0)
@@ -305,6 +310,21 @@ def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) 
     }
   return data
 
+/-- Creates a `FirstPassTrainingData` object based on the theorem `declName` which was proven via the proof term `term` -/
+def trainingDataGivenTerm (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (cmd : CompilationStep) (term : Expr) (declName : String)
+  (ci : ConstantInfo) : IO Unit /- FirstPassTrainingData -/ := do
+  let declId := makeElabDeclId elabDeclInfo module hash
+
+  -- **TODO** Use Thomas' constants.lean code to build the decl manually from `ci`. I think this is good enough
+  -- The main problem that leaves is the state
+
+  let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (cmd.stx.getPos?.getD 0) -- **NOTE** This is not correct
+  let declUpToTactic := Substring.mk (← moduleSource module) (elabDeclInfo.snd.stx.getPos?.getD 0) (cmd.stx.getPos?.getD 0) -- **NOTE** This is not correct
+
+  dbg_trace "Running trainingDataGivenTerm on {declName}"
+  dbg_trace "declUpToTactic: {declUpToTactic}"
+  return
+
 end Lean.Elab.TacticInvocation
 
 open TacticInvocation
@@ -315,6 +335,7 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
   let trees ← getInvocationTrees module
   let hash ← generateRandomHash
   let mut firstPassData : Array FirstPassTrainingData := #[]
+  -- Extract data from tactics
   for t in trees do
     for t in t.tactics do
       match getElabDeclOfTacticInvocation infos t with
@@ -326,6 +347,24 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
         let data ← t.trainingDataGivenTactic elabDeclInfo module hash tDeclName
         firstPassData := firstPassData.push data
       | none => pure ()
+  -- Extract data from declarations that are proven without entering tactic mode (`theorem foo := t` is treated as `theorem foo := by exact t`)
+  /- **TODO** In progress
+  let steps := compileModule' module
+  let targets := steps.bind fun c => (MLList.ofList c.diff).map fun i => (c, i)
+  for (cmd, ci) in targets do
+    match ci with
+    | .thmInfo v =>
+      if firstPassData.any (fun x => x.declName == s!"{v.name}") then
+        continue -- This pass is only for collecting data on declarations proven without entering tactic mode
+      else
+        match getElabDeclOfCompilationStep infos cmd with
+        | some elabDeclInfo =>
+          let data ← trainingDataGivenTerm elabDeclInfo module hash cmd v.value s!"{v.name}" ci
+          -- firstPassData := firstPassData.push data
+        | none => continue
+    | _ => continue
+  -/
+  -- Perform a second pass to gather data that potentially spans multiple tactics
   let mut activeDeclId : String := firstPassData[0]!.1
   let mut activeDeclTermPremises : Array Name := #[]
   let mut activeDeclExplicitConstants : Array Name := #[]

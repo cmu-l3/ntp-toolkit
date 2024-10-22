@@ -6,6 +6,8 @@ def q := True
 axiom p_eq_true : p = True
 axiom q_eq_true : q = True
 
+namespace TacticProofs
+
 theorem list_eq_self1 (l : List α) : l = l := by
   cases l
   . have : p = True := by exact p_eq_true
@@ -40,3 +42,15 @@ theorem querySMTTest (x y z : Int) : x ≤ y → y ≤ z → x ≤ z := by
     (x + -Int.ofNat 1 * y ≥ Int.ofNat 1 ∨ y + -Int.ofNat 1 * z ≥ Int.ofNat 1) ∨ ¬x + -Int.ofNat 1 * z ≥ Int.ofNat 1 :=
     by simp; omega
   duper [h0, h1, negGoal, smtLemma0, smtLemma1, smtLemma2, smtLemma3]
+
+end TacticProofs
+
+namespace TermProofs
+
+theorem termProof1 : 0 = 0 := rfl
+
+theorem termProof2 (x : α) : x = x := rfl
+
+theorem termProof3 (p q : Prop) (h : p → q) (hp : p) : q := h hp
+
+end TermProofs
