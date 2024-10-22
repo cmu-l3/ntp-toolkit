@@ -19,7 +19,8 @@ The flags that can be set to indicate which processes to run are:
 - `--state_comments`: This outputs to the `StateComments` directory
 - `--full_proof_training_data_states`: This outputs to the `FullProofWithStates` directory
 - `--training_data_with_premises`: This outputs to the `TrainingDataWithPremises` directory
-- `--declarations`: This outputs to the `Declarations` directory
+- `--constants`: This outputs to the `Constants` directory
+- `--imports`: This outputs to the `Imports` directory
 
 At least one of the above flags must be set in order for the script to run (but there should be no issue with setting multiple or even all of the above flags)
 
@@ -66,7 +67,7 @@ This produces Lean source files with proof states interleaved as comments after 
 
 This produces premises used by each constant in a module.
 
-### `declarations`
+### `constants`
 
 This produces information that pretty-prints each declaration in a module. The resulting format is
 ```json
@@ -75,7 +76,19 @@ This produces information that pretty-prints each declaration in a module. The r
    "kind": "{declaration type (def/theorem/...)}",
    "args": ["{arg1 : Type1}", "(arg2 : Type2)", ...],
    "type": "{resulting type}",
-   "doc": "{docstring, if exists (null otherwise)}"
+   "doc": "{docstring, if exists (null otherwise)}",
+   "module": "{module in which the constant is defined}",
+   "line": "{line number on which the constant is defined}",
+   "column": "{column at which the constant is defined}"
+}
+```
+
+### `imports`
+This outputs the imports of each module (both transitively imported modules and directly imported modules). The resulting format is
+```json
+{
+   "name": "{imported module name}",
+   "isDirect": "{whether it is explicitly imported by the module (otherwise it is transitively imported)}"
 }
 ```
 

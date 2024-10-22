@@ -4,10 +4,9 @@ import Mathlib.Lean.Expr.Basic
 import Batteries.Lean.HashMap
 import Batteries.Lean.Util.Path
 import DocGen4.Process
-import Qq
 
 /-!
-Generate declaration names and types.
+Generate constant names and types.
 -/
 
 open Lean Meta DocGen4.Process
@@ -22,6 +21,22 @@ def argToString (arg : Arg) : String :=
     | some name => s!"{name.toString} : "
     | none => ""
   s!"{l}{n}{arg.type.stripTags}{r}"
+
+/--
+Wrapper around `Lean.findDeclarationRanges?` that tries harder to find a range
+-/
+def findDeclarationRanges! [Monad m] [MonadEnv m] [MonadLiftT BaseIO m]
+    (name : Name) : m DeclarationRanges := do
+  match ← findDeclarationRanges? name with
+  | some range => pure range
+  | none =>
+    match name with
+    | .str p _ | .num p _ =>
+      -- If declaration range of e.g. `Nat.noConfusionType` could not be found, try prefix `Nat` instead.
+      findDeclarationRanges! p
+    | .anonymous =>
+      -- If a declaration range could not be found with recursion above, use the default range (all 0)
+      pure default
 
 namespace DocGen4.Process
 
@@ -53,12 +68,13 @@ def NameInfo.ofTypedName' (n : Name) (t : Expr) : MetaM NameInfo := do
 Modified version of `Info.ofConstantVal`:
 * Changed rendering width to 1000000000
 * Suppressed error when declaration range is none
+* Changed findDeclarationRanges? to findDeclarationRanges!
 -/
 def Info.ofConstantVal' (v : ConstantVal) : MetaM Info := do
   argTypeTelescope v.type fun args type => do
     let args ← args.mapM (fun (n, e, b) => do return Arg.mk n (← prettyPrintTerm' e) b)
     let nameInfo ← NameInfo.ofTypedName' v.name type
-    let range := (← findDeclarationRanges? v.name).getD default
+    let range ← findDeclarationRanges! v.name
     return {
       toNameInfo := nameInfo,
       args,
@@ -98,22 +114,34 @@ def infoOfConstant (cinfo : ConstantInfo) : MetaM (String × Info) := do
 end DocGen4.Process
 
 /-- Pretty-prints a constant to JSON -/
-def constantInfoToJson (cinfo : ConstantInfo) (moduleName : Name) : MetaM Json := do
+def constantInfoToJson (cinfo : ConstantInfo) : MetaM Json := do
   let (kind, info) ← infoOfConstant cinfo
+  let name := cinfo.name.toString
+  let args := info.args.map argToString
+  let type := info.type.stripTags
+  let doc? := info.doc
+
+  -- format declaration into `decl`
+  let mut decl := ""
+  if let some doc := doc? then
+    decl := decl ++ "/-- " ++ doc.stripSuffix " " ++ " -/\n"
+  decl := decl ++ kind ++ " "
+  decl := decl ++ name ++ " "
+  for arg in args do
+    decl := decl ++ arg ++ " "
+  decl := decl ++ ": " ++ type
+
   return Json.mkObj [
-    ("name", Json.str cinfo.name.toString),
+    ("name", Json.str name),
     ("kind", Json.str kind),
-    ("args", Json.arr <| info.args.map argToString |>.map Json.str),
-    ("type", Json.str info.type.stripTags),
-    ("doc", match info.doc with
+    ("args", Json.arr (args.map .str)),
+    ("type", Json.str type),
+    ("doc", match doc? with
       | some doc => Json.str doc
       | none => Json.null),
-    ("line", match info.declarationRange.pos.line with
-      -- if 0, probably generated from the getD default in Info.ofConstantVal'
-      -- so we don't know the position
-      | 0 => Json.null
-      | l => l),
-    ("module", Json.str moduleName.toString)
+    ("decl", Json.str decl),
+    ("line", Json.num info.declarationRange.pos.line),
+    ("column", Json.num info.declarationRange.pos.column),
   ]
 
 /-- If a constant should not be included. -/
@@ -128,45 +156,30 @@ def isBlackListedName (name : Name) : Bool :=
   -- | _ =>
   name.isInternalDetail
 
-/-- If a constant from this module should not be included. -/
-def isBlacklistedModule (moduleName : Name) : Bool :=
-  -- We should do this during postprocessing?
-  -- match moduleName.components with
-  -- | `Lean :: _ => true
-  -- | `Lake :: _ => true
-  -- | `Qq :: _ => true
-  -- | `Aesop :: _ => true
-  -- | `Cli :: _ => true
-  -- | `ImportGraph :: _ => true
-  -- | `DocGen4 :: _ => true
-  -- | `ProofWidgets :: _ => true
-  -- | `UnicodeBasic :: _ => true
-  -- | `MD4Lean :: _ => true
-  -- | _ =>
-  false
-
 /--
-Traverse all constants from imported files,
-collecting prettified declarations
+Traverse all constants from modules, collecting prettified declarations
+Calls callback on each extracted constant.
+(Should convert to MLList instead of callback?)
 -/
-def allConstants (callback : Name → Json → MetaM Unit) :
+def allConstants (moduleNames : Array Name) (callback : Nat → Nat → Name → Json → MetaM Unit) :
     MetaM Unit := do
   let env ← getEnv
   let constantsMap := env.constants.map₁
+  let total := constantsMap.size
+  let mut i := 0
   for (name, cinfo) in constantsMap do
-    -- We omit all internal details (Name.isInternalDetail)
-    -- We restrict to declarations in the module
     if !isBlackListedName name then
       if let some moduleIdx := env.getModuleIdxFor? name then
         if let some moduleName := env.header.moduleNames[moduleIdx.toNat]? then
-          if !isBlacklistedModule moduleName then
+          if moduleNames.contains moduleName then
             try
-              let json ← constantInfoToJson cinfo moduleName
-              callback name json
+              let json ← constantInfoToJson cinfo
+              callback i total name json
             catch _ =>
-              -- Extremely rare cases (e.g. Qq.Quoted.unsafeMk)
-              IO.eprintln s!"\nFailed to extract {name}"
+              -- Extremely rare cases (e.g. Fin.eq_of_val_eq, Qq.Quoted.unsafeMk)
+              IO.eprintln s!"warning: failed to extract constant {name}"
               continue
+    i := i + 1
 
 def main (args : List String) : IO UInt32 := do
   let options := Options.empty.insert `maxHeartbeats (0 : Nat)
@@ -174,9 +187,16 @@ def main (args : List String) : IO UInt32 := do
   | [] => #[`Mathlib]
   | args => args.toArray.map fun s => s.toName
   searchPathRef.set compile_time_search_path%
-  CoreM.withImportModules modules (options := options) do
-    MetaM.run' <| allConstants fun name json ↦ do
-      IO.eprint s!"\x1B[2K\rProcessing {name.toString.take 60}"
+  -- Proper delaborators need also be loaded for better printing of results
+  -- (e.g., if the module is Init.Prelude which does not have delaborator for Eq yet)
+  let delaboratorModules := #[
+    `Mathlib.Lean.PrettyPrinter.Delaborator,
+    `Lean.PrettyPrinter
+  ]
+  let importModules := modules ++ delaboratorModules
+  CoreM.withImportModules importModules (options := options) do
+    MetaM.run' <| allConstants modules fun _ _ _ json ↦ do
+      -- IO.eprint s!"\x1B[2K\rProcessing [{i}/{total}] {name.toString.take 60}"
       IO.println json.compress
-    IO.eprintln ""
+    -- IO.eprintln ""
   return 0

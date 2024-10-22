@@ -39,14 +39,14 @@ lean_exe premises where
 lean_exe training_data_with_premises where
   root := `scripts.training_data_with_premises
 
-lean_exe declarations where
-  root := `scripts.declarations
+lean_exe all_modules where
+  root := `scripts.all_modules
 
-lean_exe all_imports where
-  root := `scrips.all_imports
+lean_exe constants where
+  root := `scripts.constants
 
-lean_exe all_constants where
-  root := `scripts.all_constants
+lean_exe imports where
+  root := `scripts.imports
 """ % (name, repo, commit)
     with open(os.path.join(cwd, 'lakefile.lean'), 'w') as f:
         f.write(contents)
@@ -76,14 +76,14 @@ def _setup(cwd):
     subprocess.run(['lake', 'exe', 'cache', 'get'], check=True)
     subprocess.run(['lake', 'build'], check=True)
 
-def _import_file(name, import_file, old_version):
-    name = name.replace('«', '').replace('»', '') 
-    if old_version:
-        return os.path.join('lake-packages', name, import_file)
-    else:
-        return os.path.join('.lake', 'packages', name, import_file)
+# def _import_file(name, import_file, old_version):
+#     name = name.replace('«', '').replace('»', '') 
+#     if old_version:
+#         return os.path.join('lake-packages', name, import_file)
+#     else:
+#         return os.path.join('.lake', 'packages', name, import_file)
 
-def _run(cwd, name, import_file, old_version, max_workers, flags):
+def _run(cwd, name, import_module, max_workers, flags):
     if max_workers is not None:
         flags.append('--max-workers')
         flags.append(str(max_workers))
@@ -92,7 +92,7 @@ def _run(cwd, name, import_file, old_version, max_workers, flags):
         '%s/scripts/run_pipeline.py' % cwd,
         '--output-base-dir', 'Examples/%s' % name.capitalize(),
         '--cwd', cwd,
-        '--import-file', _import_file(name, import_file, old_version),
+        '--import-module', *import_module,
         *flags
     ], check=True)
 
@@ -140,7 +140,11 @@ if __name__ == '__main__':
         action='store_true'
     )
     parser.add_argument(
-        '--declarations',
+        '--constants',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--imports',
         action='store_true'
     )
     args = parser.parse_args()
@@ -161,8 +165,10 @@ if __name__ == '__main__':
         flags.append('--full_proof_training_data_states')
     if args.training_data_with_premises:
         flags.append('--training_data_with_premises')
-    if args.declarations:
-        flags.append('--declarations')
+    if args.constants:
+        flags.append('--constants')
+    if args.imports:
+        flags.append('--imports')
 
     for source in sources:
         print("=== %s ===" % (source['name']))
@@ -188,8 +194,9 @@ if __name__ == '__main__':
         _run(
             cwd=args.cwd,
             name=source['name'],
-            import_file=source['import_file'],
-            old_version=False if 'old_version' not in source else source['old_version'],
+            import_module=source['imports'],
+            # import_file=source['import_file'],
+            # old_version=False if 'old_version' not in source else source['old_version'],
             max_workers=args.max_workers,
             flags=flags
         )

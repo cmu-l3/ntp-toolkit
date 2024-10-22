@@ -49,15 +49,18 @@ def findCommandInfo (t : InfoTree) : List (CommandInfo × ContextInfo) :=
   | (.ofCommandInfo i, some ctx, _) => (i, ctx)
   | _ => none
 
-def ElabDeclInfo := (Range × CommandInfo)
+structure ElabDeclInfo where
+  range : Range
+  cmdInfo : CommandInfo
+  currNamespace : Name
 
 def getElabDeclInfo (trees : List InfoTree) : IO (List ElabDeclInfo) := do
-  let mut out  := []
-  for tree in trees do
-    let infos := findCommandInfo tree
-    for ⟨cmdInfo, ctxInfo⟩ in infos do
-      out := (FileMap.stxRange ctxInfo.fileMap cmdInfo.stx, cmdInfo) :: out
-  return out
+    let mut out  := []
+    for tree in trees do
+      let infos := findCommandInfo tree
+      for ⟨cmdInfo, ctxInfo⟩ in infos do
+        out := ⟨FileMap.stxRange ctxInfo.fileMap cmdInfo.stx, cmdInfo, ctxInfo.currNamespace⟩ :: out
+    return out
 
 def ppCommandInfo (info : CommandInfo) : String :=
   info.stx.prettyPrint.pretty
@@ -65,10 +68,10 @@ def ppCommandInfo (info : CommandInfo) : String :=
 def getElabDeclOfTacticInvocation (elabDeclInfo : List ElabDeclInfo) (ti: TacticInvocation) :
   Option ElabDeclInfo := do
     let ⟨s, e⟩ := FileMap.stxRange ti.ctx.fileMap ti.info.stx
-    elabDeclInfo.find? fun ⟨⟨s', e'⟩, _⟩ => s' <= s && e <= e'
+    elabDeclInfo.find? fun ⟨⟨s', e'⟩, _, _⟩ => s' <= s && e <= e'
 
 def makeElabDeclId (info: ElabDeclInfo) (module: Name) (hash: String) : String :=
-  let ⟨x, y⟩ := info.fst.fst
+  let ⟨x, y⟩ := info.range.fst
   let declId := s!"{module}.{x}_{y}.{hash}"
   declId
 
@@ -91,10 +94,32 @@ def ppCommandInfo (module: ModuleName) (info : CommandInfo) : IO String :=
   (info.stx.getPos?.getD 0)
   (info.stx.getTailPos?.getD 0)).toString
 
-def ppDeclWithoutProof (module: ModuleName) (info: CommandInfo) : IO String := do
-  let ppDecl ← ppCommandInfo module info
-  let decl := (ppDecl.splitOn ":=").headD ""
-  return decl
+def ppDeclWithoutProof (module: ModuleName) (info: CommandInfo) : IO (Option String) := do
+    -- let ppDecl ← ppCommandInfo module info
+    -- (magic value) if this command is a declaration like theorem/def T := proof/definition
+    -- then the := syntax occurs at `stx[1][3][0]`
+    if info.stx[1][3][0].getAtomVal == ":=" then
+      let declStart := info.stx.getPos?.getD 0
+      let proofStart := info.stx[1][3].getPos?.getD 0
+      -- let proofEnd := info.stx.getTailPos?.getD 0
+      let moduleSource ← moduleSource module
+      let decl := (Substring.mk moduleSource declStart proofStart).toString
+      -- let proof := (Substring.mk moduleSource proofStart proofEnd).toString
+      return decl
+    else
+      return none
+
+def fullName (elabDeclInfo : ElabDeclInfo) : Option Name :=
+  let cmdInfo := elabDeclInfo.cmdInfo
+  -- (magic value) if this command is a declaration (theorem, lemma, def, etc), then
+  -- `stx[1][1][0]` should contain the identifier
+  if cmdInfo.stx[1][1][0].isIdent then
+    let name := cmdInfo.stx[1][1][0].getId
+    let isRootName := (`_root_).isPrefixOf name
+    let declName := if isRootName then name.replacePrefix `_root_ Name.anonymous else elabDeclInfo.currNamespace ++ name
+    some declName
+  else
+    none
 
 /-- Gather all premises that appear in a syntax `s` and return two namesets of names. The first nameset
     contains all hypotheses in the given `lctx` that appear in `s`, and the second nameset contains all
@@ -183,7 +208,8 @@ def nextTacticIsSimpOrRwVariant (t : String) : Bool :=
     multiple tactics) -/
 structure FirstPassTrainingData where
   declId : String
-  decl : String
+  decl? : Option String
+  declName? : Option Name
   srcUpToTactic : String
   declUpToTactic : String
   state : String
@@ -224,14 +250,15 @@ def trainingDataGivenTactic (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (
   let declId := makeElabDeclId elabDeclInfo module hash
   let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (i.info.stx.getPos?.getD 0)
   let declUpToTactic := Substring.mk (← moduleSource module)
-    (elabDeclInfo.snd.stx.getPos?.getD 0) (i.info.stx.getPos?.getD 0)
+    (elabDeclInfo.cmdInfo.stx.getPos?.getD 0) (i.info.stx.getPos?.getD 0)
 
   let state := (Format.joinSep (← i.goalState) "\n").pretty
   let numGoalsBefore : Int := i.info.goalsBefore.length
   let numGoalsAfter : Int := i.info.goalsAfter.length
 
   let nextTactic ← tacticPP module i
-  let decl ← ppDeclWithoutProof module elabDeclInfo.snd
+  let decl? ← ppDeclWithoutProof module elabDeclInfo.cmdInfo
+  let declName? := fullName elabDeclInfo
 
   let nextTacticIsSimpOrRwVariant := nextTacticIsSimpOrRwVariant nextTactic
   let numNewGoalsOpened : Int := (nextTactic.findAllSubstr " by ").size + (nextTactic.findAllSubstr ":=by ").size + (nextTactic.findAllSubstr "\nby ").size
@@ -285,7 +312,8 @@ def trainingDataGivenTactic (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (
 
   let data := {
       declId := declId,
-      decl := decl,
+      decl? := decl?,
+      declName? := declName?,
       srcUpToTactic := sourceUpToTactic.toString,
       declUpToTactic := declUpToTactic.toString,
       state := state,
@@ -319,7 +347,9 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
         let data ← t.trainingDataGivenTactic elabDeclInfo module hash
         firstPassData := firstPassData.push data
       | none => pure ()
-  let mut activeDeclId : String := firstPassData[0]!.1
+  if firstPassData.isEmpty then
+    return 0
+  let mut activeDeclId : String := firstPassData[0]!.declId
   let mut activeDeclTermPremises : Array Name := #[]
   let mut activeDeclExplicitConstants : Array Name := #[]
   let mut activeDeclExplicitPremises : Array Name := #[]
@@ -456,7 +486,8 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
     (fun d =>
       Json.mkObj [
         -- ("declId", Json.str d.declId), -- Used internally
-        ("decl", Json.str d.decl),
+        ("decl", match d.decl? with | some d => Json.str d | none => Json.null),
+        ("declName", match d.declName? with | some n => Json.str s!"{n}" | none => Json.null),
         -- ("goalDelta", Json.num d.goalDelta), -- Used internally but not output to JSON
         ("srcUpToTactic", Json.str d.srcUpToTactic),
         ("declUpToTactic", Json.str d.declUpToTactic),

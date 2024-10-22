@@ -1,4 +1,4 @@
-import glob
+import json
 import os
 import argparse
 import subprocess
@@ -15,7 +15,8 @@ DIR_NAMES = {
     'full_proof_training_data_states': 'FullProofWithStates',
     'premises': 'Premises',
     'training_data_with_premises': 'TrainingDataWithPremises',
-    'declarations': 'Declarations',
+    'imports': 'Imports',
+    'constants': 'Constants',
 }
 
 def _get_stem(input_module, input_file_mode):
@@ -26,9 +27,11 @@ def _get_stem(input_module, input_file_mode):
     return stem
 
 def _run_cmd(cmd, cwd, input_file, output_file):
+    if isinstance(input_file, str):
+        input_file = [input_file]
     with open(output_file, 'w') as f:
         subprocess.run(
-            ['lake', 'exe', cmd, input_file],
+            ['lake', 'exe', cmd, *input_file],
             cwd=cwd,
             check=True,
             stdout=f
@@ -36,7 +39,7 @@ def _run_cmd(cmd, cwd, input_file, output_file):
 
 def _extract_module(input_module, input_file_mode, output_base_dir, cwd, training_data, full_proof_training_data,
                     premises, state_comments, full_proof_training_data_states, training_data_with_premises,
-                    declarations):
+                    constants, imports):
     # Tactic prediction
     if training_data:
         _run_cmd(
@@ -115,15 +118,27 @@ def _extract_module(input_module, input_file_mode, output_base_dir, cwd, trainin
                 _get_stem(input_module, input_file_mode) + '.jsonl'
             )
         )
-    
-    if declarations:
+
+    if constants:
         _run_cmd(
-            cmd='declarations',
+            cmd='constants',
             cwd=cwd,
             input_file=input_module,
             output_file=os.path.join(
                 output_base_dir,
-                DIR_NAMES['declarations'],
+                DIR_NAMES['constants'],
+                _get_stem(input_module, input_file_mode) + '.jsonl'
+            )
+        )
+
+    if imports:
+        _run_cmd(
+            cmd='imports',
+            cwd=cwd,
+            input_file=input_module,
+            output_file=os.path.join(
+                output_base_dir,
+                DIR_NAMES['imports'],
                 _get_stem(input_module, input_file_mode) + '.jsonl'
             )
         )
@@ -137,18 +152,13 @@ if __name__ == '__main__':
     parser.add_argument('--output-base-dir', default='Examples/Mathlib')
     parser.add_argument('--cwd', default='/Users/wellecks/projects/ntptutorial/partI_nextstep/ntp_lean/llm-training-data')
     parser.add_argument(
-        '--input-file', 
-        default=None, 
-        help='input file in the Examples folder'
+        '--import-module',
+        nargs='+',
+        help='Base module name(s) as entry point to a project (e.g., Mathlib, PrimeNumberTheoremAnd)'
     )
     parser.add_argument(
-        '--import-file', 
-        help='Runs the pipeline on all modules imported in the given lean file.',
-        default='.lake/packages/mathlib/Mathlib.lean'
-    )
-    parser.add_argument(
-        '--max-workers', 
-        default=None, 
+        '--max-workers',
+        default=None,
         type=int,
         help="maximum number of processes; defaults to number of processors"
     )
@@ -177,52 +187,59 @@ if __name__ == '__main__':
         action='store_true'
     )
     parser.add_argument(
-        '--declarations',
+        '--constants',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--imports',
         action='store_true'
     )
     args = parser.parse_args()
-    
+
     if ((not args.training_data) and (not args.full_proof_training_data) and (not args.premises) and (not args.state_comments)
-        and (not args.full_proof_training_data_states) and (not args.training_data_with_premises) and (not args.declarations)):
-        raise AssertionError('''At least one of the following flags must be set: [--training_data, --full_proof_training_data, 
+        and (not args.full_proof_training_data_states) and (not args.training_data_with_premises) and (not args.constants)
+        and (not args.imports)):
+        raise AssertionError('''At least one of the following flags must be set: [--training_data, --full_proof_training_data,
                              --premises, --state_comments, --full_proof_training_data_states, --training_data_with_premises,
-                             --declarations]''')
+                             --constants, --imports]''')
 
     Path(args.output_base_dir).mkdir(parents=True, exist_ok=True)
     for name in DIR_NAMES.values():
         Path(os.path.join(args.output_base_dir, name)).mkdir(parents=True, exist_ok=True)
 
     print("Building...")
+    subprocess.run(['lake', 'build', 'all_modules'], check=True)
     subprocess.run(['lake', 'build', 'training_data'], check=True)
     subprocess.run(['lake', 'build', 'full_proof_training_data'], check=True)
     subprocess.run(['lake', 'build', 'premises'], check=True)
     subprocess.run(['lake', 'build', 'training_data_with_premises'], check=True)
-    subprocess.run(['lake', 'build', 'declarations'], check=True)
+    subprocess.run(['lake', 'build', 'constants'], check=True)
+    subprocess.run(['lake', 'build', 'imports'], check=True)
 
+    # Extract all modules in the project
+    input_modules_file = os.path.join(
+        args.output_base_dir,
+        'Modules.jsonl'
+    )
+    _run_cmd(
+        cmd='all_modules',
+        cwd=args.cwd,
+        input_file=args.import_module,
+        output_file=input_modules_file
+    )
     input_modules = []
-    if args.input_file is not None:
-        input_modules.extend(
-            glob.glob(args.input_file)
-        )
-    elif args.import_file is not None:
-        with open(args.import_file) as f:
-            for line in f.readlines():
-                if 'import ' in line:
-                    chunks = line.split('import ')
-                    module = chunks[1].strip()
-                    input_modules.append(module)
-    else:
-        raise AssertionError('one of --input-file or --import-file must be set')
+    with open(input_modules_file, 'r') as f:
+        for line in f:
+            input_modules.append(json.loads(line)['name'])
 
     completed = []
     start = time.time()
     with ProcessPoolExecutor(args.max_workers) as executor:
-        input_file_mode = args.input_file is not None
         futures = [
             executor.submit(
                 _extract_module,
                 input_module=input_module,
-                input_file_mode=input_file_mode,
+                input_file_mode=False,
                 output_base_dir=args.output_base_dir,
                 cwd=args.cwd,
                 training_data=args.training_data,
@@ -231,7 +248,8 @@ if __name__ == '__main__':
                 state_comments=args.state_comments,
                 full_proof_training_data_states=args.full_proof_training_data_states,
                 training_data_with_premises=args.training_data_with_premises,
-                declarations=args.declarations,
+                constants=args.constants,
+                imports=args.imports
             )
             for input_module in input_modules
         ]
@@ -252,8 +270,9 @@ if __name__ == '__main__':
         check=True
     )
 
-    subprocess.run(
-        ['python', 'scripts/convert_minictx.py', args.output_base_dir, os.path.join(args.output_base_dir, 'minictx.jsonl')],
-        cwd=args.cwd,
-        check=True
-    )
+    if args.premises and args.full_proof_training_data:
+        subprocess.run(
+            ['python', 'scripts/convert_minictx.py', args.output_base_dir, os.path.join(args.output_base_dir, 'minictx.jsonl')],
+            cwd=args.cwd,
+            check=True
+        )

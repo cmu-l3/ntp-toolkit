@@ -6,7 +6,7 @@ package «lean-training-data» {
 }
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git" @ "09d33efc68d3ad52db77b731d7253675395a14aa"
+  "https://github.com/leanprover-community/mathlib4.git" @ "v4.9.1"
 
 require «doc-gen4» from git
   "https://github.com/leanprover/doc-gen4.git" @ "v4.9.0"
@@ -31,8 +31,11 @@ lean_exe premises where
 lean_exe training_data_with_premises where
   root := `scripts.training_data_with_premises
 
-lean_exe declarations where
-  root := `scripts.declarations
+lean_exe all_modules where
+  root := `scripts.all_modules
 
-lean_exe all_constants where
-  root := `scripts.all_constants
+lean_exe constants where
+  root := `scripts.constants
+
+lean_exe imports where
+  root := `scripts.imports

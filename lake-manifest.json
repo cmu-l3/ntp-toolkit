@@ -61,7 +61,7 @@
    "rev": "09d33efc68d3ad52db77b731d7253675395a14aa",
    "name": "mathlib",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "09d33efc68d3ad52db77b731d7253675395a14aa",
+   "inputRev": "v4.9.1",
    "inherited": false,
    "configFile": "lakefile.lean"},
   {"url": "https://github.com/acmepjz/md4lean",
