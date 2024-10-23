@@ -114,8 +114,9 @@ def runTacticAtDecls (mod : Name) (decls : ConstantInfo → CoreM Bool) (tac : T
     if ! (← decls ci) then return none
     let g ← mkFreshExprMVar ci.type
     let ((gs, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
-      try? <| TermElabM.run' do
-        Tactic.run g.mvarId! tac
+      try? <| TermElabM.run' (do
+        Tactic.run g.mvarId! tac)
+        (ctx := {declName? := `fakeDecl, errToSorry := false})
     let type : ResultType ← match gs with
     | none => pure .failure
     | some (_ :: _) => pure .subgoals
@@ -159,12 +160,14 @@ def runHammerAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withImp
     let hammerRecommendation ← IO.ofExcept $ hammerRecommendation.getArr?
     let hammerRecommendation ← IO.ofExcept $ hammerRecommendation.mapM Json.getStr?
     let ((res, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
-      try TermElabM.run' do
-        dbg_trace "About to use hammer for {ci.name} (recommendation: {hammerRecommendation})"
-        let gs ← Tactic.run g.mvarId! $ useHammer hammerRecommendation
-        match gs with
-        | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate the hammer on Prop declarations
-        | _ :: _ => pure .subgoals
+      try
+        TermElabM.run' (do
+          dbg_trace "About to use hammer for {ci.name} (recommendation: {hammerRecommendation})"
+          let gs ← Tactic.run g.mvarId! $ useHammer hammerRecommendation
+          match gs with
+          | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate the hammer on Prop declarations
+          | _ :: _ => pure .subgoals)
+          (ctx := {declName? := `fakeDecl, errToSorry := false})
       catch e =>
         if ← Hammer.hammerErrorIsSimpPreprocessingError e then pure .simpPreprocessingFailure
         else if ← Hammer.hammerErrorIsTranslationError e then pure .tptpTranslationFailure
@@ -183,11 +186,13 @@ def runQuerySMTAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) :
     if ! (← decls ci) then return none
     let g ← mkFreshExprMVar ci.type
     let ((res, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
-      try TermElabM.run' do
-        let gs ← Tactic.run g.mvarId! $ useQuerySMT
-        match gs with
-        | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate the hammer on Prop declarations
-        | _ :: _ => pure .subgoals
+      try
+        TermElabM.run' (do
+          let gs ← Tactic.run g.mvarId! $ useQuerySMT
+          match gs with
+          | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate the hammer on Prop declarations
+          | _ :: _ => pure .subgoals)
+          (ctx := {declName? := `fakeDecl, errToSorry := false})
       catch e =>
         dbg_trace "QuerySMT encountered error when trying to prove {ci.type}: {← e.toMessageData.toString}"
         pure .failure

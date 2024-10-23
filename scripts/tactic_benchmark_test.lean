@@ -1,16 +1,18 @@
 import Scripts.Tactic_benchmark
 
+open Lean Core Elab IO Meta Term Tactic -- All the monads!
+
 /-
-#eval tacticBenchmarkFromModule `temp useRfl
-#eval tacticBenchmarkFromModule `temp useDuper
-#eval tacticBenchmarkFromModule `temp useQuerySMT
-#eval tacticBenchmarkFromModule `temp useAesop
+#eval Command.liftTermElabM $ tacticBenchmarkFromModule `temp useRfl
+#eval Command.liftTermElabM $ tacticBenchmarkFromModule `temp useDuper
+#eval Command.liftTermElabM $ tacticBenchmarkFromModule `temp useQuerySMT
+#eval Command.liftTermElabM $ tacticBenchmarkFromModule `temp useAesop
 -/
--- #eval tacticBenchmarkFromModule `temp useQuerySMT
+-- #eval Command.liftTermElabM $ querySMTBenchmarkFromModule `temp2
+-- #eval Command.liftTermElabM $ querySMTBenchmarkFromModule `temp
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Hammer testing
-open Lean Core Elab IO Meta Term Tactic -- All the monads!
 
 def withImportsDir := "Examples/Mathlib/WithImports"
 def jsonDir := "Examples/Mathlib/TrainingDataWithPremises"
@@ -19,8 +21,8 @@ def jsonDir := "Examples/Mathlib/TrainingDataWithPremises"
    and the actual hammer's performance. One example is `Set.disjoint_right` which `hammer` handles fine
    when you actually run it but appears to have Duper's proof reconstruction fail for in
    `hammerBenchmarkFromModule` -/
--- #eval hammerBenchmarkFromModule `Mathlib.Data.Set.Basic withImportsDir jsonDir
--- #eval tacticBenchmarkFromModule `Mathlib.Data.Set.Basic useDuper
+-- #eval Command.liftTermElabM $ hammerBenchmarkFromModule `Mathlib.Data.Set.Basic withImportsDir jsonDir
+-- #eval Command.liftTermElabM $ tacticBenchmarkFromModule `Mathlib.Data.Set.Basic useDuper
 
 /- Note: `subset_insert_diff_singleton` is an example where the evaluation faithfully represents what the hammer
    does, but the hammer's behavior requires investigation. The external prover can solve this example, and Duper
