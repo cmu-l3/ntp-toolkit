@@ -6,7 +6,7 @@ package «lean-training-data» {
 }
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git" @ "20c73142afa995ac9c8fb80a9bb585a55ca38308"
+  "https://github.com/leanprover-community/mathlib4.git" @ "809c3fb3b5c8f5d7dace56e200b426187516535a"
 
 require QuerySMT from git
   "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "main"

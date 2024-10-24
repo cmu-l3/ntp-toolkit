@@ -142,9 +142,9 @@ def isAuxLemma : Name → Bool
     the constant name. `unfoldConstantName` should never return any names that are supposed to be unfolded, so if a name is
     supposed to be unfolded as indicated by `shouldUnfold`, then even if its constant can't actually be unfolded, we do not
     return the name itself. -/
-def unfoldConstantName (constName : Name) (constantsMap : HashMap Name ConstantInfo) (shouldUnfold : Name → Bool) : NameSet := Id.run do
+def unfoldConstantName (constName : Name) (constantsMap : Std.HashMap Name ConstantInfo) (shouldUnfold : Name → Bool) : NameSet := Id.run do
   if shouldUnfold constName then
-    let some constInfo := constantsMap.find? constName
+    let some constInfo := constantsMap.get? constName
       | return ∅ -- If `n` cannot be unfolded, then return the empty set because `n` shouldn't appear in the output`
     return constInfo.getUsedConstantsAsSet
   else
@@ -315,14 +315,39 @@ def trainingDataGivenTerm (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (h
   (ci : ConstantInfo) : IO Unit /- FirstPassTrainingData -/ := do
   let declId := makeElabDeclId elabDeclInfo module hash
 
+  -- Manually build `decl` from `ci`
+  let mut decl :=
+    match ci with
+    | .axiomInfo _ => "axiom " ++ declName ++ " "
+    | .thmInfo _ => "theorem " ++ declName ++ " "
+    | .opaqueInfo _ => "opaque " ++ declName ++ " "
+    | .defnInfo i =>
+      if isInstanceCore cmd.after i.name then
+        "instance " ++ declName ++ " "
+      else
+        "def " ++ declName ++ " "
+    | .inductInfo i =>
+      if isClass cmd.after i.name then
+        "class " ++ declName ++ " "
+      else if isStructure cmd.after i.name then
+        "structure " ++ declName ++ " "
+      else
+        "inductive " ++ declName ++ " "
+    | .ctorInfo _ => "def " ++ declName ++ " "
+    | .recInfo _ => "def " ++ declName ++ " "
+    | .quotInfo _ => "def " ++ declName ++ " "
+
+
+
   -- **TODO** Use Thomas' constants.lean code to build the decl manually from `ci`. I think this is good enough
   -- The main problem that leaves is the state
 
-  let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (cmd.stx.getPos?.getD 0) -- **NOTE** This is not correct
-  let declUpToTactic := Substring.mk (← moduleSource module) (elabDeclInfo.snd.stx.getPos?.getD 0) (cmd.stx.getPos?.getD 0) -- **NOTE** This is not correct
+  let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (cmd.stx.getTailPos?.getD 0)
+  let declUpToTactic := Substring.mk (← moduleSource module) (elabDeclInfo.snd.stx.getPos?.getD 0) (cmd.stx.getTailPos?.getD 0)
 
   dbg_trace "Running trainingDataGivenTerm on {declName}"
   dbg_trace "declUpToTactic: {declUpToTactic}"
+  dbg_trace "cmd.stx kind: {cmd.stx.getKind}"
   return
 
 end Lean.Elab.TacticInvocation

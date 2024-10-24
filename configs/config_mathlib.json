@@ -2,8 +2,8 @@
     
     {
         "repo": "https://github.com/leanprover-community/mathlib4",
-        "commit": "20c73142afa995ac9c8fb80a9bb585a55ca38308",
-        "lean": "leanprover/lean4:v4.11.0",
+        "commit": "809c3fb3b5c8f5d7dace56e200b426187516535a",
+        "lean": "leanprover/lean4:v4.12.0",
         "name": "mathlib",
         "import_file": "Mathlib.lean",
         "imports": ["Mathlib"]

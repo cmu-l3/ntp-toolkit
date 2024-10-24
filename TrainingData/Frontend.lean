@@ -224,13 +224,13 @@ def moduleSource' (mod : Name) : IO String := do
 def moduleSourceWithImports' (mod : Name) (repoName : String) (withImportsDir : String) : IO String := do
   IO.FS.readFile (← findLeanWithImports mod repoName withImportsDir)
 
-initialize sourceCache : IO.Ref <| HashMap Name String ←
+initialize sourceCache : IO.Ref <| Std.HashMap Name String ←
   IO.mkRef .empty
 
 /-- Read the source code of the named module. The results are cached. -/
 def moduleSource (mod : Name) : IO String := do
   let m ← sourceCache.get
-  match m.find? mod with
+  match m.get? mod with
   | some r => return r
   | none => do
     let v ← moduleSource' mod
@@ -240,7 +240,7 @@ def moduleSource (mod : Name) : IO String := do
 /-- Like `moduleSource` but uses the version of the module that appears in the `Examples/WithImports` directory -/
 def moduleSourceWithImports (mod : Name) (repoName : String) (withImportsDir : String) : IO String := do
   let m ← sourceCache.get
-  match m.find? mod with
+  match m.get? mod with
   | some r => return r
   | none => do
     let v ← moduleSourceWithImports' mod repoName withImportsDir
@@ -256,7 +256,7 @@ def compileModuleWithImports' (mod : Name) (repoName : String) (withImportsDir :
   let modSource ← moduleSourceWithImports mod repoName withImportsDir
   Lean.Elab.IO.processInput' modSource none {} (← findLeanWithImports mod repoName withImportsDir).toString
 
-initialize compilationCache : IO.Ref <| HashMap Name (List CompilationStep) ←
+initialize compilationCache : IO.Ref <| Std.HashMap Name (List CompilationStep) ←
   IO.mkRef .empty
 
 /--
@@ -269,7 +269,7 @@ you should check all compiled files for error messages if attempting this.
 -/
 def compileModule (mod : Name) : IO (List CompilationStep) := do
   let m ← compilationCache.get
-  match m.find? mod with
+  match m.get? mod with
   | some r => return r
   | none => do
     let v ← compileModule' mod |>.force
