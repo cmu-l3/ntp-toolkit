@@ -22,6 +22,8 @@ The flags that can be set to indicate which processes to run are:
 - `--state_comments`: This outputs to the `StateComments` directory
 - `--full_proof_training_data_states`: This outputs to the `FullProofWithStates` directory
 - `--training_data_with_premises`: This outputs to the `TrainingDataWithPremises` directory
+- `--declarations`: This outputs to the `Declarations` directory
+- `--imports`: This outputs to the `Imports` directory
 
 At least one of the above flags must be set in order for the script to run (but there should be no issue with setting multiple or even all of the above flags)
 
@@ -63,6 +65,35 @@ This produces a `.jsonl` file where each line is an example of the following for
 ### `state_comments`
 
 This produces Lean source files with proof states interleaved as comments after each tactic.
+
+### `premises`
+
+This produces premises used by each constant in a module.
+
+### `declarations`
+
+This produces information that pretty-prints each declaration in a module. The resulting format is
+```json
+{
+   "name": "pow_two",
+   "kind": "theorem",
+   "args": ["{M : Type u_2}", "[Monoid M]", "(a : M)"],
+   "type": "a ^ 2 = a * a",
+   "doc": "Note that most of the lemmas about powers of two refer to it as `sq`.",
+   "decl": "/-- Note that most of the lemmas about powers of two refer to it as `sq`. -/\ntheorem pow_two {M : Type u_2} [Monoid M] (a : M) : a ^ 2 = a * a",
+   "line": 810,
+   "column": 0
+}
+```
+
+### `imports`
+This outputs the imports of each module (both transitively imported modules and directly imported modules). The resulting format is
+```json
+{
+   "name": "{imported module name}",
+   "isDirect": "{whether it is explicitly imported by the module (otherwise it is transitively imported)}"
+}
+```
 
 ### `training_data_with_premises`
 
