@@ -109,18 +109,6 @@ def ppDeclWithoutProof (module: ModuleName) (info: CommandInfo) : IO (Option Str
     else
       return none
 
-def fullName (elabDeclInfo : ElabDeclInfo) : Option Name :=
-  let cmdInfo := elabDeclInfo.cmdInfo
-  -- (magic value) if this command is a declaration (theorem, lemma, def, etc), then
-  -- `stx[1][1][0]` should contain the identifier
-  if cmdInfo.stx[1][1][0].isIdent then
-    let name := cmdInfo.stx[1][1][0].getId
-    let isRootName := (`_root_).isPrefixOf name
-    let declName := if isRootName then name.replacePrefix `_root_ Name.anonymous else elabDeclInfo.currNamespace ++ name
-    some declName
-  else
-    none
-
 /-- Gather all premises that appear in a syntax `s` and return two namesets of names. The first nameset
     contains all hypotheses in the given `lctx` that appear in `s`, and the second nameset contains all
     global constants that appear in `s`.
@@ -258,7 +246,7 @@ def trainingDataGivenTactic (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (
 
   let nextTactic ← tacticPP module i
   let decl? ← ppDeclWithoutProof module elabDeclInfo.cmdInfo
-  let declName? := fullName elabDeclInfo
+  let declName? := i.ctx.parentDecl?
 
   let nextTacticIsSimpOrRwVariant := nextTacticIsSimpOrRwVariant nextTactic
   let numNewGoalsOpened : Int := (nextTactic.findAllSubstr " by ").size + (nextTactic.findAllSubstr ":=by ").size + (nextTactic.findAllSubstr "\nby ").size
