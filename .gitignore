@@ -4,7 +4,6 @@
 out/
 Examples
 Extracted
-/embeddings/
 .vscode
 *.olean
 /build

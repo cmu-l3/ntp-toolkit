@@ -91,8 +91,7 @@ def ppCommandInfo (module: ModuleName) (info : CommandInfo) : IO String :=
   (info.stx.getPos?.getD 0)
   (info.stx.getTailPos?.getD 0)).toString
 
-def ppDeclAndProof (module: ModuleName) (info: CommandInfo) : IO (Option (String × String)) := do
-    -- let ppDecl ← ppCommandInfo module info
+def ppDeclWithoutProof (module: ModuleName) (info: CommandInfo) : IO String := do
     -- (magic value) if this command is a declaration like theorem/def T := proof/definition
     -- then the := syntax occurs at `stx[1][3][0]`
     if info.stx[1][3][0].getAtomVal == ":=" then
@@ -102,9 +101,9 @@ def ppDeclAndProof (module: ModuleName) (info: CommandInfo) : IO (Option (String
       let moduleSource ← moduleSource module
       let decl := (Substring.mk moduleSource declStart proofStart).toString
       let proof := (Substring.mk moduleSource proofStart proofEnd).toString
-      return (decl, proof)
+      return decl
     else
-      return none
+      return ""
 
 /-- Gather all premises that appear in a syntax `s` and return two namesets of names. The first nameset
     contains all hypotheses in the given `lctx` that appear in `s`, and the second nameset contains all
