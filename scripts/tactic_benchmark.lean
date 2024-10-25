@@ -234,7 +234,7 @@ def tacticBenchmarkFromModule (module : ModuleName) (tac : TacticM Unit) : IO UI
 
 def hammerBenchmarkFromModule (module : ModuleName) (withImportsDir : String) (jsonDir : String) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
-  let result := runHammerAtDecls module (fun ci => isProp ci.type) withImportsDir jsonDir
+  let result := runHammerAtDecls module (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir
   IO.println s!"{module}"
   for (ci, ⟨type, seconds, heartbeats⟩) in result do
     IO.println <| (resultTypeToEmojiString type) ++ " " ++ ci.name.toString ++
@@ -243,7 +243,7 @@ def hammerBenchmarkFromModule (module : ModuleName) (withImportsDir : String) (j
 
 def querySMTBenchmarkFromModule (module : ModuleName) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
-  let result := runQuerySMTAtDecls module (fun ci => isProp ci.type)
+  let result := runQuerySMTAtDecls module (fun ci => try isProp ci.type catch _ => pure false)
   IO.println s!"{module}"
   for (ci, ⟨type, seconds, heartbeats⟩) in result do
     IO.println <| (resultTypeToEmojiString type) ++ " " ++ ci.name.toString ++

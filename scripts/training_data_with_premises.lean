@@ -369,7 +369,9 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
           match t.ctx.parentDecl? with
           | some n => s!"{n}"
           | none => ""
-        let data ← t.trainingDataGivenTactic elabDeclInfo module hash tDeclName
+        let data ←
+          try t.trainingDataGivenTactic elabDeclInfo module hash tDeclName
+          catch _ => continue
         firstPassData := firstPassData.push data
       | none => pure ()
   -- Extract data from declarations that are proven without entering tactic mode (`theorem foo := t` is treated as `theorem foo := by exact t`)
