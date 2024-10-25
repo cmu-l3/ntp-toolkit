@@ -42,8 +42,8 @@ lean_exe training_data_with_premises where
 lean_exe all_modules where
   root := `scripts.all_modules
 
-lean_exe constants where
-  root := `scripts.constants
+lean_exe declarations where
+  root := `scripts.declarations
 
 lean_exe imports where
   root := `scripts.imports
@@ -77,7 +77,7 @@ def _setup(cwd):
     subprocess.run(['lake', 'build'], check=True)
 
 # def _import_file(name, import_file, old_version):
-#     name = name.replace('«', '').replace('»', '') 
+#     name = name.replace('«', '').replace('»', '')
 #     if old_version:
 #         return os.path.join('lake-packages', name, import_file)
 #     else:
@@ -101,13 +101,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--cwd', default='/Users/wellecks/projects/ntp-training-data/')
     parser.add_argument(
-        '--config', 
-        default='configs/config.json', 
+        '--config',
+        default='configs/config.json',
         help='config file'
     )
     parser.add_argument(
-        '--max-workers', 
-        default=None, 
+        '--max-workers',
+        default=None,
         type=int,
         help="maximum number of processes; defaults to number of processors"
     )
@@ -140,7 +140,7 @@ if __name__ == '__main__':
         action='store_true'
     )
     parser.add_argument(
-        '--constants',
+        '--declarations',
         action='store_true'
     )
     parser.add_argument(
@@ -165,8 +165,8 @@ if __name__ == '__main__':
         flags.append('--full_proof_training_data_states')
     if args.training_data_with_premises:
         flags.append('--training_data_with_premises')
-    if args.constants:
-        flags.append('--constants')
+    if args.declarations:
+        flags.append('--declarations')
     if args.imports:
         flags.append('--imports')
 

@@ -34,8 +34,8 @@ lean_exe training_data_with_premises where
 lean_exe all_modules where
   root := `scripts.all_modules
 
-lean_exe constants where
-  root := `scripts.constants
+lean_exe declarations where
+  root := `scripts.declarations
 
 lean_exe imports where
   root := `scripts.imports
