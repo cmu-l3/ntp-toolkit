@@ -65,6 +65,37 @@ def runAtDecls (mod : Name) (withImportsDir : Option String := none) (tac : Cons
           | some r => pure (ci, r)
           | none => pure none
 
+/-- Like `runAtDecls` but only returns the output for a single declaration. If the declaration cannot be found or if the tactic fails, `none` is returned. -/
+def runAtDecl (mod : Name) (declName : Name) (withImportsDir : Option String := none) (tac : ConstantInfo → MetaM (Option α)) : IO (Option (ConstantInfo × α)) := do
+  let fileName ←
+    match withImportsDir with
+    | none => pure (← findLean mod).toString
+    | some withImportsDir => pure (← findLeanWithImports mod "mathlib" withImportsDir).toString
+  let steps :=
+    match withImportsDir with
+    | none => compileModule' mod
+    | some withImportsDir => compileModuleWithImports' mod "mathlib" withImportsDir
+  let targets := steps.bind fun c => (MLList.ofList c.diff).map fun i => (c, i)
+  for (cmd, ci) in targets do
+    if ci.name == declName then
+      let options := ({} : KVMap).insert `maxHeartbeats (.ofNat 20000)
+      let ctx := { fileName, options, fileMap := default }
+      let state := { env := cmd.before }
+      -- From `IO` to `CoreM`:
+      let res ← Prod.fst <$> (CoreM.toIO · ctx state) do
+        if ← ci.name.isBlackListed then
+          IO.eprintln s!"runAtDecl :: {ci.name} is blacklisted and is therefore not an eligible declaration for runAtDecl"
+          return none
+        else
+          -- From `CoreM` to `MetaM`:
+          MetaM.run' (ctx := {}) (s := {}) do
+            match ← tac ci with
+            | some r => pure $ some (ci, r)
+            | none => pure none
+      return res
+  IO.eprintln s!"Unable to find declaration {declName} in module {mod}"
+  return none
+
 inductive ResultType
 | success
 | failure -- Generic failure result used for `runTacticAtDecls` but not `runHammerAtDecls`
@@ -179,6 +210,49 @@ def runHammerAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withImp
         else pure .miscFailure
     return some ⟨res, seconds, heartbeats⟩
 
+/-- Like `runHammerAtDecls` but only tests a single declaration (indicated by `declName`). -/
+def runHammerAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String) :
+  IO (Option (ConstantInfo × Result)) := do
+  runAtDecl mod declName (some withImportsPath) fun ci => do
+    if ! (← decls ci) then return none
+    let g ← mkFreshExprMVar ci.type
+    -- Find JSON file corresponding to current `mod`
+    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let jsonObjects ← IO.FS.lines fileName
+    let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
+    -- Find `declHammerRecommendation` corresponding to current `ci`
+    let mut ciEntry := Json.null
+    for jsonEntry in json do
+      let jsonDeclName ← IO.ofExcept $ jsonEntry.getObjVal? "declName"
+      let curDeclName ← IO.ofExcept $ jsonDeclName.getStr?
+      if curDeclName == s!"{ci.name}" then
+        ciEntry := jsonEntry
+        break
+    if ciEntry.isNull then
+      return some ⟨.noJSON, 0.0, 0⟩
+    let hammerRecommendation ← IO.ofExcept $ ciEntry.getObjVal? "declHammerRecommendation"
+    let hammerRecommendation ← IO.ofExcept $ hammerRecommendation.getArr?
+    let hammerRecommendation ← IO.ofExcept $ hammerRecommendation.mapM Json.getStr?
+    let ((res, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
+      try
+        TermElabM.run' (do
+          dbg_trace "About to use hammer for {ci.name} (recommendation: {hammerRecommendation})"
+          let gs ← Tactic.run g.mvarId! $ useHammer hammerRecommendation
+          match gs with
+          | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate the hammer on Prop declarations
+          | _ :: _ => pure .subgoals)
+          (ctx := {declName? := `fakeDecl, errToSorry := false})
+      catch e =>
+        if ← Hammer.hammerErrorIsSimpPreprocessingError e then pure .simpPreprocessingFailure
+        else if ← Hammer.hammerErrorIsTranslationError e then pure .tptpTranslationFailure
+        else if ← Hammer.hammerErrorIsExternalSolverError e then pure .externalProverFailure
+        else if ← Hammer.hammerErrorIsDuperSolverError e then pure .duperFailure
+        else if ← Hammer.hammerErrorIsProofFitError e then pure .proofFitFailure
+        else if "tactic 'simp' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
+        else if "tactic 'simp_all' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
+        else pure .miscFailure
+    return some ⟨res, seconds, heartbeats⟩
+
 /-- **TODO** Add optional `jsonDir` String to add premises -/
 def runQuerySMTAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) :
   MLList IO (ConstantInfo × Result) := do
@@ -240,6 +314,17 @@ def hammerBenchmarkFromModule (module : ModuleName) (withImportsDir : String) (j
     IO.println <| (resultTypeToEmojiString type) ++ " " ++ ci.name.toString ++
       s!" ({seconds}s) ({heartbeats} heartbeats)"
   return 0
+
+def hammerBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) : IO UInt32 := do
+  searchPathRef.set compile_time_search_path%
+  let result ← runHammerAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir
+  match result with
+  | some (ci, ⟨type, seconds, heartbeats⟩) =>
+    IO.println $ (resultTypeToEmojiString type) ++ " " ++ ci.name.toString ++ s!" ({seconds}s) ({heartbeats} heartbeats)"
+    return 0
+  | none =>
+    IO.println s!"Encountered an issue attempting to run hammer benchmark at {declName} in module {module}"
+    return 0
 
 def querySMTBenchmarkFromModule (module : ModuleName) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
