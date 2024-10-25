@@ -6,7 +6,7 @@ package «lean-training-data» {
 }
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git" @ "v4.9.1"
+  "https://github.com/leanprover-community/mathlib4.git" @ "09d33efc68d3ad52db77b731d7253675395a14aa"
 
 require «doc-gen4» from git
   "https://github.com/leanprover/doc-gen4.git" @ "v4.9.0"
