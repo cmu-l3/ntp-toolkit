@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/siddhartha-gadgil/Polylean",
+    "commit": "f0619d3",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "Polylean",
+    "imports": [
+        "UnitConjecture"
+    ]
+}

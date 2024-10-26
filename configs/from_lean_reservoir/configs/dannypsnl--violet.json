@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/dannypsnl/violet-legacy",
+    "commit": "baa86fb",
+    "lean": "leanprover/lean4:v4.8.0",
+    "name": "\u00abviolet\u00bb",
+    "imports": [
+        "\u00abViolet\u00bb"
+    ]
+}

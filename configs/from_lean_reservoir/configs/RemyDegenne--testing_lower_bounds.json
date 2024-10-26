@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/RemyDegenne/testing-lower-bounds",
+    "commit": "0f09ff1",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "\u00abtesting_lower_bounds\u00bb",
+    "imports": [
+        "TestingLowerBounds"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/argumentcomputer/Blake3.lean",
+    "commit": "0acd907",
+    "lean": "leanprover/lean4:nightly-2023-01-10",
+    "name": "Blake3",
+    "imports": [
+        "Blake3"
+    ]
+}

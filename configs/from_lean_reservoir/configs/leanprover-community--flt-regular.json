@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/leanprover-community/flt-regular",
+    "commit": "b0eb9f8",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abflt-regular\u00bb",
+    "imports": [
+        "\u00abFltRegular\u00bb"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/ImperialCollegeLondon/M1F-explained",
+    "commit": "10bdd7f",
+    "lean": "leanprover/lean4:nightly-2023-08-05",
+    "name": "\u00abm1F-Explained\u00bb",
+    "imports": [
+        "\u00abM1FExplained\u00bb"
+    ]
+}

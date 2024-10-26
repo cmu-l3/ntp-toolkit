@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/fpvandoorn/LogicColloquiumTutorial",
+    "commit": "9bb5d37",
+    "lean": "leanprover/lean4:nightly-2023-06-20",
+    "name": "LCTutorial",
+    "imports": [
+        "LCTutorial"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/niklasmohrin/lean-seminar-2023",
+    "commit": "01aa704",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "FlowEquivalentForest",
+    "imports": [
+        "FlowEquivalentForest"
+    ]
+}

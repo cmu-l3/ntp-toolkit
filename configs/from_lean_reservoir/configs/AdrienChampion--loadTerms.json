@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/AdrienChampion/loadTerms.lean",
+    "commit": "a59d2dc",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "\u00abloadTerms\u00bb",
+    "imports": [
+        "\u00abLoadTerms\u00bb"
+    ]
+}

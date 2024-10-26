@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/math-xmum/gametheory",
+    "commit": "6cde761",
+    "lean": "leanprover/lean4:None",
+    "name": "\u00abGameTheory\u00bb",
+    "imports": [
+        "\u00abGameTheory\u00bb"
+    ]
+}

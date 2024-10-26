@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/Izzimach/lean-glfw",
+    "commit": "3edcbd8",
+    "lean": "leanprover/lean4:None",
+    "name": null,
+    "imports": [
+        null
+    ]
+}

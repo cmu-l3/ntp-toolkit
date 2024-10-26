@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/fgdorais/extra4",
+    "commit": "22ac970",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "extra",
+    "imports": [
+        "Extra"
+    ]
+}

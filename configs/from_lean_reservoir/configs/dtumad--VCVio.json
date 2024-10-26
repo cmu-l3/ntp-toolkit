@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/dtumad/VCV-io",
+    "commit": "19d1822",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "VCVio",
+    "imports": [
+        "VCVio"
+    ]
+}

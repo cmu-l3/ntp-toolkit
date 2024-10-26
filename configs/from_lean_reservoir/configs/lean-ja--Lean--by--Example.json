@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/lean-ja/lean-by-example",
+    "commit": "397c00a",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abLean",
+    "imports": [
+        "LeanByExample"
+    ]
+}

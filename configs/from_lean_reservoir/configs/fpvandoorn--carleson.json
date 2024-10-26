@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/fpvandoorn/carleson",
+    "commit": "a4a366d",
+    "lean": "leanprover/lean4:v4.13.0-rc1",
+    "name": "\u00abcarleson\u00bb",
+    "imports": [
+        "\u00abCarleson\u00bb"
+    ]
+}

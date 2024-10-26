@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/T-Brick/lean-wasm",
+    "commit": "939e41c",
+    "lean": "leanprover/lean4:v4.8.0",
+    "name": "wasm",
+    "imports": [
+        "Wasm"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/pimpale/llm.lean",
+    "commit": "a0973eb",
+    "lean": "leanprover/lean4:v4.11.0-rc2",
+    "name": "llm.lean",
+    "imports": [
+        "LinearAlgebra"
+    ]
+}

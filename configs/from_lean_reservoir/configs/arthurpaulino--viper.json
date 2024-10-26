@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/arthurpaulino/viper",
+    "commit": "cc23850",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "viper",
+    "imports": [
+        "Viper"
+    ]
+}

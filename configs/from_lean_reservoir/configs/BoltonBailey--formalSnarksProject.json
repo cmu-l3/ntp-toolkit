@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/BoltonBailey/formal-snarks-project",
+    "commit": "848140e",
+    "lean": "leanprover/lean4:v4.8.0",
+    "name": "\u00abformalSnarksProject\u00bb",
+    "imports": [
+        "\u00abFormalSnarksProject\u00bb"
+    ]
+}

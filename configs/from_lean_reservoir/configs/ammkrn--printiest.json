@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/ammkrn/printiest",
+    "commit": "8598cb4",
+    "lean": "leanprover/lean4:v4.8.0-rc1",
+    "name": "printiest",
+    "imports": [
+        "Printiest"
+    ]
+}

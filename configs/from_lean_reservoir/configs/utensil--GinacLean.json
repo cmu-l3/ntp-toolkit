@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/utensil/ginac-lean",
+    "commit": "67cfb12",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abGinacLean\u00bb",
+    "imports": [
+        "\u00abGinacLean\u00bb"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/ImperialCollegeLondon/FLT",
+    "commit": "7922941",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "FLT",
+    "imports": [
+        "FLT"
+    ]
+}

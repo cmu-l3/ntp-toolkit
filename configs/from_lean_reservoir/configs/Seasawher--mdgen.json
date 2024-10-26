@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/Seasawher/mdgen",
+    "commit": "3500acf",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abmdgen\u00bb",
+    "imports": [
+        "\u00abMdgen\u00bb"
+    ]
+}

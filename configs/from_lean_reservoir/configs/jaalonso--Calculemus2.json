@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/jaalonso/Calculemus2",
+    "commit": "ab09b93",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "Calculemus2",
+    "imports": [
+        "Calculemus2"
+    ]
+}

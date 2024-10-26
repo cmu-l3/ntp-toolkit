@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/alma-n/ConstructiveLogicCourseGame",
+    "commit": "f8685fa",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "Game",
+    "imports": [
+        "Game"
+    ]
+}

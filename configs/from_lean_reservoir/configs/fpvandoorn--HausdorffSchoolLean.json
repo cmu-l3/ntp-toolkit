@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/fpvandoorn/HausdorffSchoolLean",
+    "commit": "df1f295",
+    "lean": "leanprover/lean4:v4.0.0",
+    "name": "HausdorffSchool",
+    "imports": [
+        "HausdorffSchool"
+    ]
+}

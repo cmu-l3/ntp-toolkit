@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/NUS-Math-Formalization/CalculusSkeleton",
+    "commit": "a9c02a0",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "Game",
+    "imports": [
+        "Game"
+    ]
+}

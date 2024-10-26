@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/rami3l/plfl",
+    "commit": "1a25fc3",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "plfl",
+    "imports": [
+        "Plfl"
+    ]
+}

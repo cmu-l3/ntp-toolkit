@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/AdrienChampion/safeIdx",
+    "commit": "6b46962",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00absafeIdx\u00bb",
+    "imports": [
+        "\u00abSafeIdx\u00bb"
+    ]
+}

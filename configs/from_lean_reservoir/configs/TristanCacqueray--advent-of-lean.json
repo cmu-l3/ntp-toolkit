@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/TristanCacqueray/advent-of-lean",
+    "commit": "9704a78",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "\u00abadvent-of-lean\u00bb",
+    "imports": [
+        "\u00abAdventOfLean\u00bb"
+    ]
+}

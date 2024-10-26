@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/optsuite/optlib",
+    "commit": "2f84855",
+    "lean": "leanprover/lean4:v4.10.0",
+    "name": "\u00abconvex\u00bb",
+    "imports": [
+        "\u00abConvex\u00bb"
+    ]
+}

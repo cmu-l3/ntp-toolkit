@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/pitmonticone/LeanProject",
+    "commit": "308c0b5",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "Project",
+    "imports": [
+        "Project"
+    ]
+}

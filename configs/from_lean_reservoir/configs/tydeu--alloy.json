@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/tydeu/lean4-alloy",
+    "commit": "a712058",
+    "lean": "leanprover/lean4:v4.11.0-rc1",
+    "name": "alloy",
+    "imports": [
+        "Alloy"
+    ]
+}

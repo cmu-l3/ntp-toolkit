@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/JLimperg/regensburg-itp-school-2023",
+    "commit": "7307618",
+    "lean": "leanprover/lean4:None",
+    "name": "talk",
+    "imports": [
+        "Talk"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/reaslab/jixia",
+    "commit": "6f30c06",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "jixia",
+    "imports": [
+        "Analyzer"
+    ]
+}

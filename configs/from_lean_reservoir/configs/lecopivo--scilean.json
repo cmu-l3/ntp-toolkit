@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/lecopivo/SciLean",
+    "commit": "66ee02b",
+    "lean": "leanprover/lean4:v4.11.0-rc2",
+    "name": "scilean",
+    "imports": [
+        "SciLean"
+    ]
+}

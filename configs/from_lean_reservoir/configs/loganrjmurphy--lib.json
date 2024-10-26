@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/loganrjmurphy/LeanEuclid",
+    "commit": "f1912c3",
+    "lean": "leanprover/lean4:v4.8.0",
+    "name": "\u00ablib\u00bb",
+    "imports": [
+        "SystemE"
+    ]
+}

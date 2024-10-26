@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/siddhartha-gadgil/proofs-and-programs-2023",
+    "commit": "92fd2d8",
+    "lean": "leanprover/lean4:v4.8.0",
+    "name": "pnP2023",
+    "imports": [
+        "PnP2023"
+    ]
+}

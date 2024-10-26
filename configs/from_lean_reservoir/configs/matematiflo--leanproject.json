@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/matematiflo/CompAssistedMath2024",
+    "commit": "f953e43",
+    "lean": "leanprover/lean4:None",
+    "name": "\u00ableanproject\u00bb",
+    "imports": [
+        "\u00abLeanproject\u00bb"
+    ]
+}

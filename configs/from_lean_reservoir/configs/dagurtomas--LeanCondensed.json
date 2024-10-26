@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/dagurtomas/LeanCondensed",
+    "commit": "ad30c8d",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abLeanCondensed\u00bb",
+    "imports": [
+        "\u00abLeanCondensed\u00bb"
+    ]
+}

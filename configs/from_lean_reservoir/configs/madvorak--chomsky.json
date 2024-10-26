@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/madvorak/chomsky",
+    "commit": "b5c2a1b",
+    "lean": "leanprover/lean4:nightly-2023-07-12",
+    "name": "\u00abchomsky\u00bb",
+    "imports": [
+        "\u00abGrammars\u00bb"
+    ]
+}

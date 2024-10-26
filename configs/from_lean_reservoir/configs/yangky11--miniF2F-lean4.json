@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/yangky11/miniF2F-lean4",
+    "commit": "6bcf0b4",
+    "lean": "leanprover/lean4:v4.10.0",
+    "name": "\u00abminiF2F-lean4\u00bb",
+    "imports": [
+        "\u00abMiniF2F\u00bb"
+    ]
+}

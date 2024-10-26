@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/lindy-labs/corelib_verification",
+    "commit": "e4cf24c",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abcorelib_verification\u00bb",
+    "imports": [
+        "\u00abCorelibVerification\u00bb"
+    ]
+}

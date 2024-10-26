@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/hanwenzhu/primality-tests",
+    "commit": "4b84dd7",
+    "lean": "leanprover/lean4:v4.5.0",
+    "name": "\u00abprimality-tests\u00bb",
+    "imports": [
+        "PrimalityTests"
+    ]
+}

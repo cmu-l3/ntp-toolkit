@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/functionally/crypto-lean4",
+    "commit": "1991acb",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "\u00abCrypto\u00bb",
+    "imports": [
+        "\u00abCrypto\u00bb"
+    ]
+}

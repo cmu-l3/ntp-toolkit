@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/haruhisa-enomoto/mathlib4-all-tactics",
+    "commit": "1343083",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abmathlib4-all-tactics\u00bb",
+    "imports": [
+        "\u00abMathlib4AllTactics\u00bb"
+    ]
+}

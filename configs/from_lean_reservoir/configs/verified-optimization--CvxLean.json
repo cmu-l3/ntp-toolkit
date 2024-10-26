@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/verified-optimization/CvxLean",
+    "commit": "c62c2f2",
+    "lean": "leanprover/lean4:None",
+    "name": "CvxLean",
+    "imports": [
+        "CvxLean"
+    ]
+}

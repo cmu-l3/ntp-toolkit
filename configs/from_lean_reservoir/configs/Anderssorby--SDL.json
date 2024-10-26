@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/Anderssorby/SDL.lean",
+    "commit": "df56977",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "\u00abSDL\u00bb",
+    "imports": [
+        "\u00abSDL\u00bb"
+    ]
+}

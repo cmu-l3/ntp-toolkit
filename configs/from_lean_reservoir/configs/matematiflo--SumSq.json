@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/matematiflo/SumsOfSquares",
+    "commit": "4b82a90",
+    "lean": "leanprover/lean4:v4.11.0-rc3",
+    "name": "SumSq",
+    "imports": [
+        "SumSq"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/igrep/lean-workshop",
+    "commit": "843e524",
+    "lean": "leanprover/lean4:v4.10.0",
+    "name": "\u00abtest\u00bb",
+    "imports": [
+        "\u00abTest\u00bb"
+    ]
+}

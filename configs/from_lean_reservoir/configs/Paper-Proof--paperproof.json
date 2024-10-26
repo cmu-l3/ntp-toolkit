@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/Paper-Proof/paperproof",
+    "commit": "992c4c8",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abpaperproof\u00bb",
+    "imports": [
+        "\u00abpaperproof\u00bb"
+    ]
+}

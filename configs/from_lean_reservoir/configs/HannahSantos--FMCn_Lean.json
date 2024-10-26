@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/HannahSantos/FMCn_Lean",
+    "commit": "8e24b93",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abFMCn_Lean\u00bb",
+    "imports": [
+        "\u00abFMCnLean\u00bb"
+    ]
+}

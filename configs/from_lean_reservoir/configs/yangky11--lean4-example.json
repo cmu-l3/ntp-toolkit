@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/yangky11/lean4-example",
+    "commit": "7f7d713",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00ablean4-example\u00bb",
+    "imports": [
+        "\u00abLean4Example\u00bb"
+    ]
+}

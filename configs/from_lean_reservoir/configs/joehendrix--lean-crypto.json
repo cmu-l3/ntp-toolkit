@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/joehendrix/lean-crypto",
+    "commit": "1c7f01d",
+    "lean": "leanprover/lean4:nightly-2023-04-20",
+    "name": "LeanCrypto",
+    "imports": [
+        "LeanCrypto"
+    ]
+}

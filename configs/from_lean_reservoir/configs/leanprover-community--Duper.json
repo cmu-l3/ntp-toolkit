@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/leanprover-community/duper",
+    "commit": "f7ec49e",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "Duper",
+    "imports": [
+        "Duper"
+    ]
+}

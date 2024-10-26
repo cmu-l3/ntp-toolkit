@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/lecopivo/lean4-karray",
+    "commit": "fd3b0e7",
+    "lean": "leanprover/lean4:nightly-2022-01-19",
+    "name": null,
+    "imports": [
+        null
+    ]
+}

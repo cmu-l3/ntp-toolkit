@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/KislyjKisel/Raylib.lean",
+    "commit": "3530893",
+    "lean": "leanprover/lean4:None",
+    "name": "raylib",
+    "imports": [
+        "Raylib"
+    ]
+}

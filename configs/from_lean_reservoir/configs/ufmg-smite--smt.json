@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/ufmg-smite/lean-smt",
+    "commit": "f0e6b56",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "smt",
+    "imports": [
+        "Smt"
+    ]
+}

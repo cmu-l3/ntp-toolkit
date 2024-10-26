@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/wellecks/llmstep",
+    "commit": "88f4107",
+    "lean": "leanprover/lean4:v4.1.0",
+    "name": "\u00abllmstep\u00bb",
+    "imports": [
+        "\u00abLLMstep\u00bb"
+    ]
+}

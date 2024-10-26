@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/atlas-computing-org/CoqLeanTranslation",
+    "commit": "2fb870d",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abcoq_lean_translation\u00bb",
+    "imports": [
+        "\u00abCoqLeanTranslation\u00bb"
+    ]
+}

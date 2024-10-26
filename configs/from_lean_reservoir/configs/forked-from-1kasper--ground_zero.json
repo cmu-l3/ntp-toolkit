@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/forked-from-1kasper/ground_zero",
+    "commit": "39044da",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "GroundZero",
+    "imports": [
+        "GroundZero"
+    ]
+}

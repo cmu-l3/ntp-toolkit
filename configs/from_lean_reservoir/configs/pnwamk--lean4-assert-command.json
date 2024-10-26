@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/pnwamk/lean4-assert-command",
+    "commit": "6ad74ff",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "assertCmd",
+    "imports": [
+        "AssertCmd"
+    ]
+}

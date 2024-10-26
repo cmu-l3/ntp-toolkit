@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/mhuisi/Uniq",
+    "commit": "e622cfd",
+    "lean": "leanprover/lean4:v4.12.0",
+    "name": "uniq",
+    "imports": [
+        "Uniq"
+    ]
+}

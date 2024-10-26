@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/leanprover/subverso",
+    "commit": "d0b2c57",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00absubverso\u00bb",
+    "imports": [
+        "SubVersoCompat"
+    ]
+}

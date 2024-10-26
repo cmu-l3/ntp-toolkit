@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/mo271/FormalBook",
+    "commit": "6c6e0d9",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "FormalBook",
+    "imports": [
+        "FormalBook"
+    ]
+}

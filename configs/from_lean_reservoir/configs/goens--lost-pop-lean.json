@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/goens/lost-pop-lean",
+    "commit": "bcad3ee",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "lost-pop-lean",
+    "imports": [
+        "Pop"
+    ]
+}

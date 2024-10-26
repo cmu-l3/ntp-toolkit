@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/lindy-labs/aegis",
+    "commit": "b5e24d6",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abaegis\u00bb",
+    "imports": [
+        "Aegis"
+    ]
+}

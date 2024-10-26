@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/kim-em/lean-training-data",
+    "commit": "325da40",
+    "lean": "leanprover/lean4:v4.9.0-rc3",
+    "name": "\u00ablean-training-data\u00bb",
+    "imports": [
+        "TrainingData"
+    ]
+}

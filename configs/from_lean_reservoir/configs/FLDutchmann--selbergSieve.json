@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/FLDutchmann/selberg-sieve4",
+    "commit": "64530a3",
+    "lean": "leanprover/lean4:None",
+    "name": "selbergSieve",
+    "imports": [
+        "SelbergSieve"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/Seasawher/lean-book",
+    "commit": "ce20d40",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abLean",
+    "imports": [
+        "\u00abSrc\u00bb"
+    ]
+}

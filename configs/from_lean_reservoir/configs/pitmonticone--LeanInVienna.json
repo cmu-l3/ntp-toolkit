@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/pitmonticone/LeanInVienna2024",
+    "commit": "273e31b",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "LeanInVienna",
+    "imports": [
+        "LeanInVienna"
+    ]
+}

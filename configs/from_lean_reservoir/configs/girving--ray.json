@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/girving/ray",
+    "commit": "06aa499",
+    "lean": "leanprover/lean4:v4.12.0",
+    "name": "ray",
+    "imports": [
+        "Ray"
+    ]
+}

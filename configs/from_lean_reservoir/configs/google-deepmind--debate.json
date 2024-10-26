@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/google-deepmind/debate",
+    "commit": "de3a6e5",
+    "lean": "leanprover/lean4:v4.8.0",
+    "name": "debate",
+    "imports": [
+        "Debate"
+    ]
+}

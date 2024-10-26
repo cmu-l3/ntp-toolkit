@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/m4lvin/lean4-pdl",
+    "commit": "24ab45d",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abpdl\u00bb",
+    "imports": [
+        "\u00abPdl\u00bb"
+    ]
+}

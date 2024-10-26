@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/YaelDillies/ChandraFurstLipton",
+    "commit": "9a475b9",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "ChandraFurstLipton",
+    "imports": [
+        "ChandraFurstLipton"
+    ]
+}

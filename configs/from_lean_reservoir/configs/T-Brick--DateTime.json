@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/T-Brick/DateTime",
+    "commit": "da61e2a",
+    "lean": "leanprover/lean4:v4.5.0",
+    "name": "datetime",
+    "imports": [
+        "DateTime"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/leanprover-community/iris-lean",
+    "commit": "f63fd77",
+    "lean": "leanprover/lean4:nightly-2023-07-30",
+    "name": "iris",
+    "imports": [
+        "iris"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/andrejbauer/lean2sexp",
+    "commit": "7da759c",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00ablean2sexp\u00bb",
+    "imports": [
+        "Sexp"
+    ]
+}

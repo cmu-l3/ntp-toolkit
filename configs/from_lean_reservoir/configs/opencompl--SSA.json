@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/opencompl/lean-mlir",
+    "commit": "ca361c7",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "SSA",
+    "imports": [
+        "SSA"
+    ]
+}

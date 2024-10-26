@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/remimimimimi/leansec",
+    "commit": "0b5119f",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "\u00ableansec\u00bb",
+    "imports": [
+        "\u00abLeansec\u00bb"
+    ]
+}

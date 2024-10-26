@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/leanprover/doc-gen4",
+    "commit": "d36b7fd",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abdoc-gen4\u00bb",
+    "imports": [
+        "DocGen4"
+    ]
+}

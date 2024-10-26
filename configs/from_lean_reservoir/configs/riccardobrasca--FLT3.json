@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/riccardobrasca/flt3",
+    "commit": "e7f8239",
+    "lean": "leanprover/lean4:v4.9.1",
+    "name": "\u00abFLT3\u00bb",
+    "imports": [
+        "\u00abFLT3\u00bb"
+    ]
+}

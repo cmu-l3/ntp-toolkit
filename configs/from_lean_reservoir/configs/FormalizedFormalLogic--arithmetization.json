@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/FormalizedFormalLogic/Arithmetization",
+    "commit": "85e3277",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "arithmetization",
+    "imports": [
+        "Arithmetization"
+    ]
+}

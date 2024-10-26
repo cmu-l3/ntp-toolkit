@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/JamesGallicchio/lean-openapi",
+    "commit": "2761346",
+    "lean": "leanprover/lean4:v4.5.0",
+    "name": "\u00ablean-openapi\u00bb",
+    "imports": [
+        "LeanOpenAPI"
+    ]
+}

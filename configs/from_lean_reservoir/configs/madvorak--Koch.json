@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/madvorak/lean4-koch",
+    "commit": "ac65108",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "Koch",
+    "imports": [
+        "Koch"
+    ]
+}

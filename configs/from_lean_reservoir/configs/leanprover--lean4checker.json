@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/leanprover/lean4checker",
+    "commit": "1950756",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "lean4checker",
+    "imports": [
+        "Lean4Checker"
+    ]
+}

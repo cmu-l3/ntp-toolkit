@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/teorth/pfr",
+    "commit": "ee35aa0",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "PFR",
+    "imports": [
+        "PFR"
+    ]
+}

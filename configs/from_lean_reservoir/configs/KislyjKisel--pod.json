@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/KislyjKisel/lean-pod",
+    "commit": "a24edfe",
+    "lean": "leanprover/lean4:v4.12.0",
+    "name": "\u00abpod\u00bb",
+    "imports": [
+        "Pod"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/argumentcomputer/Ipld.lean",
+    "commit": "d8bd0cd",
+    "lean": "leanprover/lean4:nightly-2023-01-10",
+    "name": "Ipld",
+    "imports": [
+        "Ipld"
+    ]
+}

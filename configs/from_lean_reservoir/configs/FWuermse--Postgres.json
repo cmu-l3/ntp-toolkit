@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/FWuermse/lean-postgres",
+    "commit": "7cb83c3",
+    "lean": "leanprover/lean4:None",
+    "name": "Postgres",
+    "imports": [
+        "Postgres"
+    ]
+}

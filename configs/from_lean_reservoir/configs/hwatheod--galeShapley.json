@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/hwatheod/galeshapley-lean",
+    "commit": "69d595d",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abgaleShapley\u00bb",
+    "imports": [
+        "\u00abGaleShapley\u00bb"
+    ]
+}

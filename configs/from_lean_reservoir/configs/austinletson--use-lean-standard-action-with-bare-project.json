@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/austinletson/use-lean-standard-action-with-bare-project",
+    "commit": "383c641",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abuse-lean-standard-action-with-bare-project\u00bb",
+    "imports": [
+        "\u00abUseLeanStandardActionWithBareProject\u00bb"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/leanprover/LNSym",
+    "commit": "3b8f5f1",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "\u00ablnsym\u00bb",
+    "imports": [
+        "\u00abArm\u00bb"
+    ]
+}

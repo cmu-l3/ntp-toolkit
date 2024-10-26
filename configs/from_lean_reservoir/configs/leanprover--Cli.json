@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/leanprover/lean4-cli",
+    "commit": "2cf1030",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "Cli",
+    "imports": [
+        "Cli"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/AeneasVerif/icfp-tutorial",
+    "commit": "a8e927a",
+    "lean": "leanprover/lean4:v4.11.0-rc2",
+    "name": "\u00abtutorial\u00bb",
+    "imports": [
+        "Tutorial"
+    ]
+}

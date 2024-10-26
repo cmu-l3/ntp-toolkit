@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/Joonas-vonlerber/Type-Theory-Game",
+    "commit": "7f9847f",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "Game",
+    "imports": [
+        "Game"
+    ]
+}

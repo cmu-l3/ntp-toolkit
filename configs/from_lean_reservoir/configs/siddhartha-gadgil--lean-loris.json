@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/siddhartha-gadgil/lean-loris",
+    "commit": "045951c",
+    "lean": "leanprover/lean4:v4.0.0",
+    "name": "\u00ablean-loris\u00bb{",
+    "imports": [
+        "LeanLoris"
+    ]
+}

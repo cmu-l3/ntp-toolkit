@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/lindy-labs/wadray_verification",
+    "commit": "2e0d2e5",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
+    "name": "\u00abWadrayVerification\u00bb",
+    "imports": [
+        "\u00abWadrayVerification\u00bb"
+    ]
+}

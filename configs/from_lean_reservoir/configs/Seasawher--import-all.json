@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/Seasawher/import-all",
+    "commit": "b729933",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abimport-all\u00bb",
+    "imports": [
+        "\u00abImportAll\u00bb"
+    ]
+}

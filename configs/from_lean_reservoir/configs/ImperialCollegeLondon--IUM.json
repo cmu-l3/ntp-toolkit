@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/ImperialCollegeLondon/IUM",
+    "commit": "4794c70",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "\u00abIUM\u00bb",
+    "imports": [
+        "\u00abIUM\u00bb"
+    ]
+}

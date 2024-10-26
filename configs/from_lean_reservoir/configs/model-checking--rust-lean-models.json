@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/model-checking/rust-lean-models",
+    "commit": "ce44f02",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "\u00abrust-lean-models\u00bb",
+    "imports": [
+        "RustLeanModels"
+    ]
+}

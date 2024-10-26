@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/lf-lang/reactor-model",
+    "commit": "30f9bec",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "reactor-model",
+    "imports": [
+        "ReactorModel"
+    ]
+}

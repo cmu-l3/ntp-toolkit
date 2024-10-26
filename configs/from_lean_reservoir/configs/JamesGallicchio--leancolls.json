@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/JamesGallicchio/LeanColls",
+    "commit": "49ecefb",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "leancolls",
+    "imports": [
+        "LeanColls"
+    ]
+}

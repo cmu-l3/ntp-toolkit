@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/siddhartha-gadgil/LeanLion",
+    "commit": "ff98723",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abLeanLion\u00bb",
+    "imports": [
+        "\u00abLeanLion\u00bb"
+    ]
+}

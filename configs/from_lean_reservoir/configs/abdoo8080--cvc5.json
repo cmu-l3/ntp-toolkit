@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/abdoo8080/lean-cvc5",
+    "commit": "8deed5a",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "cvc5",
+    "imports": [
+        "cvc5"
+    ]
+}

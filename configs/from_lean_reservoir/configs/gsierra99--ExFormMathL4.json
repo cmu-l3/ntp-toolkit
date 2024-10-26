@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/gsierra99/ExFormMathL4",
+    "commit": "e7993dc",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "ExFormMathL4",
+    "imports": [
+        "ExFormMathL4"
+    ]
+}

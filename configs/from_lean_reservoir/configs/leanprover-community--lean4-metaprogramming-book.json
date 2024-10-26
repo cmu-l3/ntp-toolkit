@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/leanprover-community/lean4-metaprogramming-book",
+    "commit": "a7fefe8",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "\u00ablean4-metaprogramming-book\u00bb",
+    "imports": [
+        "\u00ablean4-metaprogramming-book\u00bb"
+    ]
+}

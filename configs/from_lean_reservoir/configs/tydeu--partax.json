@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/tydeu/lean4-partax",
+    "commit": "cae09f6",
+    "lean": "leanprover/lean4:v4.5.0",
+    "name": "partax",
+    "imports": [
+        "Partax"
+    ]
+}

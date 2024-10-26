@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/PatrickMassot/verbose-lean4",
+    "commit": "5a1a751",
+    "lean": "leanprover/lean4:v4.11.0-rc1",
+    "name": "verbose",
+    "imports": [
+        "Verbose"
+    ]
+}

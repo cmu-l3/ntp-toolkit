@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/vbeffara/RMT4",
+    "commit": "c2a092d",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "\u00abrMT4\u00bb",
+    "imports": [
+        "RMT4"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/madvorak/vcsp",
+    "commit": "51e7181",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "vcsp",
+    "imports": [
+        "VCSP"
+    ]
+}

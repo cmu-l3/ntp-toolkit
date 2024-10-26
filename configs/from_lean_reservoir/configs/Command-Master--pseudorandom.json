@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/Command-Master/lean-bourgain",
+    "commit": "07fe8b2",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "\u00abpseudorandom\u00bb",
+    "imports": [
+        "\u00abPseudorandom\u00bb"
+    ]
+}

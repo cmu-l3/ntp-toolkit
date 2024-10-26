@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/bergmannjg/time",
+    "commit": "dc472e0",
+    "lean": "leanprover/lean4:v4.12.0",
+    "name": "time",
+    "imports": [
+        "Time"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/Trequetrum/lean4game-logic",
+    "commit": "40ceec5",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "Game",
+    "imports": [
+        "Game"
+    ]
+}

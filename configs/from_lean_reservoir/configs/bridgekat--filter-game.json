@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/bridgekat/filter-game",
+    "commit": "5a56539",
+    "lean": "leanprover/lean4:nightly-2023-06-20",
+    "name": "filtergame",
+    "imports": [
+        "FilterGame"
+    ]
+}

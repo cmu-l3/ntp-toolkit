@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/argumentcomputer/Http.lean",
+    "commit": "59c270c",
+    "lean": "leanprover/lean4:nightly-2022-09-11",
+    "name": "Http",
+    "imports": [
+        "Http"
+    ]
+}

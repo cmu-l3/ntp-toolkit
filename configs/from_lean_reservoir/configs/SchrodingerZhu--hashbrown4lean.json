@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/SchrodingerZhu/hashbrown4lean",
+    "commit": "3667007",
+    "lean": "leanprover/lean4:None",
+    "name": "\u00abhashbrown\u00bb",
+    "imports": [
+        "\u00abHashBrown\u00bb"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/awodey/joyal",
+    "commit": "204ed6b",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abjoyalRepresentationTheorem\u00bb",
+    "imports": [
+        "\u00abJoyalRepresentationTheorem\u00bb"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/leanprover-community/con-nf",
+    "commit": "a2b708e",
+    "lean": "leanprover/lean4:v4.13.0-rc1",
+    "name": "ConNF",
+    "imports": [
+        "ConNF"
+    ]
+}

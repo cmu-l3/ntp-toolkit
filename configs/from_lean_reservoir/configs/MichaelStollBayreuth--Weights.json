@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/MichaelStollBayreuth/Weights",
+    "commit": "da50d90",
+    "lean": "leanprover/lean4:None",
+    "name": "\u00abWeights\u00bb",
+    "imports": [
+        "\u00abWeights\u00bb"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/Timeroot/Lean-QuantumInfo",
+    "commit": "608ffd7",
+    "lean": "leanprover/lean4:v4.11.0-rc3",
+    "name": "\u00abquantumInfo\u00bb",
+    "imports": [
+        "QuantumInfo"
+    ]
+}

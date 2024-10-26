@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/ElifUskuplu/Stlc_deBruijn",
+    "commit": "dbac012",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abstlc\u00bb",
+    "imports": [
+        "\u00abStlc\u00bb"
+    ]
+}

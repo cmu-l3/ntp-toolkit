@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/glams-lean-2024/formal-2024",
+    "commit": "99725f3",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "Formal2024",
+    "imports": [
+        "Formal2024"
+    ]
+}

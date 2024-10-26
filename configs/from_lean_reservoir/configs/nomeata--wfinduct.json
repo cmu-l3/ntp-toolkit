@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/nomeata/lean-wf-induct",
+    "commit": "3777f85",
+    "lean": "leanprover/lean4:v4.6.1",
+    "name": "wfinduct",
+    "imports": [
+        "\u00abWfInduct\u00bb"
+    ]
+}

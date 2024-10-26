@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/keilambda/eocia-lean",
+    "commit": "e94976a",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abeocia-lean\u00bb",
+    "imports": [
+        "\u00abEociaLean\u00bb"
+    ]
+}

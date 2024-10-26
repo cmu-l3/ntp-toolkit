@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/bergmannjg/regex",
+    "commit": "9337247",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "\u00abRegex\u00bb",
+    "imports": [
+        "\u00abRegex\u00bb"
+    ]
+}

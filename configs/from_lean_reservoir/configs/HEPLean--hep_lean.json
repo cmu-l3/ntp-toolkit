@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/HEPLean/HepLean",
+    "commit": "16fb8fa",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "hep_lean",
+    "imports": [
+        "HepLean"
+    ]
+}

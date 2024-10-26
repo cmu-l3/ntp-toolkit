@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/optimisticexquisite/lean-rsa-project",
+    "commit": "90bbe81",
+    "lean": "leanprover/lean4:None",
+    "name": "\u00abRSAproject\u00bb",
+    "imports": [
+        "\u00abRSAProject\u00bb"
+    ]
+}

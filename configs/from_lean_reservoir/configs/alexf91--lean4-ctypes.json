@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/alexf91/lean4-ctypes",
+    "commit": "c9754f3",
+    "lean": "leanprover/lean4:None",
+    "name": "ctypes",
+    "imports": [
+        "CTypes"
+    ]
+}

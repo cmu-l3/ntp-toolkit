@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/leanprover-community/tutorials4",
+    "commit": "155202c",
+    "lean": "leanprover/lean4:v4.1.0-rc1",
+    "name": "tutorials",
+    "imports": [
+        "Tutorials"
+    ]
+}

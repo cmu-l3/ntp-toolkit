@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/utensil/LeanBlueprintExample",
+    "commit": "8e508b6",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abLeanBlueprintExample\u00bb",
+    "imports": [
+        "\u00abLeanBlueprintExample\u00bb"
+    ]
+}

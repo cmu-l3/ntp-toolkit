@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/teorth/equational_theories",
+    "commit": "f8d1659",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "equational_theories",
+    "imports": [
+        "equational_theories"
+    ]
+}

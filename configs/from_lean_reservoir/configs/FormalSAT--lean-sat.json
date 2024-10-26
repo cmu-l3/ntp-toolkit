@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/FormalSAT/trestle",
+    "commit": "5d1649c",
+    "lean": "leanprover/lean4:v4.8.0",
+    "name": "\u00ablean-sat\u00bb",
+    "imports": [
+        "LeanSAT"
+    ]
+}

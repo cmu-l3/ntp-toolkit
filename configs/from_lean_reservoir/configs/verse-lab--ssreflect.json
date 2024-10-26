@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/verse-lab/lean-ssr",
+    "commit": "cd42927",
+    "lean": "leanprover/lean4:v4.11.0-rc1",
+    "name": "ssreflect",
+    "imports": [
+        "Ssreflect"
+    ]
+}

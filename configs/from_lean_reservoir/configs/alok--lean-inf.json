@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/alok/lean-inf",
+    "commit": "9ea6e5d",
+    "lean": "leanprover/lean4:v4.12.0",
+    "name": "\"lean-inf\"",
+    "imports": [
+        "\u00abLeanInf\u00bb"
+    ]
+}

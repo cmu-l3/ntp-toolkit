@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/avigad/verification_demo",
+    "commit": "23c1e7f",
+    "lean": "leanprover/lean4:None",
+    "name": "VerificationDemo",
+    "imports": [
+        "Demo"
+    ]
+}

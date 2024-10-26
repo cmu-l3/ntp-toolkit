@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/hhu-adam/lean-i18n",
+    "commit": "5ed8ee2",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "i18n",
+    "imports": [
+        "I18n"
+    ]
+}

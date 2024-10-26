@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/mortarsanjaya/IMOSLLean4",
+    "commit": "b45cf18",
+    "lean": "leanprover/lean4:v4.12.0-rc1",
+    "name": "\u00abIMOSLLean4\u00bb",
+    "imports": [
+        "\u00abIMOSLLean4\u00bb"
+    ]
+}

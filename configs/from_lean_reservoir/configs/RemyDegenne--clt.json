@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/RemyDegenne/CLT",
+    "commit": "c9ae89a",
+    "lean": "leanprover/lean4:v4.12.0-rc1",
+    "name": "\u00abclt\u00bb",
+    "imports": [
+        "\u00abClt\u00bb"
+    ]
+}

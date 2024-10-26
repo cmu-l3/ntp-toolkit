@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/arademaker/delphin",
+    "commit": "086d244",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "delphin",
+    "imports": [
+        "\u00abMrs\u00bb"
+    ]
+}

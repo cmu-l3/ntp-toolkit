@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/katydid/proofs",
+    "commit": "6cae3a0",
+    "lean": "leanprover/lean4:v4.11.0-rc3",
+    "name": "katydid",
+    "imports": [
+        "Katydid"
+    ]
+}

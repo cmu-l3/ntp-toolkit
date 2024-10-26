@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/apnelson1/Matroid",
+    "commit": "4ab1e07",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "\u00abmatroid\u00bb",
+    "imports": [
+        "\u00abMatroid\u00bb"
+    ]
+}

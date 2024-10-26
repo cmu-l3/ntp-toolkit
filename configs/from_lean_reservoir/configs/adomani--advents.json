@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/adomani/advents",
+    "commit": "2d70f57",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abadvents\u00bb",
+    "imports": [
+        "\u00abAdvents\u00bb"
+    ]
+}

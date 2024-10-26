@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/dwrensha/compfiles",
+    "commit": "57a624b",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "compfiles",
+    "imports": [
+        "ProblemExtraction"
+    ]
+}

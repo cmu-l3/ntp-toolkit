@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/paulch42/lean-spec",
+    "commit": "11bea8b",
+    "lean": "leanprover/lean4:None",
+    "name": "\u00ableanSpec\u00bb",
+    "imports": [
+        "\u00abLeanSpec\u00bb"
+    ]
+}

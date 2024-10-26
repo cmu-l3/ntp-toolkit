@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/knowsys/Formale-Systeme-in-LEAN",
+    "commit": "217df6e",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "formal_systems",
+    "imports": [
+        "FormalSystems"
+    ]
+}

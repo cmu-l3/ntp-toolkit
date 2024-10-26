@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/siddhartha-gadgil/Saturn",
+    "commit": "3811a9d",
+    "lean": "leanprover/lean4:v4.8.0",
+    "name": "saturn",
+    "imports": [
+        "Saturn"
+    ]
+}

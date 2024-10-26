@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/hargoniX/socket.lean",
+    "commit": "b5e4c86",
+    "lean": "leanprover/lean4:v4.10.0",
+    "name": "\u00absocket\u00bb",
+    "imports": [
+        "\u00abSocket\u00bb"
+    ]
+}

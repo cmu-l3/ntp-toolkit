@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/quangvdao/ZKLib",
+    "commit": "d293057",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "\u00abZklib\u00bb",
+    "imports": [
+        "\u00abZKLib\u00bb"
+    ]
+}

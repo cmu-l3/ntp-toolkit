@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/hargoniX/Flame",
+    "commit": "402f040",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "\u00abflame\u00bb",
+    "imports": [
+        "\u00abFlame\u00bb"
+    ]
+}

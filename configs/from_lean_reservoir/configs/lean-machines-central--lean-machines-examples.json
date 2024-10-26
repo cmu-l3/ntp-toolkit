@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/lean-machines-central/lean-machines-examples",
+    "commit": "df2ac22",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00ablean-machines-examples\u00bb",
+    "imports": [
+        "\u00abLeanMachinesExamples\u00bb"
+    ]
+}

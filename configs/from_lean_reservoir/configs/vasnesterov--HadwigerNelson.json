@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/vasnesterov/HadwigerNelson",
+    "commit": "ad78435",
+    "lean": "leanprover/lean4:None",
+    "name": "\u00abHadwigerNelson\u00bb",
+    "imports": [
+        "HadwigerNelson"
+    ]
+}

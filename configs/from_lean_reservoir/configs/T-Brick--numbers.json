@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/T-Brick/Numbers",
+    "commit": "a7093c6",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "numbers",
+    "imports": [
+        "Numbers"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/lean-ja/lean99",
+    "commit": "5450c08",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00ablean99\u00bb",
+    "imports": [
+        "\u00abSrc\u00bb"
+    ]
+}

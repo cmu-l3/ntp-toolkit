@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/hhu-adam/GameSkeleton",
+    "commit": "4f942c5",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "Game",
+    "imports": [
+        "Game"
+    ]
+}

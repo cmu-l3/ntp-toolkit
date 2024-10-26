@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/draperlaboratory/ELFSage",
+    "commit": "18c69c9",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abELFSage\u00bb",
+    "imports": [
+        "\u00abELFSage\u00bb"
+    ]
+}

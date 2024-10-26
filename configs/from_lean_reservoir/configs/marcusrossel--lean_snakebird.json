@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/marcusrossel/lean-snakebird",
+    "commit": "222dda8",
+    "lean": "leanprover/lean4:v4.8.0",
+    "name": "lean_snakebird",
+    "imports": [
+        "Snakebird"
+    ]
+}

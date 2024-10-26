@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/argumentcomputer/Megaparsec.lean",
+    "commit": "8fe9efe",
+    "lean": "leanprover/lean4:v4.0.0",
+    "name": "Megaparsec",
+    "imports": [
+        "Megaparsec"
+    ]
+}

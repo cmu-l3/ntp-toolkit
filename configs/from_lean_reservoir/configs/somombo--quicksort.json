@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/somombo/formalized-quicksort",
+    "commit": "a4bc39e",
+    "lean": "leanprover/lean4:v4.8.0",
+    "name": "\u00abquicksort\u00bb",
+    "imports": [
+        "\u00abQuicksort\u00bb"
+    ]
+}

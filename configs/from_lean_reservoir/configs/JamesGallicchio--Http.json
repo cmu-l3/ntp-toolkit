@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/JamesGallicchio/http",
+    "commit": "6f0ad67",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "Http",
+    "imports": [
+        "Http"
+    ]
+}

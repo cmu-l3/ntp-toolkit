@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/DavePearce/LeanEVM",
+    "commit": "528e59e",
+    "lean": "leanprover/lean4:v4.12.0",
+    "name": "\u00ablean_evm\u00bb",
+    "imports": [
+        "\u00abLeanEVM\u00bb"
+    ]
+}

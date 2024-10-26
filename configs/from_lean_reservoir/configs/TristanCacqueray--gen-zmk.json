@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/TristanCacqueray/gen-zmk",
+    "commit": "488026f",
+    "lean": "leanprover/lean4:v4.9.0",
+    "name": "\u00abgen-zmk\u00bb",
+    "imports": [
+        "\u00abGenZmk\u00bb"
+    ]
+}

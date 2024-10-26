@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/jtristan/lffi",
+    "commit": "ff7808b",
+    "lean": "leanprover/lean4:None",
+    "name": "lffi",
+    "imports": [
+        "\u00abLffi\u00bb"
+    ]
+}

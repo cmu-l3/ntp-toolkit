@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/lean-dojo/LeanCopilot",
+    "commit": "880f820",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "LeanCopilot",
+    "imports": [
+        "LeanCopilot"
+    ]
+}

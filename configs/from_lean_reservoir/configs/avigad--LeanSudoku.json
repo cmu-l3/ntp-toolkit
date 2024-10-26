@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/avigad/LeanSudoku",
+    "commit": "36cf0d0",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "LeanSudoku",
+    "imports": [
+        "LeanSudoku"
+    ]
+}

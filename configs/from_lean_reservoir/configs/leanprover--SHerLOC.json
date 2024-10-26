@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/leanprover/SHerLOC",
+    "commit": "cf77ce5",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\"SHerLOC\"",
+    "imports": [
+        "\u00abSHerLOC\u00bb"
+    ]
+}

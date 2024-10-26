@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/acmepjz/md4lean",
+    "commit": "5e95f47",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "MD4Lean",
+    "imports": [
+        "MD4Lean"
+    ]
+}

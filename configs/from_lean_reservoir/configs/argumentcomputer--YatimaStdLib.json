@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/argumentcomputer/YatimaStdLib.lean",
+    "commit": "3037f0c",
+    "lean": "leanprover/lean4:v4.4.0",
+    "name": "YatimaStdLib",
+    "imports": [
+        "YatimaStdLib"
+    ]
+}

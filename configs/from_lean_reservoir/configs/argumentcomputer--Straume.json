@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/argumentcomputer/straume",
+    "commit": "ad2aa66",
+    "lean": "leanprover/lean4:v4.4.0",
+    "name": "Straume",
+    "imports": [
+        "Straume"
+    ]
+}

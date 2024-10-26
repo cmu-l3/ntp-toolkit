@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/adomani/MA4N1_Theorem_proving_with_Lean",
+    "commit": "35ad7d5",
+    "lean": "leanprover/lean4:None",
+    "name": "\u00abmA4N1\u00bb",
+    "imports": [
+        "\u00abMA4N1\u00bb"
+    ]
+}

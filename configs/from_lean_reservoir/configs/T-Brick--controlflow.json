@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/T-Brick/ControlFlow",
+    "commit": "781eafd",
+    "lean": "leanprover/lean4:v4.12.0-rc1",
+    "name": "controlflow",
+    "imports": [
+        "ControlFlow"
+    ]
+}

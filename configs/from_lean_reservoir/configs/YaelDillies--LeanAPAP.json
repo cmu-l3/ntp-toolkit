@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/YaelDillies/LeanAPAP",
+    "commit": "ece13c9",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "LeanAPAP",
+    "imports": [
+        "LeanAPAP"
+    ]
+}

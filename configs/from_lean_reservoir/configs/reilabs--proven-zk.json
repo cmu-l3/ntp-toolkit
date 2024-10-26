@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/reilabs/proven-zk",
+    "commit": "659b51e",
+    "lean": "leanprover/lean4:v4.2.0",
+    "name": "\u00abproven-zk\u00bb",
+    "imports": [
+        "\u00abProvenZk\u00bb"
+    ]
+}

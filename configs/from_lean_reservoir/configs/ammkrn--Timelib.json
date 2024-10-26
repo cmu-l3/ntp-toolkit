@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/ammkrn/timelib",
+    "commit": "89cf06c",
+    "lean": "leanprover/lean4:v4.8.0-rc2",
+    "name": "Timelib",
+    "imports": [
+        "Timelib"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/madvorak/duality",
+    "commit": "8e1331d",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "duality",
+    "imports": [
+        "Duality"
+    ]
+}

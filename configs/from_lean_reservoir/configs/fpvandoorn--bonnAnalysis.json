@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/fpvandoorn/BonnAnalysis",
+    "commit": "6b486ac",
+    "lean": "leanprover/lean4:v4.10.0",
+    "name": "\u00abbonnAnalysis\u00bb",
+    "imports": [
+        "\u00abBonnAnalysis\u00bb"
+    ]
+}

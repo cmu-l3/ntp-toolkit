@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/dwrensha/lean4-maze",
+    "commit": "c0fe06c",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "maze",
+    "imports": [
+        "Maze"
+    ]
+}

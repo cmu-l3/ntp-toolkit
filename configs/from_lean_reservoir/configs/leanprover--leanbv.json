@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/leanprover/leanbv",
+    "commit": "",
+    "lean": "leanprover/lean4:None",
+    "name": null,
+    "imports": [
+        null
+    ]
+}

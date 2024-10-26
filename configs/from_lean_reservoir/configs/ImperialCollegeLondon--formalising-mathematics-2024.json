@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/ImperialCollegeLondon/formalising-mathematics-2024",
+    "commit": "07da422",
+    "lean": "leanprover/lean4:v4.5.0",
+    "name": "\u00abformalising-mathematics-2024\u00bb",
+    "imports": [
+        "\u00abFormalisingMathematics2024\u00bb"
+    ]
+}

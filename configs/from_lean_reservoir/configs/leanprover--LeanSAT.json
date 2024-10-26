@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/leanprover/leansat",
+    "commit": "30e2ed2",
+    "lean": "leanprover/lean4:v4.11.0-rc1",
+    "name": "LeanSAT",
+    "imports": [
+        "Test"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/morganfshirley/CommComp",
+    "commit": "16cd688",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "CommComp",
+    "imports": [
+        "CommComp"
+    ]
+}

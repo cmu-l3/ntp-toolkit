@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/siddhartha-gadgil/MetaExamples",
+    "commit": "1020b88",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\"MetaExamples\"",
+    "imports": [
+        "\u00abMetaExamples\u00bb"
+    ]
+}

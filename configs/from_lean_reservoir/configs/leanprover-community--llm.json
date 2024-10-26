@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/leanprover-community/llm",
+    "commit": "d666d15",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "llm",
+    "imports": [
+        "LLM"
+    ]
+}

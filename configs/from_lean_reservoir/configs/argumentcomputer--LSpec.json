@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/argumentcomputer/LSpec",
+    "commit": "504a8ce",
+    "lean": "leanprover/lean4:v4.12.0",
+    "name": "LSpec",
+    "imports": [
+        "LSpec"
+    ]
+}

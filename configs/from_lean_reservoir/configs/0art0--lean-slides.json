@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/0art0/lean-slides",
+    "commit": "13bab1c",
+    "lean": "leanprover/lean4:v4.12.0",
+    "name": "\u00ablean-slides\u00bb",
+    "imports": [
+        "LeanSlides"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "repo": "https://github.com/mseri/BET",
+    "commit": "ffd83d7",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "BET",
+    "imports": [
+        "BET"
+    ]
+}
