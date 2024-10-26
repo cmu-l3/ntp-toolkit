@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/austinletson/use-lean-standard-action-with-bare-project",
-    "commit": "383c641",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "383c641aefa697436b1d3f5f2943db38f79fa9c0",
+    "lean": "leanprover/lean4:v4.8.0-rc1",
     "name": "\u00abuse-lean-standard-action-with-bare-project\u00bb",
     "imports": [
         "\u00abUseLeanStandardActionWithBareProject\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "use-lean-standard-action-with-bare-project",
+        "owner": "austinletson",
+        "fullName": "austinletson/use-lean-standard-action-with-bare-project",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-04-29T12:06:48Z",
+        "updatedAt": "2024-07-01T12:54:36Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOL0xj7Q",
+                "fullName": "austinletson/use-lean-standard-action-with-bare-project",
+                "repoUrl": "https://github.com/austinletson/use-lean-standard-action-with-bare-project",
+                "gitUrl": "https://github.com/austinletson/use-lean-standard-action-with-bare-project",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

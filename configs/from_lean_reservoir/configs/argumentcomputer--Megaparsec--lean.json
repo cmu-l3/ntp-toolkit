@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/argumentcomputer/Megaparsec.lean",
-    "commit": "8fe9efe",
+    "commit": "8fe9efef4d0ab1f18838aa71f1d2df9906f5212a",
     "lean": "leanprover/lean4:v4.0.0",
     "name": "Megaparsec",
     "imports": [
         "Megaparsec"
-    ]
+    ],
+    "metadata": {
+        "name": "Megaparsec.lean",
+        "owner": "argumentcomputer",
+        "fullName": "argumentcomputer/Megaparsec.lean",
+        "description": "Lean 4 port of Megaparsec",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2022-06-03T21:53:36Z",
+        "updatedAt": "2024-04-14T10:53:53Z",
+        "stars": 22,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOHcg57A",
+                "fullName": "argumentcomputer/Megaparsec.lean",
+                "repoUrl": "https://github.com/argumentcomputer/Megaparsec.lean",
+                "gitUrl": "https://github.com/argumentcomputer/Megaparsec.lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

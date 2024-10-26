@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/igrep/lean-workshop",
-    "commit": "843e524",
+    "commit": "843e524a6921e81602f476659cd1f1a2fbd54ea3",
     "lean": "leanprover/lean4:v4.10.0",
     "name": "\u00abtest\u00bb",
     "imports": [
         "\u00abTest\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "test",
+        "owner": "igrep",
+        "fullName": "igrep/test",
+        "description": "SF.lean\u52c9\u5f37\u4f1a\u3067igrep\u304c\u66f8\u3044\u305f\u30b3\u30fc\u30c9\u306e\u8a18\u9332",
+        "keywords": [],
+        "homepage": "https://discord.gg/BtgSKavg73",
+        "license": "Apache-2.0",
+        "createdAt": "2024-01-29T11:02:03Z",
+        "updatedAt": "2024-10-21T13:13:23Z",
+        "stars": 3,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLLCKiA",
+                "fullName": "igrep/lean-workshop",
+                "repoUrl": "https://github.com/igrep/lean-workshop",
+                "gitUrl": "https://github.com/igrep/lean-workshop",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

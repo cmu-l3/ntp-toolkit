@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/lindy-labs/wadray_verification",
-    "commit": "2e0d2e5",
-    "lean": "leanprover/lean4:v4.10.0-rc2",
+    "commit": "2e0d2e5d2397fd3cdfd1ff289674e915d5ed5905",
+    "lean": "leanprover/lean4:v4.9.0-rc2",
     "name": "\u00abWadrayVerification\u00bb",
     "imports": [
         "\u00abWadrayVerification\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "WadrayVerification",
+        "owner": "lindy-labs",
+        "fullName": "lindy-labs/WadrayVerification",
+        "description": "Verification of the Wadray library",
+        "keywords": [],
+        "homepage": null,
+        "license": "GPL-3.0",
+        "createdAt": "2024-01-02T09:42:56Z",
+        "updatedAt": "2024-06-21T16:04:03Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOK_23bw",
+                "fullName": "lindy-labs/wadray_verification",
+                "repoUrl": "https://github.com/lindy-labs/wadray_verification",
+                "gitUrl": "https://github.com/lindy-labs/wadray_verification",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

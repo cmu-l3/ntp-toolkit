@@ -1,9 +1,0 @@
-{
-    "repo": "https://github.com/jtristan/UnicodeSkipListTableExample",
-    "commit": "868cf62",
-    "lean": "leanprover/lean4:None",
-    "name": "\"UnicodeSkipListTableExample\"",
-    "imports": [
-        "\u00abUnicodeSkipListTableExample\u00bb"
-    ]
-}

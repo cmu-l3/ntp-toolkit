@@ -1,9 +1,36 @@
 {
     "repo": "https://github.com/BoltonBailey/formal-snarks-project",
-    "commit": "848140e",
-    "lean": "leanprover/lean4:v4.8.0",
+    "commit": "848140efbc2979deecbb5ae3b17dc5194eeb2a69",
+    "lean": "Kha/lean4:incr-tactic-v2",
     "name": "\u00abformalSnarksProject\u00bb",
     "imports": [
         "\u00abFormalSnarksProject\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "formalSnarksProject",
+        "owner": "BoltonBailey",
+        "fullName": "BoltonBailey/formalSnarksProject",
+        "description": "A formal verification of Linear PCP SNARKs.",
+        "keywords": [
+            "snark",
+            "mathlib"
+        ],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2020-11-19T20:42:41Z",
+        "updatedAt": "2024-10-16T02:35:18Z",
+        "stars": 48,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOErzWSA",
+                "fullName": "BoltonBailey/formal-snarks-project",
+                "repoUrl": "https://github.com/BoltonBailey/formal-snarks-project",
+                "gitUrl": "https://github.com/BoltonBailey/formal-snarks-project",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/YaelDillies/LeanAPAP",
-    "commit": "ece13c9",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "ece13c901dde033807bd3c72c40c9ae48f060f7b",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "LeanAPAP",
     "imports": [
         "LeanAPAP"
-    ]
+    ],
+    "metadata": {
+        "name": "LeanAPAP",
+        "owner": "YaelDillies",
+        "fullName": "YaelDillies/LeanAPAP",
+        "description": "Formalisation of the Kelley-Meka bound on Roth numbers",
+        "keywords": [],
+        "homepage": "https://yaeldillies.github.io/LeanAPAP/",
+        "license": "Apache-2.0",
+        "createdAt": "2023-03-15T09:31:38Z",
+        "updatedAt": "2024-10-19T11:19:25Z",
+        "stars": 13,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJJ1G_w",
+                "fullName": "YaelDillies/LeanAPAP",
+                "repoUrl": "https://github.com/YaelDillies/LeanAPAP",
+                "gitUrl": "https://github.com/YaelDillies/LeanAPAP",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

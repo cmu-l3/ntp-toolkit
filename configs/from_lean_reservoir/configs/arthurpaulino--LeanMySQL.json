@@ -1,9 +1,0 @@
-{
-    "repo": "https://github.com/arthurpaulino/LeanMySQL",
-    "commit": "803d171",
-    "lean": "leanprover/lean4:nightly-2022-03-09",
-    "name": null,
-    "imports": [
-        null
-    ]
-}

@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/ammkrn/timelib",
-    "commit": "89cf06c",
-    "lean": "leanprover/lean4:v4.8.0-rc2",
+    "commit": "89cf06c42b2d9b7f86f1728314bf2ba508b562b7",
+    "lean": "leanprover/lean4:v4.7.0",
     "name": "Timelib",
     "imports": [
         "Timelib"
-    ]
+    ],
+    "metadata": {
+        "name": "Timelib",
+        "owner": "ammkrn",
+        "fullName": "ammkrn/Timelib",
+        "description": "A date and time library for Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2022-05-20T19:27:46Z",
+        "updatedAt": "2024-05-03T23:44:24Z",
+        "stars": 11,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOHXrCPQ",
+                "fullName": "ammkrn/timelib",
+                "repoUrl": "https://github.com/ammkrn/timelib",
+                "gitUrl": "https://github.com/ammkrn/timelib",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/DavePearce/LeanEVM",
-    "commit": "528e59e",
+    "commit": "528e59ee754f05195e174599a3ceecdbe7be562a",
     "lean": "leanprover/lean4:v4.12.0",
     "name": "\u00ablean_evm\u00bb",
     "imports": [
         "\u00abLeanEVM\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "LeanEVM",
+        "owner": "DavePearce",
+        "fullName": "DavePearce/LeanEVM",
+        "description": "A toy implementation of the EVM in Lean4.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-09-13T21:50:51Z",
+        "updatedAt": "2024-05-29T03:24:07Z",
+        "stars": 10,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKTQwsw",
+                "fullName": "DavePearce/LeanEVM",
+                "repoUrl": "https://github.com/DavePearce/LeanEVM",
+                "gitUrl": "https://github.com/DavePearce/LeanEVM",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

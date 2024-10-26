@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/katydid/symbolic-automatic-derivatives",
-    "commit": "3d6d72f",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "3d6d72f4662c43fba86b3b1797b8ef0a30871b6f",
+    "lean": "leanprover/lean4:v4.11.0-rc2",
     "name": "sadol",
     "imports": [
         "Sadol"
-    ]
+    ],
+    "metadata": {
+        "name": "sadol",
+        "owner": "katydid",
+        "fullName": "katydid/sadol",
+        "description": "Symbolic and Automatic Differentiation of Languages in Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-08-28T12:51:36Z",
+        "updatedAt": "2024-09-03T13:39:40Z",
+        "stars": 7,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMpfHkg",
+                "fullName": "katydid/symbolic-automatic-derivatives",
+                "repoUrl": "https://github.com/katydid/symbolic-automatic-derivatives",
+                "gitUrl": "https://github.com/katydid/symbolic-automatic-derivatives",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

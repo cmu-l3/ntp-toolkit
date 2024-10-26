@@ -1,9 +1,39 @@
 {
     "repo": "https://github.com/arthurpaulino/viper",
-    "commit": "cc23850",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "cc2385005a6b64ced2e46028a90a64320a0541f7",
+    "lean": "leanprover/lean4:v4.0.0",
     "name": "viper",
     "imports": [
         "Viper"
-    ]
+    ],
+    "metadata": {
+        "name": "viper",
+        "owner": "arthurpaulino",
+        "fullName": "arthurpaulino/viper",
+        "description": "A Python environment manager built in Lean 4",
+        "keywords": [
+            "conda",
+            "pip",
+            "python",
+            "python3",
+            "venv"
+        ],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2022-06-26T20:07:55Z",
+        "updatedAt": "2024-01-13T16:35:45Z",
+        "stars": 8,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOHkJ8xA",
+                "fullName": "arthurpaulino/viper",
+                "repoUrl": "https://github.com/arthurpaulino/viper",
+                "gitUrl": "https://github.com/arthurpaulino/viper",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

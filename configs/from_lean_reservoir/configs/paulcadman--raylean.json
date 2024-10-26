@@ -1,9 +1,0 @@
-{
-    "repo": "https://github.com/paulcadman/raylean",
-    "commit": "0fc350a",
-    "lean": "leanprover/lean4:None",
-    "name": "\u00abraylean\u00bb",
-    "imports": [
-        "\u00abRaylean\u00bb"
-    ]
-}

@@ -1,9 +1,35 @@
 {
     "repo": "https://github.com/T-Brick/Numbers",
-    "commit": "a7093c6",
-    "lean": "leanprover/lean4:v4.11.0",
+    "commit": "a7093c6d0ba77139ab79d8651b26fa8a4fd1a376",
+    "lean": "leanprover/lean4:v4.8.0",
     "name": "numbers",
     "imports": [
         "Numbers"
-    ]
+    ],
+    "metadata": {
+        "name": "numbers",
+        "owner": "T-Brick",
+        "fullName": "T-Brick/numbers",
+        "description": "Arbitrary Bit-Length Integers in Lean",
+        "keywords": [
+            "wasm"
+        ],
+        "homepage": null,
+        "license": "GPL-3.0",
+        "createdAt": "2023-11-13T06:15:56Z",
+        "updatedAt": "2024-08-21T06:16:12Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKsu1rA",
+                "fullName": "T-Brick/Numbers",
+                "repoUrl": "https://github.com/T-Brick/Numbers",
+                "gitUrl": "https://github.com/T-Brick/Numbers",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

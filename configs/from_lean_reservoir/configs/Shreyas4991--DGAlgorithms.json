@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/Shreyas4991/DGAlgorithms",
-    "commit": "425cc79",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "425cc7928f9d891614cabcdd1a6d23f28ebc0c06",
+    "lean": "leanprover/lean4:v4.10.0",
     "name": "\u00abDGAlgorithms\u00bb",
     "imports": [
         "\u00abDGAlgorithms\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "DGAlgorithms",
+        "owner": "Shreyas4991",
+        "fullName": "Shreyas4991/DGAlgorithms",
+        "description": "Distributed Graph Algorithms in Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-05-17T16:39:48Z",
+        "updatedAt": "2024-08-15T00:32:02Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOL9AUpg",
+                "fullName": "Shreyas4991/DGAlgorithms",
+                "repoUrl": "https://github.com/Shreyas4991/DGAlgorithms",
+                "gitUrl": "https://github.com/Shreyas4991/DGAlgorithms",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

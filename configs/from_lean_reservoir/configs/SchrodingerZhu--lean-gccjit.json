@@ -1,9 +1,0 @@
-{
-    "repo": "https://github.com/SchrodingerZhu/lean-gccjit",
-    "commit": "138a7b6",
-    "lean": "leanprover/lean4:None",
-    "name": "\u00ablean-gccjit\u00bb",
-    "imports": [
-        "\u00abLeanGccJit\u00bb"
-    ]
-}

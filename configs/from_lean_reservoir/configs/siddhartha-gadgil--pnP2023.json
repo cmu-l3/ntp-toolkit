@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/siddhartha-gadgil/proofs-and-programs-2023",
-    "commit": "92fd2d8",
-    "lean": "leanprover/lean4:v4.8.0",
+    "commit": "92fd2d8464d8687b5b0bcd7b17612440c304d19c",
+    "lean": "leanprover/lean4:v4.7.0",
     "name": "pnP2023",
     "imports": [
         "PnP2023"
-    ]
+    ],
+    "metadata": {
+        "name": "pnP2023",
+        "owner": "siddhartha-gadgil",
+        "fullName": "siddhartha-gadgil/pnP2023",
+        "description": "Code and source for website for the course \"Proofs and Programs\", January 2023, Indian Institute of Science",
+        "keywords": [],
+        "homepage": "http://math.iisc.ac.in/~gadgil/proofs-and-programs-2023/index.html",
+        "license": "MIT",
+        "createdAt": "2022-11-25T06:16:57Z",
+        "updatedAt": "2024-10-05T15:54:15Z",
+        "stars": 8,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOIf_gtQ",
+                "fullName": "siddhartha-gadgil/proofs-and-programs-2023",
+                "repoUrl": "https://github.com/siddhartha-gadgil/proofs-and-programs-2023",
+                "gitUrl": "https://github.com/siddhartha-gadgil/proofs-and-programs-2023",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

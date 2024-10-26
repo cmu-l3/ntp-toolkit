@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/Happyves/BerLean_Workshop",
-    "commit": "498d82e",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "498d82e07bc5c80f480065395668fd26bddc9f66",
+    "lean": "leanprover/lean4:v4.12.0",
     "name": "workshop",
     "imports": [
         "Workshop"
-    ]
+    ],
+    "metadata": {
+        "name": "workshop",
+        "owner": "Happyves",
+        "fullName": "Happyves/workshop",
+        "description": "Repo for the first BerLean workshop.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-04-24T20:14:40Z",
+        "updatedAt": "2024-10-07T12:42:35Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLy0wzQ",
+                "fullName": "Happyves/BerLean_Workshop",
+                "repoUrl": "https://github.com/Happyves/BerLean_Workshop",
+                "gitUrl": "https://github.com/Happyves/BerLean_Workshop",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/leanprover-community/con-nf",
-    "commit": "a2b708e",
-    "lean": "leanprover/lean4:v4.13.0-rc1",
+    "commit": "b2e7ed5138d8280686a0c62a1ed7c37b7b387832",
+    "lean": "leanprover/lean4:v4.12.0",
     "name": "ConNF",
     "imports": [
         "ConNF"
-    ]
+    ],
+    "metadata": {
+        "name": "ConNF",
+        "owner": "leanprover-community",
+        "fullName": "leanprover-community/ConNF",
+        "description": "A formal consistency proof of Quine's set theory New Foundations",
+        "keywords": [],
+        "homepage": "https://leanprover-community.github.io/con-nf/",
+        "license": "Apache-2.0",
+        "createdAt": "2022-03-31T05:04:06Z",
+        "updatedAt": "2024-10-25T10:50:38Z",
+        "stars": 66,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOHGGXEw",
+                "fullName": "leanprover-community/con-nf",
+                "repoUrl": "https://github.com/leanprover-community/con-nf",
+                "gitUrl": "https://github.com/leanprover-community/con-nf",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

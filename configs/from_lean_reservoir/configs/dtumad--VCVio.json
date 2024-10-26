@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/dtumad/VCV-io",
-    "commit": "19d1822",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "19d182277a3ab3d44ab1c71fb969364032627c14",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "VCVio",
     "imports": [
         "VCVio"
-    ]
+    ],
+    "metadata": {
+        "name": "VCVio",
+        "owner": "dtumad",
+        "fullName": "dtumad/VCVio",
+        "description": "Formalized Cryptography Proofs in Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-03-11T06:10:46Z",
+        "updatedAt": "2024-10-25T10:12:11Z",
+        "stars": 8,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLehmvQ",
+                "fullName": "dtumad/VCV-io",
+                "repoUrl": "https://github.com/dtumad/VCV-io",
+                "gitUrl": "https://github.com/dtumad/VCV-io",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

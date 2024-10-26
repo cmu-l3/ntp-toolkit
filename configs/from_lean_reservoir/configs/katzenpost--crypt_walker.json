@@ -1,9 +1,0 @@
-{
-    "repo": "https://github.com/katzenpost/crypt_walker",
-    "commit": "86d063c",
-    "lean": "leanprover/lean4:v4.11.0-rc2",
-    "name": null,
-    "imports": [
-        null
-    ]
-}

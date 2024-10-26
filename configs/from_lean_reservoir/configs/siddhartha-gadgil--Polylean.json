@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/siddhartha-gadgil/Polylean",
-    "commit": "f0619d3",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "f0619d3af695e26d1c634bad6a939c68e0e0b6c8",
+    "lean": "leanprover/lean4:v4.11.0",
     "name": "Polylean",
     "imports": [
         "UnitConjecture"
-    ]
+    ],
+    "metadata": {
+        "name": "Polylean",
+        "owner": "siddhartha-gadgil",
+        "fullName": "siddhartha-gadgil/Polylean",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2021-10-24T15:03:33Z",
+        "updatedAt": "2024-09-03T10:37:30Z",
+        "stars": 6,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGROdgA",
+                "fullName": "siddhartha-gadgil/Polylean",
+                "repoUrl": "https://github.com/siddhartha-gadgil/Polylean",
+                "gitUrl": "https://github.com/siddhartha-gadgil/Polylean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

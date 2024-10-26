@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/fpvandoorn/BonnLeanSeminar",
+    "commit": "5ae790f269f6cc1f1d638b0bc7072e99b6fc686a",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "\u00abSeminar\u00bb",
+    "imports": [
+        "\u00abSeminar\u00bb"
+    ],
+    "metadata": {
+        "name": "Seminar",
+        "owner": "fpvandoorn",
+        "fullName": "fpvandoorn/Seminar",
+        "description": "Past contents of Lean Seminars in Bonn",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-10-23T21:14:58Z",
+        "updatedAt": "2024-10-25T14:08:23Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDONE5tpQ",
+                "fullName": "fpvandoorn/BonnLeanSeminar",
+                "repoUrl": "https://github.com/fpvandoorn/BonnLeanSeminar",
+                "gitUrl": "https://github.com/fpvandoorn/BonnLeanSeminar",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

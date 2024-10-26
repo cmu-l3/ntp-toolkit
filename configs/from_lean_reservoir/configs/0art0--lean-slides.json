@@ -1,9 +1,35 @@
 {
     "repo": "https://github.com/0art0/lean-slides",
-    "commit": "13bab1c",
-    "lean": "leanprover/lean4:v4.12.0",
+    "commit": "13bab1cd0492ae891991e71efca07a816a940e54",
+    "lean": "leanprover/lean4:v4.8.0-rc1",
     "name": "\u00ablean-slides\u00bb",
     "imports": [
         "LeanSlides"
-    ]
+    ],
+    "metadata": {
+        "name": "lean-slides",
+        "owner": "0art0",
+        "fullName": "0art0/lean-slides",
+        "description": "A tool to auto-generate and render slides from Markdown comments in the Lean editor.",
+        "keywords": [
+            "reveal-js"
+        ],
+        "homepage": null,
+        "license": "GPL-3.0",
+        "createdAt": "2023-07-30T12:49:43Z",
+        "updatedAt": "2024-08-18T07:22:02Z",
+        "stars": 15,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKBYwXQ",
+                "fullName": "0art0/lean-slides",
+                "repoUrl": "https://github.com/0art0/lean-slides",
+                "gitUrl": "https://github.com/0art0/lean-slides",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

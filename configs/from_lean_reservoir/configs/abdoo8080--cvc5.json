@@ -1,9 +1,36 @@
 {
     "repo": "https://github.com/abdoo8080/lean-cvc5",
-    "commit": "8deed5a",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "8deed5ac0beebc6e41e6dca23d6c28846957dc72",
+    "lean": "leanprover/lean4:v4.11.0",
     "name": "cvc5",
     "imports": [
         "cvc5"
-    ]
+    ],
+    "metadata": {
+        "name": "cvc5",
+        "owner": "abdoo8080",
+        "fullName": "abdoo8080/cvc5",
+        "description": "A Foreign Function Interface (FFI) to cvc5 solver in Lean.",
+        "keywords": [
+            "cvc5",
+            "smt"
+        ],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-12-28T20:12:20Z",
+        "updatedAt": "2024-10-14T14:10:46Z",
+        "stars": 5,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOK-okqw",
+                "fullName": "abdoo8080/lean-cvc5",
+                "repoUrl": "https://github.com/abdoo8080/lean-cvc5",
+                "gitUrl": "https://github.com/abdoo8080/lean-cvc5",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

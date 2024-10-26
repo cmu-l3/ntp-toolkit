@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/jaalonso/Calculemus2",
-    "commit": "ab09b93",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "ab09b93027d6eeda08d11723ef0e0b0eac74d8c7",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "Calculemus2",
     "imports": [
         "Calculemus2"
-    ]
+    ],
+    "metadata": {
+        "name": "Calculemus2",
+        "owner": "jaalonso",
+        "fullName": "jaalonso/Calculemus2",
+        "description": "Proof exercises in Lean4 and Isabelle/HOL",
+        "keywords": [],
+        "homepage": "https://jaalonso.github.io/calculemus",
+        "license": "GPL-3.0",
+        "createdAt": "2023-07-08T10:39:55Z",
+        "updatedAt": "2024-10-23T11:10:28Z",
+        "stars": 7,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJ5IAtg",
+                "fullName": "jaalonso/Calculemus2",
+                "repoUrl": "https://github.com/jaalonso/Calculemus2",
+                "gitUrl": "https://github.com/jaalonso/Calculemus2",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

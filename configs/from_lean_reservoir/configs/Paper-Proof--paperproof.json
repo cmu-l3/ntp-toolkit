@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/Paper-Proof/paperproof",
-    "commit": "992c4c8",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "992c4c8b1c5ec51fda487e8239b74af6cd56d4c2",
+    "lean": "leanprover/lean4:v4.12.0-rc1",
     "name": "\u00abpaperproof\u00bb",
     "imports": [
         "\u00abpaperproof\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "paperproof",
+        "owner": "Paper-Proof",
+        "fullName": "Paper-Proof/paperproof",
+        "description": "Lean theorem proving interface which feels like pen-and-paper proofs.",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-03-16T15:24:27Z",
+        "updatedAt": "2024-10-22T18:27:47Z",
+        "stars": 356,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJKbs2Q",
+                "fullName": "Paper-Proof/paperproof",
+                "repoUrl": "https://github.com/Paper-Proof/paperproof",
+                "gitUrl": "https://github.com/Paper-Proof/paperproof",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

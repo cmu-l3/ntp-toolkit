@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/NethermindEth/EVMYulLean",
-    "commit": "b424b1c",
+    "commit": "b424b1cd164a98280ed43b665b9cafecd24d04de",
     "lean": "leanprover/lean4:v4.10.0",
     "name": "\u00abevmyul\u00bb",
     "imports": [
         "\u00abEvmYul\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "evmyul",
+        "owner": "NethermindEth",
+        "fullName": "NethermindEth/evmyul",
+        "description": "Executable formal model of the EVM and Yul in Lean 4.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-07-18T15:44:08Z",
+        "updatedAt": "2024-10-24T09:38:50Z",
+        "stars": 35,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMYIRCg",
+                "fullName": "NethermindEth/EVMYulLean",
+                "repoUrl": "https://github.com/NethermindEth/EVMYulLean",
+                "gitUrl": "https://github.com/NethermindEth/EVMYulLean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

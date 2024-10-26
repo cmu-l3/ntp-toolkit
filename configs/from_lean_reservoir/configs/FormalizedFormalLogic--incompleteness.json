@@ -1,9 +1,36 @@
 {
     "repo": "https://github.com/FormalizedFormalLogic/Incompleteness",
-    "commit": "a8ad9e0",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "a8ad9e0408c932c95aca6dc136cb081f789aeab9",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
     "name": "incompleteness",
     "imports": [
         "Incompleteness"
-    ]
+    ],
+    "metadata": {
+        "name": "incompleteness",
+        "owner": "FormalizedFormalLogic",
+        "fullName": "FormalizedFormalLogic/incompleteness",
+        "description": "Formalize Incompleness Theorem Related Results",
+        "keywords": [
+            "incompleteness",
+            "logic"
+        ],
+        "homepage": "https://formalizedformallogic.github.io/Incompleteness/docs",
+        "license": "Apache-2.0",
+        "createdAt": "2024-07-25T12:39:49Z",
+        "updatedAt": "2024-10-15T03:58:57Z",
+        "stars": 6,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMbAu0A",
+                "fullName": "FormalizedFormalLogic/Incompleteness",
+                "repoUrl": "https://github.com/FormalizedFormalLogic/Incompleteness",
+                "gitUrl": "https://github.com/FormalizedFormalLogic/Incompleteness",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

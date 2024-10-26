@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/dannypsnl/violet-legacy",
-    "commit": "baa86fb",
-    "lean": "leanprover/lean4:v4.8.0",
+    "commit": "baa86fb7b3e6de2cf9c6413b6e51974d47856eb8",
+    "lean": "leanprover/lean4:v4.2.0",
     "name": "\u00abviolet\u00bb",
     "imports": [
         "\u00abViolet\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "violet",
+        "owner": "dannypsnl",
+        "fullName": "dannypsnl/violet",
+        "description": "A programming language, half theorem prover",
+        "keywords": [],
+        "homepage": "https://git.sr.ht/~dannypsnl/violet-legacy",
+        "license": "BSD-3-Clause",
+        "createdAt": "2022-09-30T08:19:45Z",
+        "updatedAt": "2024-09-20T13:34:06Z",
+        "stars": 12,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOIGUhxg",
+                "fullName": "dannypsnl/violet-legacy",
+                "repoUrl": "https://github.com/dannypsnl/violet-legacy",
+                "gitUrl": "https://github.com/dannypsnl/violet-legacy",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

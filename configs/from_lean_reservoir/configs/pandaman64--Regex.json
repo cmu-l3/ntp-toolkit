@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/pandaman64/lean-regex",
-    "commit": "684b65b",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "684b65b90bb20499bbab863d51da5083cb232a67",
+    "lean": "leanprover/lean4:v4.10.0",
     "name": "Regex",
     "imports": [
         "Regex"
-    ]
+    ],
+    "metadata": {
+        "name": "Regex",
+        "owner": "pandaman64",
+        "fullName": "pandaman64/Regex",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-12-29T06:52:18Z",
+        "updatedAt": "2024-10-11T05:50:10Z",
+        "stars": 18,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOK-v_qA",
+                "fullName": "pandaman64/lean-regex",
+                "repoUrl": "https://github.com/pandaman64/lean-regex",
+                "gitUrl": "https://github.com/pandaman64/lean-regex",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

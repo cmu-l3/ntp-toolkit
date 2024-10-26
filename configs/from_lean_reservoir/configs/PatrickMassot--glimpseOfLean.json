@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/PatrickMassot/GlimpseOfLean",
-    "commit": "dc93d86",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "dc93d861d34a319c62a05c199d558b62b7508eda",
+    "lean": "leanprover/lean4:v4.12.0-rc1",
     "name": "glimpseOfLean",
     "imports": [
         "GlimpseOfLean"
-    ]
+    ],
+    "metadata": {
+        "name": "glimpseOfLean",
+        "owner": "PatrickMassot",
+        "fullName": "PatrickMassot/glimpseOfLean",
+        "description": "An introduction to theorem proving in Lean for the impatient.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-05-08T22:01:10Z",
+        "updatedAt": "2024-10-21T09:25:55Z",
+        "stars": 101,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJgcrDg",
+                "fullName": "PatrickMassot/GlimpseOfLean",
+                "repoUrl": "https://github.com/PatrickMassot/GlimpseOfLean",
+                "gitUrl": "https://github.com/PatrickMassot/GlimpseOfLean",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

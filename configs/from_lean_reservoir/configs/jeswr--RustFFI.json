@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/jeswr/RDF.lean",
-    "commit": "645ffc1",
-    "lean": "leanprover/lean4:v4.8.0",
+    "commit": "762bdff78f0ee357fe4a5b8f9ca4145621952ee3",
+    "lean": "leanprover/lean4:v4.6.0-rc1",
     "name": "RDF",
     "imports": [
         "RDF"
-    ]
+    ],
+    "metadata": {
+        "name": "RustFFI",
+        "owner": "jeswr",
+        "fullName": "jeswr/RustFFI",
+        "description": "An RDF Library for Lean4",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2024-02-24T21:30:13Z",
+        "updatedAt": "2024-07-23T16:15:54Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLXgsig",
+                "fullName": "jeswr/RDF.lean",
+                "repoUrl": "https://github.com/jeswr/RDF.lean",
+                "gitUrl": "https://github.com/jeswr/RDF.lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

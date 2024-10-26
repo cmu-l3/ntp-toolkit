@@ -1,9 +1,37 @@
 {
     "repo": "https://github.com/leanprover/LeanInk",
-    "commit": "799e0fa",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "799e0fa7abd4ea6ec0c54301f5543960b42599ae",
+    "lean": "leanprover/lean4:v4.6.0-rc1",
     "name": "leanInk",
     "imports": [
         "LeanInk"
-    ]
+    ],
+    "metadata": {
+        "name": "leanInk",
+        "owner": "leanprover",
+        "fullName": "leanprover/leanInk",
+        "description": "LeanInk is a command line helper tool for Alectryon which aims to ease the integration of Lean 4.",
+        "keywords": [
+            "alectryon",
+            "visualization",
+            "interactive-theorem-proving"
+        ],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2021-10-15T13:35:30Z",
+        "updatedAt": "2024-08-24T16:48:21Z",
+        "stars": 60,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGOK5Ow",
+                "fullName": "leanprover/LeanInk",
+                "repoUrl": "https://github.com/leanprover/LeanInk",
+                "gitUrl": "https://github.com/leanprover/LeanInk",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

@@ -1,9 +1,0 @@
-{
-    "repo": "https://github.com/MohanadAhmed/LeanMathSigProc",
-    "commit": "8cf113d",
-    "lean": "leanprover/lean4:None",
-    "name": "LeanMathSigProc",
-    "imports": [
-        "LeanMathSigProc"
-    ]
-}

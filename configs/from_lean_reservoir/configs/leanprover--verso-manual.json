@@ -1,9 +1,0 @@
-{
-    "repo": "https://github.com/leanprover/reference-manual",
-    "commit": "2fbf58d",
-    "lean": "leanprover/lean4:None",
-    "name": "\"verso-manual\"",
-    "imports": [
-        "Manual"
-    ]
-}

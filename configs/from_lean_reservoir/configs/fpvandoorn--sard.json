@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/fpvandoorn/sard",
-    "commit": "77da83f",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "77da83ff581fc9bf8af67e18ba8949cf555cc41c",
+    "lean": "leanprover/lean4:v4.12.0",
     "name": "sard",
     "imports": [
         "Sard"
-    ]
+    ],
+    "metadata": {
+        "name": "sard",
+        "owner": "fpvandoorn",
+        "fullName": "fpvandoorn/sard",
+        "description": "Work towards a general version of Sard's theorem in Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-09-04T15:16:37Z",
+        "updatedAt": "2024-10-07T13:51:37Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKPQT_g",
+                "fullName": "fpvandoorn/sard",
+                "repoUrl": "https://github.com/fpvandoorn/sard",
+                "gitUrl": "https://github.com/fpvandoorn/sard",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

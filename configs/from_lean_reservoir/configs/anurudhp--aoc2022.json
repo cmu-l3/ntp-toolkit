@@ -1,9 +1,0 @@
-{
-    "repo": "https://github.com/anurudhp/aoc2022",
-    "commit": "355b0d8",
-    "lean": "leanprover/lean4:None",
-    "name": "aoc",
-    "imports": [
-        "Aoc"
-    ]
-}

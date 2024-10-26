@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/acmepjz/md4lean",
-    "commit": "5e95f47",
+    "commit": "5e95f4776be5e048364f325c7e9d619bb56fb005",
     "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "MD4Lean",
     "imports": [
         "MD4Lean"
-    ]
+    ],
+    "metadata": {
+        "name": "MD4Lean",
+        "owner": "acmepjz",
+        "fullName": "acmepjz/MD4Lean",
+        "description": "a Lean wrapper for the MD4C Markdown parser",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2024-06-10T21:04:12Z",
+        "updatedAt": "2024-07-31T08:30:25Z",
+        "stars": 5,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMHoVDw",
+                "fullName": "acmepjz/md4lean",
+                "repoUrl": "https://github.com/acmepjz/md4lean",
+                "gitUrl": "https://github.com/acmepjz/md4lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

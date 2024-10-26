@@ -1,9 +1,35 @@
 {
     "repo": "https://github.com/PatrickMassot/verbose-lean4",
-    "commit": "5a1a751",
-    "lean": "leanprover/lean4:v4.11.0-rc1",
+    "commit": "7241c81793e4f1439a50775bcf5e418fac7ee88d",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
     "name": "verbose",
     "imports": [
         "Verbose"
-    ]
+    ],
+    "metadata": {
+        "name": "verbose",
+        "owner": "PatrickMassot",
+        "fullName": "PatrickMassot/verbose",
+        "description": "Natural language tactics to teach mathematics using Lean 4",
+        "keywords": [
+            "mathematics-education"
+        ],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2022-07-21T02:55:14Z",
+        "updatedAt": "2024-09-24T17:27:55Z",
+        "stars": 51,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOHsSjxw",
+                "fullName": "PatrickMassot/verbose-lean4",
+                "repoUrl": "https://github.com/PatrickMassot/verbose-lean4",
+                "gitUrl": "https://github.com/PatrickMassot/verbose-lean4",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

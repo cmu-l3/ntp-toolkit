@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/anlucia/ChromaticPolynomial",
-    "commit": "6fe1fcd",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "6fe1fcdab3684ad78cbdf08d1124b4f0fdac7a8b",
+    "lean": "leanprover/lean4:v4.11.0-rc1",
     "name": "\u00abchromatic_polynomial\u00bb",
     "imports": [
         "\u00abChromaticPolynomial\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "chromatic_polynomial",
+        "owner": "anlucia",
+        "fullName": "anlucia/chromatic_polynomial",
+        "description": "Chromatic polynomial in Lean4",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-08-05T12:51:50Z",
+        "updatedAt": "2024-08-27T11:23:46Z",
+        "stars": 3,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMfgRwg",
+                "fullName": "anlucia/ChromaticPolynomial",
+                "repoUrl": "https://github.com/anlucia/ChromaticPolynomial",
+                "gitUrl": "https://github.com/anlucia/ChromaticPolynomial",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

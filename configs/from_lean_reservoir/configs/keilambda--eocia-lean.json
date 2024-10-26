@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/keilambda/eocia-lean",
-    "commit": "e94976a",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "e94976a1dc1936ae2da7aa389ce7a259edd8b0d0",
+    "lean": "leanprover/lean4:v4.7.0",
     "name": "\u00abeocia-lean\u00bb",
     "imports": [
         "\u00abEociaLean\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "eocia-lean",
+        "owner": "keilambda",
+        "fullName": "keilambda/eocia-lean",
+        "description": "Essentials of Compilation: An Incremental Approach in Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "BSD-3-Clause",
+        "createdAt": "2024-01-13T09:28:01Z",
+        "updatedAt": "2024-07-26T18:31:19Z",
+        "stars": 3,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLEWZdA",
+                "fullName": "keilambda/eocia-lean",
+                "repoUrl": "https://github.com/keilambda/eocia-lean",
+                "gitUrl": "https://github.com/keilambda/eocia-lean",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

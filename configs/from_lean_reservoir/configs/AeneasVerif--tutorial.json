@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/AeneasVerif/icfp-tutorial",
-    "commit": "a8e927a",
+    "commit": "a8e927aae60f74fe7ad10b70a97c55bc3ee22df8",
     "lean": "leanprover/lean4:v4.11.0-rc2",
     "name": "\u00abtutorial\u00bb",
     "imports": [
         "Tutorial"
-    ]
+    ],
+    "metadata": {
+        "name": "tutorial",
+        "owner": "AeneasVerif",
+        "fullName": "AeneasVerif/tutorial",
+        "description": "Aeneas tutorial for ICFP",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-09-04T13:23:07Z",
+        "updatedAt": "2024-09-20T21:01:03Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMswowQ",
+                "fullName": "AeneasVerif/icfp-tutorial",
+                "repoUrl": "https://github.com/AeneasVerif/icfp-tutorial",
+                "gitUrl": "https://github.com/AeneasVerif/icfp-tutorial",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

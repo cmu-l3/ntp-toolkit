@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/yuma-mizuno/lean-math-workshop",
-    "commit": "204831b",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "204831b880903afe6854aa633af3cbfb1ace863d",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
     "name": "\u00ablean-math-workshop\u00bb",
     "imports": [
         "\u00abSolution\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "lean-math-workshop",
+        "owner": "yuma-mizuno",
+        "fullName": "yuma-mizuno/lean-math-workshop",
+        "description": "\u6570\u5b66\u7cfb\u306e\u305f\u3081\u306eLean\u52c9\u5f37\u4f1a",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-05-30T10:58:24Z",
+        "updatedAt": "2024-10-19T08:32:55Z",
+        "stars": 68,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJpQQLg",
+                "fullName": "yuma-mizuno/lean-math-workshop",
+                "repoUrl": "https://github.com/yuma-mizuno/lean-math-workshop",
+                "gitUrl": "https://github.com/yuma-mizuno/lean-math-workshop",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

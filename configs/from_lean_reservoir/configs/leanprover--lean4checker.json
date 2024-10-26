@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/leanprover/lean4checker",
-    "commit": "1950756",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "195075616d904735ceb644d3b0bf06d72fc1a311",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "lean4checker",
     "imports": [
         "Lean4Checker"
-    ]
+    ],
+    "metadata": {
+        "name": "lean4checker",
+        "owner": "leanprover",
+        "fullName": "leanprover/lean4checker",
+        "description": "Replay the `Environment` for a given Lean module, ensuring that all declarations are accepted by the kernel.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-09-25T05:42:19Z",
+        "updatedAt": "2024-10-14T01:01:25Z",
+        "stars": 17,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKX3ZBA",
+                "fullName": "leanprover/lean4checker",
+                "repoUrl": "https://github.com/leanprover/lean4checker",
+                "gitUrl": "https://github.com/leanprover/lean4checker",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

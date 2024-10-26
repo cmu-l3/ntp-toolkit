@@ -1,9 +1,0 @@
-{
-    "repo": "https://github.com/ah1112/synthetic_euclid_4",
-    "commit": "f631aa4",
-    "lean": "leanprover/lean4:None",
-    "name": "synthetic_euclid_4",
-    "imports": [
-        "SyntheticEuclid4"
-    ]
-}

@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/fpvandoorn/HausdorffSchoolLean",
-    "commit": "df1f295",
+    "commit": "df1f295ee528dee88a26d22a6446c7cade7232f5",
     "lean": "leanprover/lean4:v4.0.0",
     "name": "HausdorffSchool",
     "imports": [
         "HausdorffSchool"
-    ]
+    ],
+    "metadata": {
+        "name": "HausdorffSchoolLean",
+        "owner": "fpvandoorn",
+        "fullName": "fpvandoorn/HausdorffSchoolLean",
+        "description": "Repository for the September 2023 Hausdorff School on Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-09-12T13:07:26Z",
+        "updatedAt": "2024-09-22T05:42:17Z",
+        "stars": 6,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKSlUBg",
+                "fullName": "fpvandoorn/HausdorffSchoolLean",
+                "repoUrl": "https://github.com/fpvandoorn/HausdorffSchoolLean",
+                "gitUrl": "https://github.com/fpvandoorn/HausdorffSchoolLean",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

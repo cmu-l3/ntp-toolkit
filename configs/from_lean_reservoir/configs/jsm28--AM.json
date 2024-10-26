@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/jsm28/AperiodicMonotilesLean",
-    "commit": "e84763b",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "e84763b438c4d05a6ac86c2e80d06100325cc0e9",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "AM",
     "imports": [
         "AM"
-    ]
+    ],
+    "metadata": {
+        "name": "AM",
+        "owner": "jsm28",
+        "fullName": "jsm28/AM",
+        "description": "Lean formalization of aperiodic monotiles papers (staging repository for material not yet in mathlib)",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-02-15T14:52:53Z",
+        "updatedAt": "2024-10-21T11:45:01Z",
+        "stars": 12,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLS8e2g",
+                "fullName": "jsm28/AperiodicMonotilesLean",
+                "repoUrl": "https://github.com/jsm28/AperiodicMonotilesLean",
+                "gitUrl": "https://github.com/jsm28/AperiodicMonotilesLean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

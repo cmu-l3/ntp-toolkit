@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/leanprover-community/ProofWidgets4",
-    "commit": "c6672b4",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "c6672b46db2fa3e5ff4fecd617871fc22eda9d9c",
+    "lean": "leanprover/lean4:v4.13.0-rc1",
     "name": "proofwidgets",
     "imports": [
         "ProofWidgets"
-    ]
+    ],
+    "metadata": {
+        "name": "proofwidgets",
+        "owner": "leanprover-community",
+        "fullName": "leanprover-community/proofwidgets",
+        "description": "Helper toolkit for creating your own Lean 4 UserWidgets",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2022-11-15T09:42:25Z",
+        "updatedAt": "2024-10-21T10:30:49Z",
+        "stars": 110,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOIcBiKA",
+                "fullName": "leanprover-community/ProofWidgets4",
+                "repoUrl": "https://github.com/leanprover-community/ProofWidgets4",
+                "gitUrl": "https://github.com/leanprover-community/ProofWidgets4",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

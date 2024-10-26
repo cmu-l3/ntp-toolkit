@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/alexkeizer/QpfTypes",
-    "commit": "fc4fe05",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "fc4fe055d0b704996c663d741bfe8272fff27dde",
+    "lean": "leanprover/lean4:v4.12.0",
     "name": "qpf",
     "imports": [
         "Qpf"
-    ]
+    ],
+    "metadata": {
+        "name": "qpf",
+        "owner": "alexkeizer",
+        "fullName": "alexkeizer/qpf",
+        "description": "A WIP definitional (co)datatype package for Lean4",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2022-03-15T14:48:15Z",
+        "updatedAt": "2024-10-15T20:27:26Z",
+        "stars": 27,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOHAbBZA",
+                "fullName": "alexkeizer/QpfTypes",
+                "repoUrl": "https://github.com/alexkeizer/QpfTypes",
+                "gitUrl": "https://github.com/alexkeizer/QpfTypes",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

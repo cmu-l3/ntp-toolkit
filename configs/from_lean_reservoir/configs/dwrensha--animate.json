@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/dwrensha/animate-lean-proofs",
-    "commit": "12df1c1",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "12df1c1b692659e046874d0549ca3d2f162fde50",
+    "lean": "leanprover/lean4:v4.11.0",
     "name": "\u00abanimate\u00bb",
     "imports": [
         "Annotations"
-    ]
+    ],
+    "metadata": {
+        "name": "animate",
+        "owner": "dwrensha",
+        "fullName": "dwrensha/animate",
+        "description": "tool for turning Lean proofs into Blender animations",
+        "keywords": [],
+        "homepage": "https://youtu.be/KuxFWwwlEtc",
+        "license": "Apache-2.0",
+        "createdAt": "2024-03-06T18:59:35Z",
+        "updatedAt": "2024-10-17T00:00:57Z",
+        "stars": 38,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLcq6LA",
+                "fullName": "dwrensha/animate-lean-proofs",
+                "repoUrl": "https://github.com/dwrensha/animate-lean-proofs",
+                "gitUrl": "https://github.com/dwrensha/animate-lean-proofs",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

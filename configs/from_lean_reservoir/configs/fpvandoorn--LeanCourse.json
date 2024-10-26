@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/fpvandoorn/LeanCourse24",
-    "commit": "28fec27",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "28fec273d751b90bcf8124dd7254ce725f27f340",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "\u00abLeanCourse\u00bb",
     "imports": [
         "\u00abLeanCourse\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "LeanCourse",
+        "owner": "fpvandoorn",
+        "fullName": "fpvandoorn/LeanCourse",
+        "description": "Bonn Lean course for winter 24/25",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-10-01T09:16:52Z",
+        "updatedAt": "2024-10-24T17:55:14Z",
+        "stars": 11,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOM5wW8A",
+                "fullName": "fpvandoorn/LeanCourse24",
+                "repoUrl": "https://github.com/fpvandoorn/LeanCourse24",
+                "gitUrl": "https://github.com/fpvandoorn/LeanCourse24",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

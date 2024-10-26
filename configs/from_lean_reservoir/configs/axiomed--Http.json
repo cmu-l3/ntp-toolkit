@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/axiomed/http",
-    "commit": "a6972eb",
+    "commit": "a6972eb55a44cbcb7bdb3cc38a460073eb8ca428",
     "lean": "leanprover/lean4:v4.7.0",
     "name": "\u00abHttp\u00bb",
     "imports": [
         "\u00abHttp\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "Http",
+        "owner": "axiomed",
+        "fullName": "axiomed/Http",
+        "description": "\ud83c\udf10 | HTTP primitives for Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-12-13T16:45:25Z",
+        "updatedAt": "2024-10-21T13:51:32Z",
+        "stars": 24,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOK5XrpQ",
+                "fullName": "axiomed/http",
+                "repoUrl": "https://github.com/axiomed/http",
+                "gitUrl": "https://github.com/axiomed/http",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

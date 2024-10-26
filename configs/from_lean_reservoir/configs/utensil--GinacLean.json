@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/utensil/ginac-lean",
-    "commit": "67cfb12",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "67cfb123ad8605dd4101a24f4d285bf1f348c0d4",
+    "lean": "leanprover/lean4:v4.8.0",
     "name": "\u00abGinacLean\u00bb",
     "imports": [
         "\u00abGinacLean\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "GinacLean",
+        "owner": "utensil",
+        "fullName": "utensil/GinacLean",
+        "description": "A work-in-progress Lean 4 binding to GiNaC",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-09-18T04:11:45Z",
+        "updatedAt": "2024-10-09T05:33:24Z",
+        "stars": 5,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKU3E6g",
+                "fullName": "utensil/ginac-lean",
+                "repoUrl": "https://github.com/utensil/ginac-lean",
+                "gitUrl": "https://github.com/utensil/ginac-lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/fpvandoorn/LogicColloquiumTutorial",
-    "commit": "9bb5d37",
+    "commit": "9bb5d375ca1fb90e0673b6a86b328670c871ecc5",
     "lean": "leanprover/lean4:nightly-2023-06-20",
     "name": "LCTutorial",
     "imports": [
         "LCTutorial"
-    ]
+    ],
+    "metadata": {
+        "name": "LogicColloquiumTutorial",
+        "owner": "fpvandoorn",
+        "fullName": "fpvandoorn/LogicColloquiumTutorial",
+        "description": "The Lean tutorial for Logic Colloquium 2023",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-06-01T16:16:57Z",
+        "updatedAt": "2024-03-14T13:20:01Z",
+        "stars": 5,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJqQesA",
+                "fullName": "fpvandoorn/LogicColloquiumTutorial",
+                "repoUrl": "https://github.com/fpvandoorn/LogicColloquiumTutorial",
+                "gitUrl": "https://github.com/fpvandoorn/LogicColloquiumTutorial",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/argumentcomputer/straume",
-    "commit": "ad2aa66",
+    "commit": "ad2aa666b7e4148df450ecf74aedb477f1535534",
     "lean": "leanprover/lean4:v4.4.0",
     "name": "Straume",
     "imports": [
         "Straume"
-    ]
+    ],
+    "metadata": {
+        "name": "Straume",
+        "owner": "argumentcomputer",
+        "fullName": "argumentcomputer/Straume",
+        "description": "State-of-the-art streams for Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2022-06-27T09:53:53Z",
+        "updatedAt": "2023-12-25T16:23:51Z",
+        "stars": 5,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOHkU2LA",
+                "fullName": "argumentcomputer/straume",
+                "repoUrl": "https://github.com/argumentcomputer/straume",
+                "gitUrl": "https://github.com/argumentcomputer/straume",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

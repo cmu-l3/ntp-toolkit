@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/siddhartha-gadgil/lean-loris",
-    "commit": "045951c",
+    "commit": "045951c015e215a7c93ee7f928f9b85e5e4e544d",
     "lean": "leanprover/lean4:v4.0.0",
     "name": "\u00ablean-loris\u00bb{",
     "imports": [
         "LeanLoris"
-    ]
+    ],
+    "metadata": {
+        "name": "lean-loris",
+        "owner": "siddhartha-gadgil",
+        "fullName": "siddhartha-gadgil/lean-loris",
+        "description": "Experiments with some ways of automating reasoning in lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2022-01-03T04:30:55Z",
+        "updatedAt": "2024-06-19T14:42:59Z",
+        "stars": 15,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGnX9Zw",
+                "fullName": "siddhartha-gadgil/lean-loris",
+                "repoUrl": "https://github.com/siddhartha-gadgil/lean-loris",
+                "gitUrl": "https://github.com/siddhartha-gadgil/lean-loris",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

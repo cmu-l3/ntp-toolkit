@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/pitmonticone/LeanInVienna2024",
-    "commit": "273e31b",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "273e31b539799d8be128f00c047ef81645f498b9",
+    "lean": "leanprover/lean4:v4.12.0",
     "name": "LeanInVienna",
     "imports": [
         "LeanInVienna"
-    ]
+    ],
+    "metadata": {
+        "name": "LeanInVienna",
+        "owner": "pitmonticone",
+        "fullName": "pitmonticone/LeanInVienna",
+        "description": "Repository hosting resources for the \"Lean Tutorial in Vienna\" at TU Wien from September 18 to 20, 2024.",
+        "keywords": [],
+        "homepage": "https://www.dmg.tuwien.ac.at/lean2024/",
+        "license": "Apache-2.0",
+        "createdAt": "2024-08-22T13:27:10Z",
+        "updatedAt": "2024-10-08T15:25:17Z",
+        "stars": 7,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMm4CZA",
+                "fullName": "pitmonticone/LeanInVienna2024",
+                "repoUrl": "https://github.com/pitmonticone/LeanInVienna2024",
+                "gitUrl": "https://github.com/pitmonticone/LeanInVienna2024",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/fgdorais/extra4",
-    "commit": "22ac970",
+    "commit": "22ac9706f5caa8c24d56056120978f2b8780805b",
     "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "extra",
     "imports": [
         "Extra"
-    ]
+    ],
+    "metadata": {
+        "name": "extra",
+        "owner": "fgdorais",
+        "fullName": "fgdorais/extra",
+        "description": "Supplements to the Lean 4 Standard Library",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-11-22T14:22:06Z",
+        "updatedAt": "2024-10-23T17:57:21Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKwsDJQ",
+                "fullName": "fgdorais/extra4",
+                "repoUrl": "https://github.com/fgdorais/extra4",
+                "gitUrl": "https://github.com/fgdorais/extra4",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/m4lvin/lean4-pdl",
-    "commit": "24ab45d",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "24ab45d699fbe97e3faf1e03265132e102b63d55",
+    "lean": "leanprover/lean4:v4.12.0",
     "name": "\u00abpdl\u00bb",
     "imports": [
         "\u00abPdl\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "pdl",
+        "owner": "m4lvin",
+        "fullName": "m4lvin/pdl",
+        "description": "WORK IN PROGRESS Lean 4 formalization of a Tableaux proof system for Propositional Dynamic Logic",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-10-04T12:54:56Z",
+        "updatedAt": "2024-10-21T17:43:31Z",
+        "stars": 6,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKb6caA",
+                "fullName": "m4lvin/lean4-pdl",
+                "repoUrl": "https://github.com/m4lvin/lean4-pdl",
+                "gitUrl": "https://github.com/m4lvin/lean4-pdl",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

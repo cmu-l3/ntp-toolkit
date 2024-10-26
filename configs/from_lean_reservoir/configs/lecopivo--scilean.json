@@ -1,9 +1,37 @@
 {
     "repo": "https://github.com/lecopivo/SciLean",
-    "commit": "66ee02b",
+    "commit": "0ebfd32cd2086548bebc716c05cd71bbc577c56c",
     "lean": "leanprover/lean4:v4.11.0-rc2",
     "name": "scilean",
     "imports": [
         "SciLean"
-    ]
+    ],
+    "metadata": {
+        "name": "scilean",
+        "owner": "lecopivo",
+        "fullName": "lecopivo/scilean",
+        "description": "Scientific computing in Lean 4",
+        "keywords": [
+            "scientific-computing",
+            "numerical-methods",
+            "symbolic-computation"
+        ],
+        "homepage": "https://lecopivo.github.io/scientific-computing-lean/",
+        "license": "Apache-2.0",
+        "createdAt": "2021-09-27T21:50:10Z",
+        "updatedAt": "2024-10-24T13:58:05Z",
+        "stars": 319,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGIArSw",
+                "fullName": "lecopivo/SciLean",
+                "repoUrl": "https://github.com/lecopivo/SciLean",
+                "gitUrl": "https://github.com/lecopivo/SciLean",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

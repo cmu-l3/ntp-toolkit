@@ -1,9 +1,35 @@
 {
     "repo": "https://github.com/glams-lean-2024/formal-2024",
-    "commit": "99725f3",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "99725f3ebd3c60859033e61f164af74e71e10f23",
+    "lean": "leanprover/lean4:v4.7.0",
     "name": "Formal2024",
     "imports": [
         "Formal2024"
-    ]
+    ],
+    "metadata": {
+        "name": "Formal2024",
+        "owner": "glams-lean-2024",
+        "fullName": "glams-lean-2024/Formal2024",
+        "description": "Course repository for GlaMS - Formalising Mathematics in Lean (2024)",
+        "keywords": [
+            "formalisation-mathematics"
+        ],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-01-26T21:49:55Z",
+        "updatedAt": "2024-10-03T19:54:19Z",
+        "stars": 9,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLKKLOQ",
+                "fullName": "glams-lean-2024/formal-2024",
+                "repoUrl": "https://github.com/glams-lean-2024/formal-2024",
+                "gitUrl": "https://github.com/glams-lean-2024/formal-2024",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

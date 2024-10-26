@@ -1,9 +1,36 @@
 {
     "repo": "https://github.com/argumentcomputer/OpenSSL.lean",
-    "commit": "7187dab",
+    "commit": "7187dab2f60097194167dbfa5afd862c276f4cd7",
     "lean": "leanprover/lean4:nightly-2022-09-11",
     "name": "OpenSSL",
     "imports": [
         "OpenSSL"
-    ]
+    ],
+    "metadata": {
+        "name": "OpenSSL.lean",
+        "owner": "argumentcomputer",
+        "fullName": "argumentcomputer/OpenSSL.lean",
+        "description": "OpenSSL bindings for Lean",
+        "keywords": [
+            "openssl",
+            "openssl-bindings"
+        ],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2021-11-29T16:21:28Z",
+        "updatedAt": "2023-05-19T22:56:09Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGdDMvA",
+                "fullName": "argumentcomputer/OpenSSL.lean",
+                "repoUrl": "https://github.com/argumentcomputer/OpenSSL.lean",
+                "gitUrl": "https://github.com/argumentcomputer/OpenSSL.lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

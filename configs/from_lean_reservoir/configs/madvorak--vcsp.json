@@ -1,9 +1,38 @@
 {
     "repo": "https://github.com/madvorak/vcsp",
-    "commit": "51e7181",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "51e7181b0beb4f4a89fcea83520327a42a1a7b84",
+    "lean": "leanprover/lean4:v4.11.0",
     "name": "vcsp",
     "imports": [
         "VCSP"
-    ]
+    ],
+    "metadata": {
+        "name": "vcsp",
+        "owner": "madvorak",
+        "fullName": "madvorak/vcsp",
+        "description": "General-Valued Constraint Satisfaction Problems",
+        "keywords": [
+            "combinatorial-optimization",
+            "constraint-satisfaction-problem",
+            "linear-programming",
+            "symmetric-fractional-polymorphism"
+        ],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-10-06T15:38:37Z",
+        "updatedAt": "2024-10-10T18:23:41Z",
+        "stars": 9,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKc7VPQ",
+                "fullName": "madvorak/vcsp",
+                "repoUrl": "https://github.com/madvorak/vcsp",
+                "gitUrl": "https://github.com/madvorak/vcsp",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

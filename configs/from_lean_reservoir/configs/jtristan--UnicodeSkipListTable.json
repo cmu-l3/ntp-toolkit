@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/jtristan/UnicodeSkipListTable",
-    "commit": "7b73ca0",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "7b73ca0807f55d538629098310b812e24bf4a528",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
     "name": "\"UnicodeSkipListTable\"",
     "imports": [
         "UnicodeSkipListTable"
-    ]
+    ],
+    "metadata": {
+        "name": "UnicodeSkipListTable",
+        "owner": "jtristan",
+        "fullName": "jtristan/UnicodeSkipListTable",
+        "description": "A library to create and use Unicode tables based on the skip list data structure.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-07-26T12:36:15Z",
+        "updatedAt": "2024-07-29T20:47:01Z",
+        "stars": 6,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMbdzvQ",
+                "fullName": "jtristan/UnicodeSkipListTable",
+                "repoUrl": "https://github.com/jtristan/UnicodeSkipListTable",
+                "gitUrl": "https://github.com/jtristan/UnicodeSkipListTable",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

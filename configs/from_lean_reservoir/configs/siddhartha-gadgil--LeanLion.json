@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/siddhartha-gadgil/LeanLion",
-    "commit": "ff98723",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "ff987236f4138917cbc0a6280cfe15182938ea5b",
+    "lean": "leanprover/lean4:v4.11.0",
     "name": "\u00abLeanLion\u00bb",
     "imports": [
         "\u00abLeanLion\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "LeanLion",
+        "owner": "siddhartha-gadgil",
+        "fullName": "siddhartha-gadgil/LeanLion",
+        "description": "Code for Singapore Workshop on Formal Proofs and Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-03-26T06:07:56Z",
+        "updatedAt": "2024-09-18T07:55:31Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLlkHbw",
+                "fullName": "siddhartha-gadgil/LeanLion",
+                "repoUrl": "https://github.com/siddhartha-gadgil/LeanLion",
+                "gitUrl": "https://github.com/siddhartha-gadgil/LeanLion",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

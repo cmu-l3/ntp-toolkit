@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/leanprover/SHerLOC",
-    "commit": "cf77ce5",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "cf77ce5f5b389a593f6ca0689e5d445010afc056",
+    "lean": "leanprover/lean4:v4.10.0",
     "name": "\"SHerLOC\"",
     "imports": [
         "\u00abSHerLOC\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "SHerLOC",
+        "owner": "leanprover",
+        "fullName": "leanprover/SHerLOC",
+        "description": "A StableHLO analyzer in Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-08-16T00:31:50Z",
+        "updatedAt": "2024-10-09T18:33:03Z",
+        "stars": 15,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMkHpWQ",
+                "fullName": "leanprover/SHerLOC",
+                "repoUrl": "https://github.com/leanprover/SHerLOC",
+                "gitUrl": "https://github.com/leanprover/SHerLOC",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

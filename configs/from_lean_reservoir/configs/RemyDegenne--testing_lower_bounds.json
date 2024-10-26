@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/RemyDegenne/testing-lower-bounds",
-    "commit": "0f09ff1",
+    "commit": "0f09ff100a06a5e4542181514bfff74213ae126b",
     "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "\u00abtesting_lower_bounds\u00bb",
     "imports": [
         "TestingLowerBounds"
-    ]
+    ],
+    "metadata": {
+        "name": "testing_lower_bounds",
+        "owner": "RemyDegenne",
+        "fullName": "RemyDegenne/testing_lower_bounds",
+        "description": "Information theory and hypothesis testing, in Lean",
+        "keywords": [],
+        "homepage": "https://remydegenne.github.io/testing-lower-bounds/blueprint",
+        "license": "Apache-2.0",
+        "createdAt": "2024-02-22T17:29:11Z",
+        "updatedAt": "2024-10-22T13:20:08Z",
+        "stars": 8,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLWmaEQ",
+                "fullName": "RemyDegenne/testing-lower-bounds",
+                "repoUrl": "https://github.com/RemyDegenne/testing-lower-bounds",
+                "gitUrl": "https://github.com/RemyDegenne/testing-lower-bounds",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

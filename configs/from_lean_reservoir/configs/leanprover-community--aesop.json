@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/leanprover-community/aesop",
-    "commit": "9ac1294",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "9ac12945862fa39eab7795c2f79bb9aa0c8e332c",
+    "lean": "leanprover/lean4:v4.13.0-rc1",
     "name": "aesop",
     "imports": [
         "Aesop"
-    ]
+    ],
+    "metadata": {
+        "name": "aesop",
+        "owner": "leanprover-community",
+        "fullName": "leanprover-community/aesop",
+        "description": "White-box automation for Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2021-06-01T13:02:59Z",
+        "updatedAt": "2024-10-22T22:55:03Z",
+        "stars": 200,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOFjj3ZA",
+                "fullName": "leanprover-community/aesop",
+                "repoUrl": "https://github.com/leanprover-community/aesop",
+                "gitUrl": "https://github.com/leanprover-community/aesop",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

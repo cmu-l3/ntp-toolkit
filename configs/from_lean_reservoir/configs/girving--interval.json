@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/girving/interval",
-    "commit": "c5c4bbf",
+    "commit": "c5c4bbfd1ff24a7a535f4047aa4f918075a27aa6",
     "lean": "leanprover/lean4:v4.12.0",
     "name": "interval",
     "imports": [
         "Interval"
-    ]
+    ],
+    "metadata": {
+        "name": "interval",
+        "owner": "girving",
+        "fullName": "girving/interval",
+        "description": "Conservative floating point interval arithmetic in Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-05-26T10:00:08Z",
+        "updatedAt": "2024-10-20T13:07:55Z",
+        "stars": 7,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMAu7tg",
+                "fullName": "girving/interval",
+                "repoUrl": "https://github.com/girving/interval",
+                "gitUrl": "https://github.com/girving/interval",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

@@ -1,9 +1,35 @@
 {
     "repo": "https://github.com/FormalizedFormalLogic/Arithmetization",
-    "commit": "85e3277",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "85e327734277b7f5b91d272d34a060ed21cbfdfa",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
     "name": "arithmetization",
     "imports": [
         "Arithmetization"
-    ]
+    ],
+    "metadata": {
+        "name": "arithmetization",
+        "owner": "FormalizedFormalLogic",
+        "fullName": "FormalizedFormalLogic/arithmetization",
+        "description": "Formalization of Arithmetization of Mathematics/Metamathematics",
+        "keywords": [
+            "logic"
+        ],
+        "homepage": "https://formalizedformallogic.github.io/Arithmetization/docs/",
+        "license": "Apache-2.0",
+        "createdAt": "2024-01-07T18:56:34Z",
+        "updatedAt": "2024-10-15T03:47:13Z",
+        "stars": 10,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLB5GuQ",
+                "fullName": "FormalizedFormalLogic/Arithmetization",
+                "repoUrl": "https://github.com/FormalizedFormalLogic/Arithmetization",
+                "gitUrl": "https://github.com/FormalizedFormalLogic/Arithmetization",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

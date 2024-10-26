@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/KislyjKisel/lean-pod",
-    "commit": "a24edfe",
+    "commit": "a24edfe5becf7ac1b4f3eaf448ed22ed89377d58",
     "lean": "leanprover/lean4:v4.12.0",
     "name": "\u00abpod\u00bb",
     "imports": [
         "Pod"
-    ]
+    ],
+    "metadata": {
+        "name": "pod",
+        "owner": "KislyjKisel",
+        "fullName": "KislyjKisel/pod",
+        "description": "Low level utils (native signed integers and single precision float, byte spans etc)",
+        "keywords": [],
+        "homepage": null,
+        "license": "BSD-3-Clause",
+        "createdAt": "2023-04-07T14:45:35Z",
+        "updatedAt": "2024-10-18T23:19:55Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJT9A9A",
+                "fullName": "KislyjKisel/lean-pod",
+                "repoUrl": "https://github.com/KislyjKisel/lean-pod",
+                "gitUrl": "https://github.com/KislyjKisel/lean-pod",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

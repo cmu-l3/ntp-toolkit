@@ -1,9 +1,39 @@
 {
     "repo": "https://github.com/loganrjmurphy/LeanEuclid",
-    "commit": "f1912c3",
-    "lean": "leanprover/lean4:v4.8.0",
+    "commit": "f1912c3090eb82820575758efc31e40b9db86bb8",
+    "lean": "leanprover/lean4:v4.8.0-rc2",
     "name": "\u00ablib\u00bb",
     "imports": [
         "SystemE"
-    ]
+    ],
+    "metadata": {
+        "name": "lib",
+        "owner": "loganrjmurphy",
+        "fullName": "loganrjmurphy/lib",
+        "description": "LeanEuclid is a benchmark for autoformalization in the domain of Euclidean geometry, targeting the proof assistant Lean.",
+        "keywords": [
+            "theorem-proving",
+            "llm-evaluation",
+            "formalization",
+            "euclidean-geometry",
+            "autoformalization"
+        ],
+        "homepage": "http://arxiv.org/abs/2405.17216",
+        "license": "MIT",
+        "createdAt": "2024-05-27T03:14:02Z",
+        "updatedAt": "2024-10-24T15:00:22Z",
+        "stars": 74,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMA_71Q",
+                "fullName": "loganrjmurphy/LeanEuclid",
+                "repoUrl": "https://github.com/loganrjmurphy/LeanEuclid",
+                "gitUrl": "https://github.com/loganrjmurphy/LeanEuclid",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

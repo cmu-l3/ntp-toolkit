@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/lindy-labs/corelib_verification",
-    "commit": "e4cf24c",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "e4cf24c7f98995f6f6ad158ce75825724cd99613",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
     "name": "\u00abcorelib_verification\u00bb",
     "imports": [
         "\u00abCorelibVerification\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "corelib_verification",
+        "owner": "lindy-labs",
+        "fullName": "lindy-labs/corelib_verification",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "GPL-3.0",
+        "createdAt": "2023-09-15T12:25:35Z",
+        "updatedAt": "2024-08-07T09:48:56Z",
+        "stars": 3,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKT-gwA",
+                "fullName": "lindy-labs/corelib_verification",
+                "repoUrl": "https://github.com/lindy-labs/corelib_verification",
+                "gitUrl": "https://github.com/lindy-labs/corelib_verification",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

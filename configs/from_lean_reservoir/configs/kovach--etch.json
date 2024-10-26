@@ -1,9 +1,0 @@
-{
-    "repo": "https://github.com/kovach/etch",
-    "commit": "b9e66fe",
-    "lean": "leanprover/lean4:None",
-    "name": "etch",
-    "imports": [
-        "Etch.Verification.Semantics.Example"
-    ]
-}

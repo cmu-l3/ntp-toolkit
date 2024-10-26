@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/katydid/proofs",
-    "commit": "6cae3a0",
-    "lean": "leanprover/lean4:v4.11.0-rc3",
+    "commit": "49079cb0c104669345ad9411e832263346e44230",
+    "lean": "leanprover/lean4:v4.11.0-rc2",
     "name": "katydid",
     "imports": [
         "Katydid"
-    ]
+    ],
+    "metadata": {
+        "name": "katydid",
+        "owner": "katydid",
+        "fullName": "katydid/katydid",
+        "description": "Proofs written in Lean4 for the core katydid validation algorithm",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2021-10-29T14:26:24Z",
+        "updatedAt": "2024-09-03T14:24:17Z",
+        "stars": 14,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGTBxCw",
+                "fullName": "katydid/proofs",
+                "repoUrl": "https://github.com/katydid/proofs",
+                "gitUrl": "https://github.com/katydid/proofs",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

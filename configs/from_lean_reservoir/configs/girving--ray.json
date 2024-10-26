@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/girving/ray",
-    "commit": "06aa499",
+    "commit": "06aa499cb5c0c5641742cb443185e6f204710673",
     "lean": "leanprover/lean4:v4.12.0",
     "name": "ray",
     "imports": [
         "Ray"
-    ]
+    ],
+    "metadata": {
+        "name": "ray",
+        "owner": "girving",
+        "fullName": "girving/ray",
+        "description": "Formalizing results about the Mandelbrot set in Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2022-07-28T20:41:27Z",
+        "updatedAt": "2024-10-04T20:24:05Z",
+        "stars": 20,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOHu8kJg",
+                "fullName": "girving/ray",
+                "repoUrl": "https://github.com/girving/ray",
+                "gitUrl": "https://github.com/girving/ray",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

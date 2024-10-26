@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/PeterKementzey/graph-library-for-lean4",
-    "commit": "414cdbe",
+    "commit": "414cdbe1603340a54133edf9b07985f94ceeb26a",
     "lean": "leanprover/lean4:v4.8.0-rc1",
     "name": "\u00abGraph\u00bb",
     "imports": [
         "Graph"
-    ]
+    ],
+    "metadata": {
+        "name": "graph-library-for-lean4",
+        "owner": "PeterKementzey",
+        "fullName": "PeterKementzey/graph-library-for-lean4",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2021-03-09T17:43:26Z",
+        "updatedAt": "2024-09-08T04:42:52Z",
+        "stars": 18,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOFKD0tA",
+                "fullName": "PeterKementzey/graph-library-for-lean4",
+                "repoUrl": "https://github.com/PeterKementzey/graph-library-for-lean4",
+                "gitUrl": "https://github.com/PeterKementzey/graph-library-for-lean4",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

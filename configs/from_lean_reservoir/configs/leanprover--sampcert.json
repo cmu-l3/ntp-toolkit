@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/leanprover/SampCert",
-    "commit": "9cb42e1",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "9cb42e1befdf5968b61cda66355607e5571a4039",
+    "lean": "leanprover/lean4:v4.10.0",
     "name": "\u00absampcert\u00bb",
     "imports": [
         "\u00abSampCert\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "sampcert",
+        "owner": "leanprover",
+        "fullName": "leanprover/sampcert",
+        "description": "SampCert : Verified Differential Privacy",
+        "keywords": [],
+        "homepage": "https://leanprover.github.io/SampCert/",
+        "license": "Apache-2.0",
+        "createdAt": "2024-01-27T20:52:34Z",
+        "updatedAt": "2024-10-19T22:15:11Z",
+        "stars": 62,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLKfFMA",
+                "fullName": "leanprover/SampCert",
+                "repoUrl": "https://github.com/leanprover/SampCert",
+                "gitUrl": "https://github.com/leanprover/SampCert",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

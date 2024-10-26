@@ -1,9 +1,0 @@
-{
-    "repo": "https://github.com/hargoniX/crup",
-    "commit": "f693894",
-    "lean": "leanprover/lean4:v4.11.0",
-    "name": null,
-    "imports": [
-        null
-    ]
-}

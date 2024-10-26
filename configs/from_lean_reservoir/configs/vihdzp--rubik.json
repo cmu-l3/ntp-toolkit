@@ -1,9 +1,0 @@
-{
-    "repo": "https://github.com/vihdzp/rubik-lean4",
-    "commit": "95d4f48",
-    "lean": "leanprover/lean4:None",
-    "name": "\"rubik\"",
-    "imports": [
-        "\u00abRubik\u00bb"
-    ]
-}

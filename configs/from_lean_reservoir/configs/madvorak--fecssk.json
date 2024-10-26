@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/madvorak/fecssk",
-    "commit": "d7fe3aa",
+    "commit": "d7fe3aaa462c7a5cb30a0e35ec6f2973dff0d57b",
     "lean": "leanprover/lean4:v4.2.0-rc1",
     "name": "fecssk",
     "imports": [
         "Fecssk"
-    ]
+    ],
+    "metadata": {
+        "name": "fecssk",
+        "owner": "madvorak",
+        "fullName": "madvorak/fecssk",
+        "description": "Formalisms Every Computer Scientist Should Know (course at ISTA)",
+        "keywords": [],
+        "homepage": null,
+        "license": "Unlicense",
+        "createdAt": "2023-10-10T08:23:03Z",
+        "updatedAt": "2024-02-15T10:40:26Z",
+        "stars": 12,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKeVzzg",
+                "fullName": "madvorak/fecssk",
+                "repoUrl": "https://github.com/madvorak/fecssk",
+                "gitUrl": "https://github.com/madvorak/fecssk",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/fpvandoorn/carleson",
-    "commit": "a4a366d",
-    "lean": "leanprover/lean4:v4.13.0-rc1",
+    "commit": "09edadce7eae21aba79cb47248209619a2976222",
+    "lean": "leanprover/lean4:v4.12.0",
     "name": "\u00abcarleson\u00bb",
     "imports": [
         "\u00abCarleson\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "carleson",
+        "owner": "fpvandoorn",
+        "fullName": "fpvandoorn/carleson",
+        "description": "A formalized proof of Carleson's theorem in Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-10-20T14:24:32Z",
+        "updatedAt": "2024-10-25T10:16:56Z",
+        "stars": 24,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKi8VgA",
+                "fullName": "fpvandoorn/carleson",
+                "repoUrl": "https://github.com/fpvandoorn/carleson",
+                "gitUrl": "https://github.com/fpvandoorn/carleson",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

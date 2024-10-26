@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/joehendrix/lean-crypto",
-    "commit": "1c7f01d",
+    "commit": "1c7f01d34496245ee0676c7d98f954c0c9748d75",
     "lean": "leanprover/lean4:nightly-2023-04-20",
     "name": "LeanCrypto",
     "imports": [
         "LeanCrypto"
-    ]
+    ],
+    "metadata": {
+        "name": "lean-crypto",
+        "owner": "joehendrix",
+        "fullName": "joehendrix/lean-crypto",
+        "description": "Cryptographic routines for the Lean 4 language",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2021-12-13T15:25:44Z",
+        "updatedAt": "2024-09-12T13:17:40Z",
+        "stars": 42,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGhozKg",
+                "fullName": "joehendrix/lean-crypto",
+                "repoUrl": "https://github.com/joehendrix/lean-crypto",
+                "gitUrl": "https://github.com/joehendrix/lean-crypto",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

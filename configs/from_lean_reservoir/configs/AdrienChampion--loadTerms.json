@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/AdrienChampion/loadTerms.lean",
-    "commit": "a59d2dc",
+    "commit": "a59d2dcee52c45cbcfc739957f5ad9f050da8747",
     "lean": "leanprover/lean4:v4.7.0",
     "name": "\u00abloadTerms\u00bb",
     "imports": [
         "\u00abLoadTerms\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "loadTerms",
+        "owner": "AdrienChampion",
+        "fullName": "AdrienChampion/loadTerms",
+        "description": "Testing dynamic term loading in Lean 4.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-12-12T10:16:28Z",
+        "updatedAt": "2023-12-12T14:24:36Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOK4xjSw",
+                "fullName": "AdrienChampion/loadTerms.lean",
+                "repoUrl": "https://github.com/AdrienChampion/loadTerms.lean",
+                "gitUrl": "https://github.com/AdrienChampion/loadTerms.lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

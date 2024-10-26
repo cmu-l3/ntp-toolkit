@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/niklasmohrin/lean-seminar-2023",
-    "commit": "01aa704",
+    "commit": "01aa70443bdccddf28af8f3dca80ed5e599fe0b9",
     "lean": "leanprover/lean4:v4.7.0",
     "name": "FlowEquivalentForest",
     "imports": [
         "FlowEquivalentForest"
-    ]
+    ],
+    "metadata": {
+        "name": "LeanSeminar",
+        "owner": "niklasmohrin",
+        "fullName": "niklasmohrin/LeanSeminar",
+        "description": "Construction of a flow equivalent forest from a flow matrix in Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-10-19T12:36:31Z",
+        "updatedAt": "2024-08-19T16:55:29Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKicaaA",
+                "fullName": "niklasmohrin/lean-seminar-2023",
+                "repoUrl": "https://github.com/niklasmohrin/lean-seminar-2023",
+                "gitUrl": "https://github.com/niklasmohrin/lean-seminar-2023",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

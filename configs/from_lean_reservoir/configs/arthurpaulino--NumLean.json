@@ -1,9 +1,0 @@
-{
-    "repo": "https://github.com/arthurpaulino/NumLean",
-    "commit": "ed5e568",
-    "lean": "leanprover/lean4:nightly-2022-01-15",
-    "name": null,
-    "imports": [
-        null
-    ]
-}

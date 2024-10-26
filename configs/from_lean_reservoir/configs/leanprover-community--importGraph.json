@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/leanprover-community/import-graph",
-    "commit": "0ea83a6",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "0ea83a676d288220ba227808568cbb80fe43ace0",
+    "lean": "leanprover/lean4:v4.13.0-rc1",
     "name": "importGraph",
     "imports": [
         "ImportGraph"
-    ]
+    ],
+    "metadata": {
+        "name": "importGraph",
+        "owner": "leanprover-community",
+        "fullName": "leanprover-community/importGraph",
+        "description": "Tools to analyse and visualise the import structure of Lean packages and their files.",
+        "keywords": [],
+        "homepage": "https://reservoir.lean-lang.org/@leanprover-community/import-graph",
+        "license": "Apache-2.0",
+        "createdAt": "2023-12-19T20:50:35Z",
+        "updatedAt": "2024-10-24T05:03:27Z",
+        "stars": 7,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOK7rIxA",
+                "fullName": "leanprover-community/import-graph",
+                "repoUrl": "https://github.com/leanprover-community/import-graph",
+                "gitUrl": "https://github.com/leanprover-community/import-graph",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

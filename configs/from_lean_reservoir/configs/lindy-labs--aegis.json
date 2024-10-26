@@ -1,9 +1,39 @@
 {
     "repo": "https://github.com/lindy-labs/aegis",
-    "commit": "b5e24d6",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "b5e24d6d38e9c4bcffc949407b14751cbe916a3c",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
     "name": "\u00abaegis\u00bb",
     "imports": [
         "Aegis"
-    ]
+    ],
+    "metadata": {
+        "name": "aegis",
+        "owner": "lindy-labs",
+        "fullName": "lindy-labs/aegis",
+        "description": "Verify Cairo contracts in Lean 4",
+        "keywords": [
+            "cairo-lang",
+            "sierra",
+            "starknet",
+            "starkware",
+            "verification"
+        ],
+        "homepage": null,
+        "license": "GPL-3.0",
+        "createdAt": "2023-03-24T16:44:44Z",
+        "updatedAt": "2024-08-12T12:31:02Z",
+        "stars": 8,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJN3kdQ",
+                "fullName": "lindy-labs/aegis",
+                "repoUrl": "https://github.com/lindy-labs/aegis",
+                "gitUrl": "https://github.com/lindy-labs/aegis",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

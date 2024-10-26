@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/leanprover/doc-gen4",
-    "commit": "d36b7fd",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "d36b7fd4c730cae8a3a8edfe98beb34ef0fc6e0a",
+    "lean": "leanprover/lean4:v4.13.0-rc1",
     "name": "\u00abdoc-gen4\u00bb",
     "imports": [
         "DocGen4"
-    ]
+    ],
+    "metadata": {
+        "name": "doc-gen4",
+        "owner": "leanprover",
+        "fullName": "leanprover/doc-gen4",
+        "description": "Document Generator for Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2021-11-11T01:41:27Z",
+        "updatedAt": "2024-10-16T12:21:37Z",
+        "stars": 63,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGXD9sQ",
+                "fullName": "leanprover/doc-gen4",
+                "repoUrl": "https://github.com/leanprover/doc-gen4",
+                "gitUrl": "https://github.com/leanprover/doc-gen4",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

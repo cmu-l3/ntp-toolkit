@@ -1,9 +1,35 @@
 {
     "repo": "https://github.com/Anderssorby/SDL.lean",
-    "commit": "df56977",
-    "lean": "leanprover/lean4:v4.7.0",
+    "commit": "df569777830f9754bd19a99e9871fcc813118a33",
+    "lean": "leanprover/lean4:v4.4.0",
     "name": "\u00abSDL\u00bb",
     "imports": [
         "\u00abSDL\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "SDL",
+        "owner": "Anderssorby",
+        "fullName": "Anderssorby/SDL",
+        "description": "SDL2 bindings for lean",
+        "keywords": [
+            "sdl2"
+        ],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2021-12-30T10:22:34Z",
+        "updatedAt": "2024-10-08T09:17:14Z",
+        "stars": 21,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGmhCng",
+                "fullName": "Anderssorby/SDL.lean",
+                "repoUrl": "https://github.com/Anderssorby/SDL.lean",
+                "gitUrl": "https://github.com/Anderssorby/SDL.lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

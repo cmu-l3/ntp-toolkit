@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/ImperialCollegeLondon/formalising-mathematics-2024",
-    "commit": "07da422",
-    "lean": "leanprover/lean4:v4.5.0",
+    "commit": "b732ed1352e87b4474b0520d1383994e069f8057",
+    "lean": "leanprover/lean4:v4.5.0-rc1",
     "name": "\u00abformalising-mathematics-2024\u00bb",
     "imports": [
         "\u00abFormalisingMathematics2024\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "formalising-mathematics-2024",
+        "owner": "ImperialCollegeLondon",
+        "fullName": "ImperialCollegeLondon/formalising-mathematics-2024",
+        "description": "Formalising Mathematics; a course for undergraduate mathematicians. Ran between January and March 2024.",
+        "keywords": [],
+        "homepage": "https://www.ma.imperial.ac.uk/~buzzard/xena/formalising-mathematics-2024/",
+        "license": "Apache-2.0",
+        "createdAt": "2023-11-17T19:39:37Z",
+        "updatedAt": "2024-10-23T18:07:36Z",
+        "stars": 117,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKu1Khw",
+                "fullName": "ImperialCollegeLondon/formalising-mathematics-2024",
+                "repoUrl": "https://github.com/ImperialCollegeLondon/formalising-mathematics-2024",
+                "gitUrl": "https://github.com/ImperialCollegeLondon/formalising-mathematics-2024",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

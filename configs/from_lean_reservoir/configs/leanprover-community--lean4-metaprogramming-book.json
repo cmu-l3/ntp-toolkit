@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/leanprover-community/lean4-metaprogramming-book",
-    "commit": "a7fefe8",
+    "commit": "a7fefe89b486a22eee72c4566ee725378c6f2260",
     "lean": "leanprover/lean4:v4.7.0",
     "name": "\u00ablean4-metaprogramming-book\u00bb",
     "imports": [
         "\u00ablean4-metaprogramming-book\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "lean4-metaprogramming-book",
+        "owner": "leanprover-community",
+        "fullName": "leanprover-community/lean4-metaprogramming-book",
+        "description": null,
+        "keywords": [],
+        "homepage": "https://leanprover-community.github.io/lean4-metaprogramming-book/",
+        "license": "Apache-2.0",
+        "createdAt": "2022-03-23T22:54:03Z",
+        "updatedAt": "2024-10-25T01:44:21Z",
+        "stars": 216,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOHDdC8w",
+                "fullName": "leanprover-community/lean4-metaprogramming-book",
+                "repoUrl": "https://github.com/leanprover-community/lean4-metaprogramming-book",
+                "gitUrl": "https://github.com/leanprover-community/lean4-metaprogramming-book",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

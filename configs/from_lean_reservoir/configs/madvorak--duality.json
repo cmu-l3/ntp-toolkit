@@ -1,9 +1,36 @@
 {
     "repo": "https://github.com/madvorak/duality",
-    "commit": "8e1331d",
+    "commit": "8e1331db4a4f639782b3649259c62572529d9bc1",
     "lean": "leanprover/lean4:v4.11.0",
     "name": "duality",
     "imports": [
         "Duality"
-    ]
+    ],
+    "metadata": {
+        "name": "duality",
+        "owner": "madvorak",
+        "fullName": "madvorak/duality",
+        "description": "Duality theory in linear optimization and its extensions",
+        "keywords": [
+            "linear-algebra",
+            "linear-programming"
+        ],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-07-17T14:43:59Z",
+        "updatedAt": "2024-09-29T22:16:51Z",
+        "stars": 5,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMXn9mw",
+                "fullName": "madvorak/duality",
+                "repoUrl": "https://github.com/madvorak/duality",
+                "gitUrl": "https://github.com/madvorak/duality",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

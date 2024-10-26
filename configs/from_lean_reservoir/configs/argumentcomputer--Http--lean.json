@@ -1,9 +1,35 @@
 {
     "repo": "https://github.com/argumentcomputer/Http.lean",
-    "commit": "59c270c",
+    "commit": "59c270c597162d0bf67d2e4ce98c15627a8c07e3",
     "lean": "leanprover/lean4:nightly-2022-09-11",
     "name": "Http",
     "imports": [
         "Http"
-    ]
+    ],
+    "metadata": {
+        "name": "Http.lean",
+        "owner": "argumentcomputer",
+        "fullName": "argumentcomputer/Http.lean",
+        "description": "Basic Http functionality in Lean (unfinished)",
+        "keywords": [
+            "http"
+        ],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2022-02-10T11:58:31Z",
+        "updatedAt": "2024-10-18T06:09:57Z",
+        "stars": 10,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOG0jimw",
+                "fullName": "argumentcomputer/Http.lean",
+                "repoUrl": "https://github.com/argumentcomputer/Http.lean",
+                "gitUrl": "https://github.com/argumentcomputer/Http.lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

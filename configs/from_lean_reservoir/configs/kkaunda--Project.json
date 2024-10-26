@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/kkaunda/spgf",
-    "commit": "70ae488",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "1afbe396fd2cb4d9b5a3cb3a60be687f64cdd5c9",
+    "lean": "leanprover/lean4:v4.11.0-rc2",
     "name": "Project",
     "imports": [
         "Project"
-    ]
+    ],
+    "metadata": {
+        "name": "Project",
+        "owner": "kkaunda",
+        "fullName": "kkaunda/Project",
+        "description": "Structure in Prime Gaps - Formalized",
+        "keywords": [],
+        "homepage": "https://kkaunda.github.io/spgf/",
+        "license": "Apache-2.0",
+        "createdAt": "2024-08-10T10:44:01Z",
+        "updatedAt": "2024-10-24T20:10:22Z",
+        "stars": 3,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMhuxuQ",
+                "fullName": "kkaunda/spgf",
+                "repoUrl": "https://github.com/kkaunda/spgf",
+                "gitUrl": "https://github.com/kkaunda/spgf",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

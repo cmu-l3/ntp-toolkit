@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/leanprover-community/mathport",
-    "commit": "1826bb7",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "1826bb7206c4620a44fa425722c546cd4cf85918",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
     "name": "mathport",
     "imports": [
         "Mathport"
-    ]
+    ],
+    "metadata": {
+        "name": "mathport",
+        "owner": "leanprover-community",
+        "fullName": "leanprover-community/mathport",
+        "description": "Mathport is a tool for porting Lean3 projects to Lean4",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2021-06-22T17:55:21Z",
+        "updatedAt": "2024-08-28T13:30:41Z",
+        "stars": 41,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOFpyHUg",
+                "fullName": "leanprover-community/mathport",
+                "repoUrl": "https://github.com/leanprover-community/mathport",
+                "gitUrl": "https://github.com/leanprover-community/mathport",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

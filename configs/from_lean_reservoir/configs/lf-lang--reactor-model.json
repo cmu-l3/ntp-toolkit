@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/lf-lang/reactor-model",
-    "commit": "30f9bec",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "30f9bec1c7115f76ccad504ad3ce977f97fa35c6",
+    "lean": "leanprover/lean4:v4.12.0-rc1",
     "name": "reactor-model",
     "imports": [
         "ReactorModel"
-    ]
+    ],
+    "metadata": {
+        "name": "reactor-model",
+        "owner": "lf-lang",
+        "fullName": "lf-lang/reactor-model",
+        "description": "A Lean-based formalization of the Reactor model.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2021-04-29T13:53:32Z",
+        "updatedAt": "2024-09-11T16:04:22Z",
+        "stars": 5,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOFaBp8g",
+                "fullName": "lf-lang/reactor-model",
+                "repoUrl": "https://github.com/lf-lang/reactor-model",
+                "gitUrl": "https://github.com/lf-lang/reactor-model",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

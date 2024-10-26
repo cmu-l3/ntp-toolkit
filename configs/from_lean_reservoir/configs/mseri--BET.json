@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/mseri/BET",
-    "commit": "ffd83d7",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "ffd83d7ffb7198aeec10ad839e684838b7def117",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "BET",
     "imports": [
         "BET"
-    ]
+    ],
+    "metadata": {
+        "name": "BET",
+        "owner": "mseri",
+        "fullName": "mseri/BET",
+        "description": "Project for \"Machine-Checked Mathematics\" at the Lorentz Center",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-07-17T07:35:45Z",
+        "updatedAt": "2024-10-24T12:25:44Z",
+        "stars": 6,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJ8YqWg",
+                "fullName": "mseri/BET",
+                "repoUrl": "https://github.com/mseri/BET",
+                "gitUrl": "https://github.com/mseri/BET",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

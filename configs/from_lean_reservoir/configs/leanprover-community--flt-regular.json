@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/leanprover-community/flt-regular",
-    "commit": "b0eb9f8",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "33953c1ee121a1eae474bdaa4e651f31c026f2cf",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "\u00abflt-regular\u00bb",
     "imports": [
         "\u00abFltRegular\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "flt-regular",
+        "owner": "leanprover-community",
+        "fullName": "leanprover-community/flt-regular",
+        "description": "Fermat's Last Theorem for regular primes",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2021-10-25T12:48:56Z",
+        "updatedAt": "2024-10-25T12:12:32Z",
+        "stars": 51,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGRhGIA",
+                "fullName": "leanprover-community/flt-regular",
+                "repoUrl": "https://github.com/leanprover-community/flt-regular",
+                "gitUrl": "https://github.com/leanprover-community/flt-regular",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

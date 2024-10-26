@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/madvorak/thue",
-    "commit": "00c5d7b",
+    "commit": "00c5d7b5234209231e68f6f11f7304f6814002eb",
     "lean": "leanprover/lean4:nightly-2023-07-12",
     "name": "thue",
     "imports": [
         "Thue"
-    ]
+    ],
+    "metadata": {
+        "name": "thue",
+        "owner": "madvorak",
+        "fullName": "madvorak/thue",
+        "description": "Semi-Thue systems a.k.a. string rewriting systems",
+        "keywords": [],
+        "homepage": null,
+        "license": "BSD-2-Clause",
+        "createdAt": "2023-08-18T12:23:00Z",
+        "updatedAt": "2024-10-21T09:40:40Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKIoBSg",
+                "fullName": "madvorak/thue",
+                "repoUrl": "https://github.com/madvorak/thue",
+                "gitUrl": "https://github.com/madvorak/thue",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

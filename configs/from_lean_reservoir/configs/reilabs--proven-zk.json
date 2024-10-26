@@ -1,9 +1,36 @@
 {
     "repo": "https://github.com/reilabs/proven-zk",
-    "commit": "659b51e",
+    "commit": "659b51e94d4c5160c5d93b92323f0d0dda05c3ad",
     "lean": "leanprover/lean4:v4.2.0",
     "name": "\u00abproven-zk\u00bb",
     "imports": [
         "\u00abProvenZk\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "proven-zk",
+        "owner": "reilabs",
+        "fullName": "reilabs/proven-zk",
+        "description": "A support library for working with zero knowledge cryptography in Lean 4.",
+        "keywords": [
+            "formal-verification",
+            "zero-knowledge"
+        ],
+        "homepage": "https://reilabs.io",
+        "license": "Apache-2.0",
+        "createdAt": "2023-06-12T15:45:48Z",
+        "updatedAt": "2024-10-25T09:17:10Z",
+        "stars": 30,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJudT5A",
+                "fullName": "reilabs/proven-zk",
+                "repoUrl": "https://github.com/reilabs/proven-zk",
+                "gitUrl": "https://github.com/reilabs/proven-zk",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

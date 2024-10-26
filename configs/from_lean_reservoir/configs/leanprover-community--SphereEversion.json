@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/leanprover-community/sphere-eversion",
-    "commit": "97755ea",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "97755eaae3311c0573bf3c10fb769e4e36893327",
+    "lean": "leanprover/lean4:v4.12.0",
     "name": "SphereEversion",
     "imports": [
         "SphereEversion"
-    ]
+    ],
+    "metadata": {
+        "name": "SphereEversion",
+        "owner": "leanprover-community",
+        "fullName": "leanprover-community/SphereEversion",
+        "description": "Formalization of the existence of sphere eversions",
+        "keywords": [],
+        "homepage": "https://leanprover-community.github.io/sphere-eversion/",
+        "license": "Apache-2.0",
+        "createdAt": "2020-06-03T12:52:04Z",
+        "updatedAt": "2024-10-07T12:56:48Z",
+        "stars": 36,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOEAnydw",
+                "fullName": "leanprover-community/sphere-eversion",
+                "repoUrl": "https://github.com/leanprover-community/sphere-eversion",
+                "gitUrl": "https://github.com/leanprover-community/sphere-eversion",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/tydeu/lean4-itertools",
-    "commit": "d4275eb",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "d4275eb4ddc5d9756b8dd0172e5d20d121e46113",
+    "lean": "leanprover/lean4:v4.3.0",
     "name": "itertools",
     "imports": [
         "Itertools"
-    ]
+    ],
+    "metadata": {
+        "name": "itertools",
+        "owner": "tydeu",
+        "fullName": "tydeu/itertools",
+        "description": "A Lean 4 library for iterators.",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2021-12-20T20:29:01Z",
+        "updatedAt": "2024-04-14T10:59:49Z",
+        "stars": 11,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGj5sAg",
+                "fullName": "tydeu/lean4-itertools",
+                "repoUrl": "https://github.com/tydeu/lean4-itertools",
+                "gitUrl": "https://github.com/tydeu/lean4-itertools",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/yangky11/lean4-example",
-    "commit": "7f7d713",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "7f7d71379312f9e8098ce7341d8ea1cd449ec0e9",
+    "lean": "leanprover/lean4:v4.11.0",
     "name": "\u00ablean4-example\u00bb",
     "imports": [
         "\u00abLean4Example\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "lean4-example",
+        "owner": "yangky11",
+        "fullName": "yangky11/lean4-example",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-05-03T15:37:37Z",
+        "updatedAt": "2024-09-02T10:11:59Z",
+        "stars": 10,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJeZbpQ",
+                "fullName": "yangky11/lean4-example",
+                "repoUrl": "https://github.com/yangky11/lean4-example",
+                "gitUrl": "https://github.com/yangky11/lean4-example",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

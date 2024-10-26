@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/fgdorais/lean4-parser",
-    "commit": "469bc3d",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "469bc3db0dfc3b9f4c3b445a736c6550420408eb",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "Parser",
     "imports": [
         "Parser"
-    ]
+    ],
+    "metadata": {
+        "name": "Parser",
+        "owner": "fgdorais",
+        "fullName": "fgdorais/Parser",
+        "description": "Parser Combinator Library for Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-01-08T21:16:12Z",
+        "updatedAt": "2024-10-06T16:30:12Z",
+        "stars": 33,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOIveJLw",
+                "fullName": "fgdorais/lean4-parser",
+                "repoUrl": "https://github.com/fgdorais/lean4-parser",
+                "gitUrl": "https://github.com/fgdorais/lean4-parser",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

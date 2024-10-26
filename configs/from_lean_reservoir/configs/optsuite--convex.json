@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/optsuite/optlib",
-    "commit": "2f84855",
-    "lean": "leanprover/lean4:v4.10.0",
+    "commit": "244700cf867f25159dd5009cb42fa9c3c3600655",
+    "lean": "leanprover/lean4:v4.10.0-rc1",
     "name": "\u00abconvex\u00bb",
     "imports": [
         "\u00abConvex\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "convex",
+        "owner": "optsuite",
+        "fullName": "optsuite/convex",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-09-13T11:02:59Z",
+        "updatedAt": "2024-10-24T01:54:48Z",
+        "stars": 36,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKTA4bQ",
+                "fullName": "optsuite/optlib",
+                "repoUrl": "https://github.com/optsuite/optlib",
+                "gitUrl": "https://github.com/optsuite/optlib",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

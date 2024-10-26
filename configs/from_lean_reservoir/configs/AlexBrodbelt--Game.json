@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/AlexBrodbelt/metric-spaces-and-topology-game",
-    "commit": "983ae9a",
+    "commit": "983ae9ad4ab54d742abdc0496e23f39b7e22ef99",
     "lean": "leanprover/lean4:v4.7.0",
     "name": "Game",
     "imports": [
         "Game"
-    ]
+    ],
+    "metadata": {
+        "name": "Game",
+        "owner": "AlexBrodbelt",
+        "fullName": "AlexBrodbelt/Game",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2024-03-12T10:51:45Z",
+        "updatedAt": "2024-10-01T16:01:07Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLfLnJg",
+                "fullName": "AlexBrodbelt/metric-spaces-and-topology-game",
+                "repoUrl": "https://github.com/AlexBrodbelt/metric-spaces-and-topology-game",
+                "gitUrl": "https://github.com/AlexBrodbelt/metric-spaces-and-topology-game",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

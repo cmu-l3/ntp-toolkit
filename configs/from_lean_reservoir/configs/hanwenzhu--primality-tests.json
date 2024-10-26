@@ -1,9 +1,36 @@
 {
     "repo": "https://github.com/hanwenzhu/primality-tests",
-    "commit": "4b84dd7",
-    "lean": "leanprover/lean4:v4.5.0",
+    "commit": "4b84dd714543a5f223f4b20038015c5ba211898c",
+    "lean": "leanprover/lean4:v4.5.0-rc1",
     "name": "\u00abprimality-tests\u00bb",
     "imports": [
         "PrimalityTests"
-    ]
+    ],
+    "metadata": {
+        "name": "primality-tests",
+        "owner": "hanwenzhu",
+        "fullName": "hanwenzhu/primality-tests",
+        "description": "Miller\u2013Rabin primality test in Lean",
+        "keywords": [
+            "primality-test",
+            "theorem-proving"
+        ],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-12-18T04:21:08Z",
+        "updatedAt": "2024-05-31T22:01:21Z",
+        "stars": 5,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOK67duw",
+                "fullName": "hanwenzhu/primality-tests",
+                "repoUrl": "https://github.com/hanwenzhu/primality-tests",
+                "gitUrl": "https://github.com/hanwenzhu/primality-tests",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

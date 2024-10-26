@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/Command-Master/lean-bourgain",
-    "commit": "07fe8b2",
+    "commit": "07fe8b2feac3e72d4f0bd1c8d094e1ebd0a02ffb",
     "lean": "leanprover/lean4:v4.7.0",
     "name": "\u00abpseudorandom\u00bb",
     "imports": [
         "\u00abPseudorandom\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "pseudorandom",
+        "owner": "Command-Master",
+        "fullName": "Command-Master/pseudorandom",
+        "description": null,
+        "keywords": [],
+        "homepage": "https://command-master.github.io/lean-bourgain/",
+        "license": "Apache-2.0",
+        "createdAt": "2024-03-17T04:23:13Z",
+        "updatedAt": "2024-09-25T18:49:04Z",
+        "stars": 3,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLhZ5Nw",
+                "fullName": "Command-Master/lean-bourgain",
+                "repoUrl": "https://github.com/Command-Master/lean-bourgain",
+                "gitUrl": "https://github.com/Command-Master/lean-bourgain",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

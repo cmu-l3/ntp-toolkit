@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/leanprover/leansat",
-    "commit": "30e2ed2",
-    "lean": "leanprover/lean4:v4.11.0-rc1",
+    "commit": "b83b5d8631ee54bc913b0e6aaf44711c34a50e0d",
+    "lean": "leanprover/lean4:nightly-2024-08-02",
     "name": "LeanSAT",
     "imports": [
         "Test"
-    ]
+    ],
+    "metadata": {
+        "name": "LeanSAT",
+        "owner": "leanprover",
+        "fullName": "leanprover/LeanSAT",
+        "description": "This package provides an interface and foundation for verified SAT reasoning",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-11-20T22:09:05Z",
+        "updatedAt": "2024-09-24T19:20:20Z",
+        "stars": 49,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKv731w",
+                "fullName": "leanprover/leansat",
+                "repoUrl": "https://github.com/leanprover/leansat",
+                "gitUrl": "https://github.com/leanprover/leansat",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

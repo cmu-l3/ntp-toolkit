@@ -1,9 +1,36 @@
 {
     "repo": "https://github.com/matematiflo/SumsOfSquares",
-    "commit": "4b82a90",
-    "lean": "leanprover/lean4:v4.11.0-rc3",
+    "commit": "4b82a90bfce25713656d0ddcd3681bdc1fbfc328",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
     "name": "SumSq",
     "imports": [
         "SumSq"
-    ]
+    ],
+    "metadata": {
+        "name": "SumSq",
+        "owner": "matematiflo",
+        "fullName": "matematiflo/SumSq",
+        "description": "Summing squares in Lean",
+        "keywords": [
+            "real-algebra",
+            "type-theory"
+        ],
+        "homepage": "https://matematiflo.github.io/SumsOfSquares/",
+        "license": "Apache-2.0",
+        "createdAt": "2023-11-03T13:06:25Z",
+        "updatedAt": "2024-08-16T12:07:06Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKo0a9g",
+                "fullName": "matematiflo/SumsOfSquares",
+                "repoUrl": "https://github.com/matematiflo/SumsOfSquares",
+                "gitUrl": "https://github.com/matematiflo/SumsOfSquares",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

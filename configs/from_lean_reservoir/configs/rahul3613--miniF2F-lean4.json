@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/rahul3613/miniF2F-lean4",
-    "commit": "d2e847c",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "d2e847c98dee1acf5355f5de2ab71f3fcd24849a",
+    "lean": "leanprover/lean4:v4.6.0",
     "name": "\u00abminiF2F-lean4\u00bb",
     "imports": [
         "\u00abMiniF2FLean4\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "miniF2F-lean4",
+        "owner": "rahul3613",
+        "fullName": "rahul3613/miniF2F-lean4",
+        "description": "miniF2F dataset ported into Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2024-03-05T13:52:43Z",
+        "updatedAt": "2024-10-06T13:27:26Z",
+        "stars": 3,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLb_iRQ",
+                "fullName": "rahul3613/miniF2F-lean4",
+                "repoUrl": "https://github.com/rahul3613/miniF2F-lean4",
+                "gitUrl": "https://github.com/rahul3613/miniF2F-lean4",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

@@ -1,9 +1,40 @@
 {
     "repo": "https://github.com/forked-from-1kasper/ground_zero",
-    "commit": "39044da",
+    "commit": "39044dae1b039208c372afb92f4b20633646d7ed",
     "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "GroundZero",
     "imports": [
         "GroundZero"
-    ]
+    ],
+    "metadata": {
+        "name": "ground_zero",
+        "owner": "forked-from-1kasper",
+        "fullName": "forked-from-1kasper/ground_zero",
+        "description": "Ground Zero: Lean 4 HoTT Library",
+        "keywords": [
+            "math",
+            "cubical-type-theory",
+            "ctt",
+            "homotopy-type-theory",
+            "hott",
+            "leanprover"
+        ],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2022-03-21T13:32:56Z",
+        "updatedAt": "2024-10-18T11:19:25Z",
+        "stars": 43,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOHCeC-A",
+                "fullName": "forked-from-1kasper/ground_zero",
+                "repoUrl": "https://github.com/forked-from-1kasper/ground_zero",
+                "gitUrl": "https://github.com/forked-from-1kasper/ground_zero",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

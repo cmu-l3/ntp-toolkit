@@ -1,9 +1,35 @@
 {
     "repo": "https://github.com/kmill/lean4-raytracer",
-    "commit": "205143b",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "205143b32c006199c914cf6f340004137aaaa72a",
+    "lean": "leanprover/lean4:v4.8.0-rc1",
     "name": "render",
     "imports": [
         "Render"
-    ]
+    ],
+    "metadata": {
+        "name": "render",
+        "owner": "kmill",
+        "fullName": "kmill/render",
+        "description": "A simple raytracer written in Lean 4",
+        "keywords": [
+            "raytracing"
+        ],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2021-01-31T19:48:50Z",
+        "updatedAt": "2024-10-22T13:01:06Z",
+        "stars": 123,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOE_PEtg",
+                "fullName": "kmill/lean4-raytracer",
+                "repoUrl": "https://github.com/kmill/lean4-raytracer",
+                "gitUrl": "https://github.com/kmill/lean4-raytracer",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

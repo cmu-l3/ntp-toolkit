@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/algebraic-dev/parse",
-    "commit": "0af4ac3",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "0af4ac3bd84affdf04fac16d7452ad89fb8c8902",
+    "lean": "leanprover/lean4:v4.8.0",
     "name": "\u00abParse\u00bb",
     "imports": [
         "\u00abParse\u00bb"
-    ]
+    ],
+    "metadata": {
+        "name": "Parse",
+        "owner": "algebraic-dev",
+        "fullName": "algebraic-dev/Parse",
+        "description": "\ud83e\udde9 | Parser generation for Lean 4.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-12-15T11:34:01Z",
+        "updatedAt": "2024-08-14T03:17:08Z",
+        "stars": 9,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOK6FjNQ",
+                "fullName": "algebraic-dev/parse",
+                "repoUrl": "https://github.com/algebraic-dev/parse",
+                "gitUrl": "https://github.com/algebraic-dev/parse",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

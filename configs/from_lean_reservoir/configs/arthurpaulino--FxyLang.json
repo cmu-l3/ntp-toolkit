@@ -1,9 +1,0 @@
-{
-    "repo": "https://github.com/arthurpaulino/FxyLang",
-    "commit": "fe1c1df",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
-    "name": null,
-    "imports": [
-        null
-    ]
-}

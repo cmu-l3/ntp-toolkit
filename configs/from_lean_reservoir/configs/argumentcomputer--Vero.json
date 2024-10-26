@@ -1,9 +1,0 @@
-{
-    "repo": "https://github.com/argumentcomputer/Vero",
-    "commit": "d35e4c6",
-    "lean": "leanprover/lean4:None",
-    "name": "vero",
-    "imports": [
-        "Vero"
-    ]
-}

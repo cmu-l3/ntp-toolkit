@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/ammkrn/printiest",
-    "commit": "8598cb4",
+    "commit": "8598cb44caeb0e560cd41636e554ca93c9324edd",
     "lean": "leanprover/lean4:v4.8.0-rc1",
     "name": "printiest",
     "imports": [
         "Printiest"
-    ]
+    ],
+    "metadata": {
+        "name": "printiest",
+        "owner": "ammkrn",
+        "fullName": "ammkrn/printiest",
+        "description": "A pretty printer for Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2021-07-14T06:40:21Z",
+        "updatedAt": "2024-02-03T23:23:02Z",
+        "stars": 6,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOFv9zyg",
+                "fullName": "ammkrn/printiest",
+                "repoUrl": "https://github.com/ammkrn/printiest",
+                "gitUrl": "https://github.com/ammkrn/printiest",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

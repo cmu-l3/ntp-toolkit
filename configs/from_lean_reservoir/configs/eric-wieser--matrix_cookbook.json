@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/eric-wieser/lean-matrix-cookbook",
-    "commit": "7520e81",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "7520e81244705edc1d1093c3d131c436f8332136",
+    "lean": "leanprover/lean4:v4.12.0",
     "name": "matrix_cookbook",
     "imports": [
         "MatrixCookbook"
-    ]
+    ],
+    "metadata": {
+        "name": "matrix_cookbook",
+        "owner": "eric-wieser",
+        "fullName": "eric-wieser/matrix_cookbook",
+        "description": "The matrix cookbook, proved in the Lean theorem prover",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2021-10-21T16:25:24Z",
+        "updatedAt": "2024-10-21T18:17:09Z",
+        "stars": 84,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGQWYtQ",
+                "fullName": "eric-wieser/lean-matrix-cookbook",
+                "repoUrl": "https://github.com/eric-wieser/lean-matrix-cookbook",
+                "gitUrl": "https://github.com/eric-wieser/lean-matrix-cookbook",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }

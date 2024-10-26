@@ -1,9 +1,33 @@
 {
     "repo": "https://github.com/tydeu/lean4-partax",
-    "commit": "cae09f6",
-    "lean": "leanprover/lean4:v4.5.0",
+    "commit": "cae09f613655da2ecae3f4e079fd8f9928159157",
+    "lean": "leanprover/lean4:v4.3.0",
     "name": "partax",
     "imports": [
         "Partax"
-    ]
+    ],
+    "metadata": {
+        "name": "partax",
+        "owner": "tydeu",
+        "fullName": "tydeu/partax",
+        "description": "Lean 4 library of tools for parsing and compiling syntax and parser definitions.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-07-08T03:23:47Z",
+        "updatedAt": "2024-06-20T03:58:14Z",
+        "stars": 8,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJ5AmHw",
+                "fullName": "tydeu/lean4-partax",
+                "repoUrl": "https://github.com/tydeu/lean4-partax",
+                "gitUrl": "https://github.com/tydeu/lean4-partax",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
 }
