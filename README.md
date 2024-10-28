@@ -5,7 +5,7 @@ The neural theorem proving toolkit transforms Lean repositories into datasets fo
 <img width="900" alt="ntp-toolkit" src="https://github.com/user-attachments/assets/61441106-722c-4187-a505-c0d438760582">
 
 
-The toolkit is originally a fork of Kim Morrison's [lean-training-data](https://github.com/semorrison/lean-training-data) and developed in [miniCTX](https://cmu-l3.github.io/minictx/). 
+The toolkit is originally a fork of Kim Morrison's [lean-training-data](https://github.com/semorrison/lean-training-data) and developed in [miniCTX](https://cmu-l3.github.io/minictx/).
 
 
 
@@ -123,6 +123,11 @@ This produces a `.jsonl` file where each line contains all of the information in
 
 Note: Of the above additional fields, all `...ToEndOfGoal` fields are potentially approximations. They currently appear to be accurate for the patterns I have tested, but it's hard to check whether there may be edge cases for which they are inaccurate.
 
+### Adding new extraction tasks
+You can add a new extraction task, by:
+1. Add a relevant flag to `scripts/extract_repos.py`. Also change the `_lakefile` method accordingly, and add the flag to `flags`.
+2. Then add an entry in `TASKS` to `scripts/run_pipeline.py`
+
 ## Running instruction tuning data generation
 After extraction, you can generate various forms of (prompt, completion) examples for fine-tuning language models.
 
@@ -176,12 +181,12 @@ The toolkit is originally a fork of Kim Morrison's [lean-training-data](https://
 The `ntp-toolkit` was initially developed in [miniCTX](https://cmu-l3.github.io/minictx/):
 ```bibtex
 @misc{hu2024minictxneuraltheoremproving,
-      title={miniCTX: Neural Theorem Proving with (Long-)Contexts}, 
+      title={miniCTX: Neural Theorem Proving with (Long-)Contexts},
       author={Jiewen Hu and Thomas Zhu and Sean Welleck},
       year={2024},
       eprint={2408.03350},
       archivePrefix={arXiv},
       primaryClass={cs.AI},
-      url={https://arxiv.org/abs/2408.03350}, 
+      url={https://arxiv.org/abs/2408.03350},
 }
 ```

@@ -1,0 +1,10 @@
+[
+    {
+        "repo": "https://github.com/leanprover-community/mathlib4",
+        "commit": "0311b12d9c874ba88246fea92c992b97025af76d",
+        "lean": "leanprover/lean4:v4.13.0-rc3",
+        "name": "mathlib",
+        "import_file": "Mathlib.lean",
+        "imports": ["Mathlib", "Init", "Batteries"]
+    }
+]

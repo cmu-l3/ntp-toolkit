@@ -3,11 +3,9 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Lean.Elab.Frontend
-import Lean.Util.Paths
-import Batteries.Lean.Util.Path -- Note: this is ported to upstream in later Lean versions
--- import Batteries.Parser.Term
-import Batteries.Data.MLList.Basic
+/- The reason to be deliberately ambiguous is for maximum Lean version polymorphism -/
+import Lean
+import Batteries
 
 /-!
 # Compiling Lean sources to obtain `Environment`, `Message`s and `InfoTree`s.
@@ -104,7 +102,7 @@ def one : FrontendM (CompilationStep × Bool) := do
   let src := ⟨(← read).inputCtx.input, (← get).cmdPos, (← get).parserState.pos⟩
   let s' := (← get).commandState
   let after := s'.env
-  let msgs := s'.messages.unreported.drop s.messages.unreported.size
+  let msgs := s'.messages.toList.drop s.messages.toList.length -- not using `msgs` for v4.8.0 support
   let trees := s'.infoState.trees.drop s.infoState.trees.size
   return ({ src, stx, before, after, msgs, trees }, done)
 
