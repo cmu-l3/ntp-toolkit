@@ -5,11 +5,10 @@ package «lean-training-data» {
   -- add any package configuration options here
 }
 
-require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git" @ "09d33efc68d3ad52db77b731d7253675395a14aa"
+require LeanCamCombi from git
+  "https://github.com/YaelDillies/LeanCamCombi.git" @ "ef325f10fab9bfde5184048021dad23c94461e1d"
 
-require «doc-gen4» from git
-  "https://github.com/leanprover/doc-gen4.git" @ "v4.9.0"
+
 
 @[default_target]
 lean_lib TrainingData where

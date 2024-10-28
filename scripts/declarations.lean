@@ -1,8 +1,8 @@
 import Mathlib.Lean.CoreM
 import Mathlib.Control.Basic
 import Mathlib.Lean.Expr.Basic
-import Batteries.Lean.HashMap
-import Batteries.Lean.Util.Path
+import Batteries
+import Lean
 import DocGen4.Process
 
 /-!

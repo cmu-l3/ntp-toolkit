@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Change
+import Lean
 open Lean
 
 instance : LE Position where
