@@ -43,6 +43,12 @@ theorem querySMTTest (x y z : Int) : x ≤ y → y ≤ z → x ≤ z := by
     by simp; omega
   duper [h0, h1, negGoal, smtLemma0, smtLemma1, smtLemma2, smtLemma3]
 
+theorem skolemizationTest1 (α : Type) [Inhabited α] (p : Prop) (f : α → Prop) (h : p ∨ ∃ x : α, f x) : p ∨ ∃ x : α, f x := by
+  exact h -- `skolemizeAll` can succeed because `α` is known to be inhabited
+
+theorem skolemizationTest2 (α : Type) (p : Prop) (f : α → Prop) (h : p ∨ ∃ x : α, f x) : p ∨ ∃ x : α, f x := by
+  exact h -- `skolemizeAll` fails because `α` isn't known to be inhabited and the fact that `α` isn't inhabited doesn't follow from `h`
+
 end TacticProofs
 
 namespace TermProofs
