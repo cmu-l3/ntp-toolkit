@@ -200,11 +200,11 @@ def runHammerAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withImp
           | _ :: _ => pure .subgoals)
           (ctx := {declName? := `fakeDecl, errToSorry := false})
       catch e =>
-        if ← Hammer.hammerErrorIsSimpPreprocessingError e then pure .simpPreprocessingFailure
-        else if ← Hammer.hammerErrorIsTranslationError e then pure .tptpTranslationFailure
-        else if ← Hammer.hammerErrorIsExternalSolverError e then pure .externalProverFailure
-        else if ← Hammer.hammerErrorIsDuperSolverError e then pure .duperFailure
-        else if ← Hammer.hammerErrorIsProofFitError e then pure .proofFitFailure
+        if ← Hammer.errorIsSimpPreprocessingError e then pure .simpPreprocessingFailure
+        else if ← Hammer.errorIsTranslationError e then pure .tptpTranslationFailure
+        else if ← Hammer.errorIsExternalSolverError e then pure .externalProverFailure
+        else if ← Hammer.errorIsDuperSolverError e then pure .duperFailure
+        else if ← Hammer.errorIsProofFitError e then pure .proofFitFailure
         else if "tactic 'simp' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
         else if "tactic 'simp_all' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
         else pure .miscFailure
@@ -243,11 +243,11 @@ def runHammerAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → Met
           | _ :: _ => pure .subgoals)
           (ctx := {declName? := `fakeDecl, errToSorry := false})
       catch e =>
-        if ← Hammer.hammerErrorIsSimpPreprocessingError e then pure .simpPreprocessingFailure
-        else if ← Hammer.hammerErrorIsTranslationError e then pure .tptpTranslationFailure
-        else if ← Hammer.hammerErrorIsExternalSolverError e then pure .externalProverFailure
-        else if ← Hammer.hammerErrorIsDuperSolverError e then pure .duperFailure
-        else if ← Hammer.hammerErrorIsProofFitError e then pure .proofFitFailure
+        if ← Hammer.errorIsSimpPreprocessingError e then pure .simpPreprocessingFailure
+        else if ← Hammer.errorIsTranslationError e then pure .tptpTranslationFailure
+        else if ← Hammer.errorIsExternalSolverError e then pure .externalProverFailure
+        else if ← Hammer.errorIsDuperSolverError e then pure .duperFailure
+        else if ← Hammer.errorIsProofFitError e then pure .proofFitFailure
         else if "tactic 'simp' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
         else if "tactic 'simp_all' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
         else pure .miscFailure
