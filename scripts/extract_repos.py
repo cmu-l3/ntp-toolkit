@@ -17,7 +17,7 @@ require %s from git
   "%s.git" @ "%s"
 
 require QuerySMT from git
-  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "main"
+  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "48757019d1d2680d4764aba59dfd5e020c450fe8"
 
 require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.12.0"
 
