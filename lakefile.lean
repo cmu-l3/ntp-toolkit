@@ -11,6 +11,8 @@ require mathlib from git
 require QuerySMT from git
   "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "main"
 
+require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.12.0"
+
 @[default_target]
 lean_lib TrainingData where
 

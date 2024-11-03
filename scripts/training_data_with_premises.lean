@@ -3,6 +3,7 @@ import TrainingData.InfoTree.ToJson
 import TrainingData.InfoTree.TacticInvocation.Basic
 import TrainingData.Utils.Range
 import TrainingData.Utils.HammerBlacklist
+import TrainingData.Utils.TheoremPrettyPrinting
 import Mathlib.Data.String.Defs
 import Mathlib.Lean.CoreM
 import Batteries.Data.String.Basic
@@ -11,18 +12,17 @@ import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Change
 import Cli
 
-open Lean Elab IO Meta
-open Cli System
+open Lean Elab IO Meta Cli System TheoremPrettyPrinting DocGen4.Process
 
-def DeclIdMap := HashMap String (List Json)
+def DeclIdMap := Std.HashMap String (List Json)
 
 def addToMap (map : DeclIdMap) (declId : String) (jsonObj : Json) : DeclIdMap :=
-  match map.find? declId with
+  match map.get? declId with
   | some jsonList => map.insert declId (jsonObj :: jsonList)
   | none => map.insert declId [jsonObj]
 
 def groupByDecl (idJsons : List (String × Json)) : IO DeclIdMap := do
-  let mut map : DeclIdMap := HashMap.empty
+  let mut map : DeclIdMap := Std.HashMap.empty
   for ⟨declId, json⟩ in idJsons do
     map := addToMap map declId json
   return map
@@ -310,45 +310,108 @@ def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) 
     }
   return data
 
-/-- Creates a `FirstPassTrainingData` object based on the theorem `declName` which was proven via the proof term `term` -/
-def trainingDataGivenTerm (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (cmd : CompilationStep) (term : Expr) (declName : String)
-  (ci : ConstantInfo) : IO Unit /- FirstPassTrainingData -/ := do
-  let declId := makeElabDeclId elabDeclInfo module hash
-
-  -- Manually build `decl` from `ci`
-  let mut decl :=
-    match ci with
-    | .axiomInfo _ => "axiom " ++ declName ++ " "
-    | .thmInfo _ => "theorem " ++ declName ++ " "
-    | .opaqueInfo _ => "opaque " ++ declName ++ " "
-    | .defnInfo i =>
-      if isInstanceCore cmd.after i.name then
-        "instance " ++ declName ++ " "
-      else
-        "def " ++ declName ++ " "
-    | .inductInfo i =>
-      if isClass cmd.after i.name then
-        "class " ++ declName ++ " "
-      else if isStructure cmd.after i.name then
-        "structure " ++ declName ++ " "
-      else
-        "inductive " ++ declName ++ " "
-    | .ctorInfo _ => "def " ++ declName ++ " "
-    | .recInfo _ => "def " ++ declName ++ " "
-    | .quotInfo _ => "def " ++ declName ++ " "
-
-
-
-  -- **TODO** Use Thomas' constants.lean code to build the decl manually from `ci`. I think this is good enough
-  -- The main problem that leaves is the state
-
+/-- Creates a `SecondPassTrainingData` object based on the theorem `v`. This can be done in one pass because we only call
+    `trainingDataGivenTheoremVal` on theorems that are proved without entering tactic mode (so there is no need to do multiple
+    passes to gather information from multiple tactics). -/
+def trainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (cmd : CompilationStep) (v : TheoremVal)
+  : MetaM SecondPassTrainingData := do
+  let thmInfo ← Info.ofConstantVal' v.toConstantVal
   let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (cmd.stx.getTailPos?.getD 0)
-  let declUpToTactic := Substring.mk (← moduleSource module) (elabDeclInfo.snd.stx.getPos?.getD 0) (cmd.stx.getTailPos?.getD 0)
+  let declUpToTactic := Substring.mk (← moduleSource module) (cmd.stx.getPos?.getD 0) (cmd.stx.getTailPos?.getD 0)
 
-  dbg_trace "Running trainingDataGivenTerm on {declName}"
-  dbg_trace "declUpToTactic: {declUpToTactic}"
-  dbg_trace "cmd.stx kind: {cmd.stx.getKind}"
-  return
+  let mut decl := ""
+  if let some doc := thmInfo.doc then
+    decl := decl ++ "/-- " ++ doc.stripSuffix " " ++ " -/\n"
+  decl := decl ++ "theorem " ++ v.name.toString ++ " "
+  for arg in thmInfo.args do
+    decl := decl ++ (argToString arg) ++ " "
+  decl := decl ++ ": " ++ thmInfo.type.stripTags
+
+  let vType := v.type
+  let Expr.mvar m ← mkFreshExprMVar vType
+    | throwError "trainingDataGivenTheoremVal :: Failed to build an mvar of type {vType}"
+  let (fvars, m) ← m.introNP thmInfo.args.size
+  let state := (← Meta.ppGoal m).pretty
+
+  let (vProof, nextTactic) ← m.withContext do
+    try
+      let lctx ← getLCtx
+      let instantiatedVal ← m.withContext $ whnf $ ← mkAppOptM' v.value (fvars.map (fun fVarId => some (Expr.fvar fVarId)))
+      let mut nextTactic ← m.withContext $ pure ("exact " ++ (← prettyPrintTerm instantiatedVal).stripTags)
+      for fvar in fvars do
+        match lctx.find? fvar with
+        | some fvarDecl =>
+          let fvarAsPrettyPrintTerm := (← prettyPrintTerm (Expr.fvar fvar)).stripTags -- Has the form "@_fvar.X" or "_fvar.X"
+          nextTactic := nextTactic.replace fvarAsPrettyPrintTerm fvarDecl.userName.toString
+        | none => continue
+      pure (instantiatedVal, nextTactic)
+    catch e =>
+      let msg := m!"Failed to apply {fvars.map Expr.fvar} to {v.value} (error: {e.toMessageData})"
+      let msg := m!"v.name: {v.name}\nv.type: {v.type}\nv.value: {v.value}\nstate:{state}\n" ++ msg
+      throwError msg
+
+  let (termLemmas, explicitUsedLctxHypotheses, explicitUsedConstants, explicitUsedLemmas, allLemmas) ← m.withContext do
+    let lctx ← getLCtx
+    -- Gather all constants that appear in the proof term generated by the current tactic
+    let constantsMap := (← getEnv).constants.map₁
+    let termConstantNamesNoUnfolding := vProof.getUsedConstantsAsSet
+    -- Replace all auxiliary lemmas in `termConstantNamesNoUnfolding` with the constants that appear in their unfolded definitions
+    let mut termConstantsNameSet : NameSet := ∅
+    for constName in termConstantNamesNoUnfolding do
+      termConstantsNameSet := termConstantsNameSet.append $ unfoldConstantName constName constantsMap isAuxLemma
+    let termConstants := termConstantsNameSet.toArray
+    -- Filter ``usedConstants` to only included constants that are lemmas (i.e. Prop-typed)
+    let termConstantsWithTypes ← termConstants.mapM (fun n => do pure (n, (← Lean.getConstInfo n).type))
+    let termLemmas ← termConstantsWithTypes.filterMapM (fun (n, t) => do pure (if (← inferType t).isProp then some n else none))
+    -- Gather all names that appear explicitly in the source code of the current tactic
+    let (explicitUsedLctxNames, explicitUsedConstants) ← syntaxPremises lctx cmd.stx
+    let explicitUsedLctxNames := explicitUsedLctxNames.toArray
+    let explicitUsedConstants := explicitUsedConstants.toArray
+    -- Filter `explicitUsedLctxNames` to only include names that correspond to hypotheses in the local context (i.e. filter out non-Props)
+    let explicitUsedLctxHypotheses ← explicitUsedLctxNames.filterM
+      (fun n =>
+        match lctx.findFromUserName? n with
+        | some decl => do pure (← inferType decl.type).isProp
+        | none => return false -- This should never happen since `syntaxPremises` found that `lctx.usesUserName n` returns true
+      )
+    -- Filter `explicitUsedConstants` to only include names that correspond to constants that are lemmas
+    let explicitUsedLemmas ← explicitUsedConstants.filterM (fun n => do pure (← inferType (← Lean.getConstInfo n).type).isProp)
+    /- It is possible for `simp only` calls to require certain lemmas in order to succeed but not use those lemmas in the final proof
+        term. To reflect the fact that these lemmas are still important, we include them along all term lemmas in in `allLemmas` -/
+    let allLemmas := explicitUsedLemmas.foldl (fun acc l => if !acc.contains l then acc.push l else acc) termLemmas
+    pure (termLemmas, explicitUsedLctxHypotheses, explicitUsedConstants, explicitUsedLemmas, allLemmas)
+
+  let hammerRecommendation := allLemmas.filter (fun n => !isBlackListed s!"{n}")
+
+  let data := {
+      declId := makeElabDeclId elabDeclInfo module hash,
+      declName := v.name.toString,
+      decl := decl,
+      srcUpToTactic := sourceUpToTactic.toString,
+      declUpToTactic := declUpToTactic.toString,
+      state := state,
+      nextTactic := nextTactic,
+      nextTacticTermPremises := termLemmas,
+      nextTacticExplicitConstants := explicitUsedConstants,
+      nextTacticExplicitPremises := explicitUsedLemmas,
+      nextTacticExplicitLocalHypotheses := explicitUsedLctxHypotheses,
+      nextTacticAllPremises := allLemmas,
+      goalDelta := 0, -- This field doesn't matter since the output of `trainingDataGivenTheoremVal` is sent straight to JSON ignores this field
+      nextTacticIsSimpOrRwVariant := false,
+      numNewGoalsOpened := 0,
+      nextTacticHammerRecommendation := hammerRecommendation,
+      declTermPremises := termLemmas,
+      declExplicitConstants := explicitUsedConstants,
+      declExplicitPremises := explicitUsedLemmas,
+      declAllPremises := allLemmas,
+      declHammerRecommendation := hammerRecommendation,
+      termPremisesToEndOfGoal := termLemmas,
+      explicitConstantsToEndOfGoal := explicitUsedConstants,
+      explicitPremisesToEndOfGoal := explicitUsedLemmas,
+      allPremisesToEndOfGoal := allLemmas,
+      hammerRecommendationToEndOfGoal := hammerRecommendation,
+    }
+  return data
 
 end Lean.Elab.TacticInvocation
 
@@ -374,23 +437,6 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
           catch _ => continue
         firstPassData := firstPassData.push data
       | none => pure ()
-  -- Extract data from declarations that are proven without entering tactic mode (`theorem foo := t` is treated as `theorem foo := by exact t`)
-  /- **TODO** In progress
-  let steps := compileModule' module
-  let targets := steps.bind fun c => (MLList.ofList c.diff).map fun i => (c, i)
-  for (cmd, ci) in targets do
-    match ci with
-    | .thmInfo v =>
-      if firstPassData.any (fun x => x.declName == s!"{v.name}") then
-        continue -- This pass is only for collecting data on declarations proven without entering tactic mode
-      else
-        match getElabDeclOfCompilationStep infos cmd with
-        | some elabDeclInfo =>
-          let data ← trainingDataGivenTerm elabDeclInfo module hash cmd v.value s!"{v.name}" ci
-          -- firstPassData := firstPassData.push data
-        | none => continue
-    | _ => continue
-  -/
   -- Perform a second pass to gather data that potentially spans multiple tactics
   let mut activeDeclId : String := firstPassData[0]!.1
   let mut activeDeclTermPremises : Array Name := #[]
@@ -524,6 +570,25 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
         declAllPremises := activeDeclAllPremises
         declHammerRecommendation := activeDeclHammerRecommendation
       }
+  /- **TODO** Still debugging this code
+  -- Extract data from declarations that are proven without entering tactic mode (`theorem foo := t` is treated as `theorem foo := by exact t`)
+  let steps := compileModule' module
+  let targets := steps.bind fun c => (MLList.ofList c.diff).map fun i => (c, i)
+  for (cmd, ci) in targets do
+    match ci with
+    | .thmInfo v =>
+      if firstPassData.any (fun x => x.declName == s!"{v.name}") then
+        continue -- This pass is only for collecting data on declarations proven without entering tactic mode
+      else
+        match getElabDeclOfCompilationStep infos cmd with
+        | some elabDeclInfo =>
+          let data ←
+            CoreM.withImportModules #[`Mathlib.Lean.PrettyPrinter.Delaborator, `Lean.PrettyPrinter, module]
+              (trainingDataGivenTheoremVal elabDeclInfo module hash cmd v).run'
+          secondPassData := secondPassData.push data
+        | none => continue
+    | _ => continue
+  -/
   -- Convert `secondPassData` to Json
   let jsonRes : Array Json := secondPassData.map
     (fun d =>
@@ -579,8 +644,8 @@ def main (args : List String) : IO UInt32 :=
   training_data.validate args
 
 -- Testing:
--- #eval trainingDataGivenModule `temp
--- #eval trainingDataGivenModule `Mathlib.Data.Prod.Basic
--- #eval trainingDataGivenModule `Mathlib.Data.Int.Defs
--- #eval trainingDataGivenModule `Mathlib.Data.Option.Basic
--- #eval trainingDataGivenModule `Mathlib.Data.Set.Basic
+-- #eval Command.liftTermElabM $ trainingDataGivenModule `temp
+-- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Data.Prod.Basic
+-- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Data.Int.Defs
+-- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Data.Option.Basic
+-- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Data.Set.Basic

@@ -59,4 +59,6 @@ theorem termProof2 (x : α) : x = x := rfl
 
 theorem termProof3 (p q : Prop) (h : p → q) (hp : p) : q := h hp
 
+theorem termProof4 (b : Prop) (h : a → b) : a → b := h
+
 end TermProofs

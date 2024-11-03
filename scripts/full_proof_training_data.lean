@@ -12,10 +12,10 @@ open Lean Elab IO Meta
 open Cli System
 
 
-def DeclIdMap := HashMap String Json
+def DeclIdMap := Std.HashMap String Json
 
 def addToMap (map : DeclIdMap) (declId : String) (jsonObj : Json) : DeclIdMap :=
-  match map.find? declId with
+  match map.get? declId with
   | some _ => map
   | none => map.insert declId jsonObj
 
@@ -107,12 +107,12 @@ def trainingData (args : Cli.Parsed) : IO UInt32 := do
     let infos ← getElabDeclInfo (← moduleInfoTrees module)
     let hash ← generateRandomHash
 
-    let mut declMap : DeclIdMap  := HashMap.empty
+    let mut declMap : DeclIdMap  := Std.HashMap.empty
     let mut jsons : List Json := []
     for elabDeclInfo in infos do
       let ⟨keep, ⟨id, json⟩⟩  ← (trainingData' elabDeclInfo module hash)
       if keep then
-        match declMap.find? id with
+        match declMap.get? id with
         | some id => pure ()
         | none => do
           jsons := json :: jsons
