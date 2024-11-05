@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/JamesGallicchio/lean-openapi",
+    "commit": "27613464557994f7bd2535d4e85c4a29f819483b",
+    "lean": "leanprover/lean4:v4.5.0-rc1",
+    "name": "\u00ablean-openapi\u00bb",
+    "imports": [
+        "LeanOpenAPI"
+    ],
+    "metadata": {
+        "name": "lean-openapi",
+        "owner": "JamesGallicchio",
+        "fullName": "JamesGallicchio/lean-openapi",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "GPL-3.0",
+        "createdAt": "2023-09-14T05:27:50Z",
+        "updatedAt": "2024-06-13T12:27:36Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKTXs1w",
+                "fullName": "JamesGallicchio/lean-openapi",
+                "repoUrl": "https://github.com/JamesGallicchio/lean-openapi",
+                "gitUrl": "https://github.com/JamesGallicchio/lean-openapi",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

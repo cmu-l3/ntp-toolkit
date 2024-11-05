@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/model-checking/rust-lean-models",
+    "commit": "ce44f0266495ef4758b6528cb5d979b9b20ce23f",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "\u00abrust-lean-models\u00bb",
+    "imports": [
+        "RustLeanModels"
+    ],
+    "metadata": {
+        "name": "rust-lean-models",
+        "owner": "model-checking",
+        "fullName": "model-checking/rust-lean-models",
+        "description": "Lean models of Rust libraries",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-07-19T18:25:05Z",
+        "updatedAt": "2024-09-26T00:46:55Z",
+        "stars": 9,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMYoN6Q",
+                "fullName": "model-checking/rust-lean-models",
+                "repoUrl": "https://github.com/model-checking/rust-lean-models",
+                "gitUrl": "https://github.com/model-checking/rust-lean-models",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/FormalSAT/trestle",
+    "commit": "5d1649c4c5a9b797c2d46287156ac7338dab392d",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "\u00ablean-sat\u00bb",
+    "imports": [
+        "LeanSAT"
+    ],
+    "metadata": {
+        "name": "lean-sat",
+        "owner": "FormalSAT",
+        "fullName": "FormalSAT/lean-sat",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-01-15T12:20:32Z",
+        "updatedAt": "2024-10-17T06:32:55Z",
+        "stars": 18,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOIx6BVA",
+                "fullName": "FormalSAT/trestle",
+                "repoUrl": "https://github.com/FormalSAT/trestle",
+                "gitUrl": "https://github.com/FormalSAT/trestle",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

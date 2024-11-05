@@ -1,0 +1,35 @@
+{
+    "repo": "https://github.com/Hagb/lean-groebner",
+    "commit": "103e362b2f2b902c449f1eedef691a7363ce25ff",
+    "lean": "leanprover/lean4:nightly-2023-06-10",
+    "name": "\u00ablean-trying-multivariable\u00bb",
+    "imports": [
+        "\u00abDivision\u00bb"
+    ],
+    "metadata": {
+        "name": "lean-groebner",
+        "owner": "Hagb",
+        "fullName": "Hagb/lean-groebner",
+        "description": "Lean4 formalization of Gr\u00f6bner basis (WIP)",
+        "keywords": [
+            "groebner-basis"
+        ],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-04-03T14:20:08Z",
+        "updatedAt": "2024-09-11T14:28:34Z",
+        "stars": 3,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJSJ23A",
+                "fullName": "Hagb/lean-groebner",
+                "repoUrl": "https://github.com/Hagb/lean-groebner",
+                "gitUrl": "https://github.com/Hagb/lean-groebner",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

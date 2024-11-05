@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/nomeata/lean-wf-induct",
+    "commit": "3777f85c40df1dd4503e33aa2b8c4e5999c07816",
+    "lean": "leanprover/lean4:nightly-2024-02-02",
+    "name": "wfinduct",
+    "imports": [
+        "\u00abWfInduct\u00bb"
+    ],
+    "metadata": {
+        "name": "wfinduct",
+        "owner": "nomeata",
+        "fullName": "nomeata/wfinduct",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-01-05T16:05:46Z",
+        "updatedAt": "2024-04-16T17:31:57Z",
+        "stars": 17,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLBM-lw",
+                "fullName": "nomeata/lean-wf-induct",
+                "repoUrl": "https://github.com/nomeata/lean-wf-induct",
+                "gitUrl": "https://github.com/nomeata/lean-wf-induct",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

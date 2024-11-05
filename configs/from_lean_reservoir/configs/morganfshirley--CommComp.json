@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/morganfshirley/CommComp",
+    "commit": "16cd688070e0af6b4bcce8d78ec85df94b3fbc7d",
+    "lean": "leanprover/lean4:v4.12.0-rc1",
+    "name": "CommComp",
+    "imports": [
+        "CommComp"
+    ],
+    "metadata": {
+        "name": "CommComp",
+        "owner": "morganfshirley",
+        "fullName": "morganfshirley/CommComp",
+        "description": "Formalization of communication complexity in Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-09-13T12:14:24Z",
+        "updatedAt": "2024-09-21T09:04:56Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMxMvig",
+                "fullName": "morganfshirley/CommComp",
+                "repoUrl": "https://github.com/morganfshirley/CommComp",
+                "gitUrl": "https://github.com/morganfshirley/CommComp",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

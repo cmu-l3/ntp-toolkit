@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/RemyDegenne/CLT",
+    "commit": "c9ae89a26912712c9bc26785e71ea3da91c4b2f4",
+    "lean": "leanprover/lean4:v4.12.0-rc1",
+    "name": "\u00abclt\u00bb",
+    "imports": [
+        "\u00abClt\u00bb"
+    ],
+    "metadata": {
+        "name": "clt",
+        "owner": "RemyDegenne",
+        "fullName": "RemyDegenne/clt",
+        "description": "Central limit theorem in Lean",
+        "keywords": [],
+        "homepage": "https://remydegenne.github.io/CLT/",
+        "license": "Apache-2.0",
+        "createdAt": "2023-12-26T10:23:53Z",
+        "updatedAt": "2024-09-25T08:12:15Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOK9yMqA",
+                "fullName": "RemyDegenne/CLT",
+                "repoUrl": "https://github.com/RemyDegenne/CLT",
+                "gitUrl": "https://github.com/RemyDegenne/CLT",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

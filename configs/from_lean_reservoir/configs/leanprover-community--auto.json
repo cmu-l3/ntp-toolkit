@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/leanprover-community/lean-auto",
+    "commit": "60e546ca7a9d40d508e58847a9d0630406835178",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "\u00abauto\u00bb",
+    "imports": [
+        "\u00abAuto\u00bb"
+    ],
+    "metadata": {
+        "name": "auto",
+        "owner": "leanprover-community",
+        "fullName": "leanprover-community/auto",
+        "description": "Experiments in automation for Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-07-11T20:35:26Z",
+        "updatedAt": "2024-10-24T04:19:15Z",
+        "stars": 70,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJ6c3pg",
+                "fullName": "leanprover-community/lean-auto",
+                "repoUrl": "https://github.com/leanprover-community/lean-auto",
+                "gitUrl": "https://github.com/leanprover-community/lean-auto",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

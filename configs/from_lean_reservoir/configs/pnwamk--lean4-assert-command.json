@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/pnwamk/lean4-assert-command",
+    "commit": "6ad74ff0eb6933249135c81a83f59b507ba49eb0",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "assertCmd",
+    "imports": [
+        "AssertCmd"
+    ],
+    "metadata": {
+        "name": "lean4-assert-command",
+        "owner": "pnwamk",
+        "fullName": "pnwamk/lean4-assert-command",
+        "description": "A simple assertion command for Lean4",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2021-02-07T01:45:04Z",
+        "updatedAt": "2023-12-10T10:54:59Z",
+        "stars": 7,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOFBFHFQ",
+                "fullName": "pnwamk/lean4-assert-command",
+                "repoUrl": "https://github.com/pnwamk/lean4-assert-command",
+                "gitUrl": "https://github.com/pnwamk/lean4-assert-command",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

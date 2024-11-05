@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/madvorak/lean4-koch",
+    "commit": "ac65108fb263acbdfc32c1ff5274cb43bfefa71d",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "Koch",
+    "imports": [
+        "Koch"
+    ],
+    "metadata": {
+        "name": "Koch",
+        "owner": "madvorak",
+        "fullName": "madvorak/Koch",
+        "description": "Koch 2D snowflake generator for 4D Golf",
+        "keywords": [],
+        "homepage": null,
+        "license": "Unlicense",
+        "createdAt": "2024-05-07T19:28:37Z",
+        "updatedAt": "2024-06-03T17:22:30Z",
+        "stars": 3,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOL4ePDA",
+                "fullName": "madvorak/lean4-koch",
+                "repoUrl": "https://github.com/madvorak/lean4-koch",
+                "gitUrl": "https://github.com/madvorak/lean4-koch",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

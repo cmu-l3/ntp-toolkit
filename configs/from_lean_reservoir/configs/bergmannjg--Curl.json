@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/bergmannjg/leanCurl",
+    "commit": "54a64ed6bd3fe39eb18d3f017a93e42d3bfa34d5",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "Curl",
+    "imports": [
+        "Curl"
+    ],
+    "metadata": {
+        "name": "Curl",
+        "owner": "bergmannjg",
+        "fullName": "bergmannjg/Curl",
+        "description": "Lean 4 bindings to libcurl",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-10-20T13:59:07Z",
+        "updatedAt": "2024-09-14T06:27:36Z",
+        "stars": 7,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKi7q8Q",
+                "fullName": "bergmannjg/leanCurl",
+                "repoUrl": "https://github.com/bergmannjg/leanCurl",
+                "gitUrl": "https://github.com/bergmannjg/leanCurl",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

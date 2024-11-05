@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/hhu-adam/GameSkeleton",
+    "commit": "4f942c5464b4a0f055358b6de442168a9c6ab32b",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "Game",
+    "imports": [
+        "Game"
+    ],
+    "metadata": {
+        "name": "Game",
+        "owner": "hhu-adam",
+        "fullName": "hhu-adam/Game",
+        "description": "The standard template to create a lean game",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-11-09T15:18:10Z",
+        "updatedAt": "2024-09-07T03:24:23Z",
+        "stars": 18,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKrcrig",
+                "fullName": "hhu-adam/GameSkeleton",
+                "repoUrl": "https://github.com/hhu-adam/GameSkeleton",
+                "gitUrl": "https://github.com/hhu-adam/GameSkeleton",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

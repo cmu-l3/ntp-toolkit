@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/argumentcomputer/yatima",
+    "commit": "d9f20f51bca748878b8561661fe8bc19a7dba609",
+    "lean": "leanprover/lean4:nightly-2023-01-10",
+    "name": "Yatima",
+    "imports": [
+        "Yatima"
+    ],
+    "metadata": {
+        "name": "yatima",
+        "owner": "argumentcomputer",
+        "fullName": "argumentcomputer/yatima",
+        "description": "A zero-knowledge Lean4 compiler and kernel",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2022-05-11T22:20:12Z",
+        "updatedAt": "2024-10-22T21:26:16Z",
+        "stars": 117,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOHUh1fw",
+                "fullName": "argumentcomputer/yatima",
+                "repoUrl": "https://github.com/argumentcomputer/yatima",
+                "gitUrl": "https://github.com/argumentcomputer/yatima",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

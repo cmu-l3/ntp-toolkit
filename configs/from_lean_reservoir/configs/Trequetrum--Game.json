@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/Trequetrum/lean4game-logic",
+    "commit": "40ceec5f3ca5dce6cec2800b8f5e4927631ca2da",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "Game",
+    "imports": [
+        "Game"
+    ],
+    "metadata": {
+        "name": "Game",
+        "owner": "Trequetrum",
+        "fullName": "Trequetrum/Game",
+        "description": "Make/Encode some basic logic puzzles",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-11-07T23:01:02Z",
+        "updatedAt": "2024-10-24T07:09:27Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKqql9g",
+                "fullName": "Trequetrum/lean4game-logic",
+                "repoUrl": "https://github.com/Trequetrum/lean4game-logic",
+                "gitUrl": "https://github.com/Trequetrum/lean4game-logic",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/TristanCacqueray/advent-of-lean",
+    "commit": "9704a783fbd0250f3d6c996f4f3125267adcc03f",
+    "lean": "leanprover/lean4:v4.3.0",
+    "name": "\u00abadvent-of-lean\u00bb",
+    "imports": [
+        "\u00abAdventOfLean\u00bb"
+    ],
+    "metadata": {
+        "name": "advent-of-lean",
+        "owner": "TristanCacqueray",
+        "fullName": "TristanCacqueray/advent-of-lean",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-11-27T23:51:36Z",
+        "updatedAt": "2023-12-08T19:26:43Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKyz6qg",
+                "fullName": "TristanCacqueray/advent-of-lean",
+                "repoUrl": "https://github.com/TristanCacqueray/advent-of-lean",
+                "gitUrl": "https://github.com/TristanCacqueray/advent-of-lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

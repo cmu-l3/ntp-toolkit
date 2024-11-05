@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/leanprover-community/quote4",
+    "commit": "1357f4f49450abb9dfd4783e38219f4ce84f9785",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "Qq",
+    "imports": [
+        "Qq"
+    ],
+    "metadata": {
+        "name": "Qq",
+        "owner": "leanprover-community",
+        "fullName": "leanprover-community/Qq",
+        "description": "Intuitive, type-safe expression quotations for Lean 4.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2021-05-08T19:00:07Z",
+        "updatedAt": "2024-10-18T22:38:11Z",
+        "stars": 74,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOFcp4kg",
+                "fullName": "leanprover-community/quote4",
+                "repoUrl": "https://github.com/leanprover-community/quote4",
+                "gitUrl": "https://github.com/leanprover-community/quote4",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

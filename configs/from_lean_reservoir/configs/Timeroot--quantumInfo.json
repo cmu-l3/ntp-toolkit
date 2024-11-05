@@ -1,0 +1,35 @@
+{
+    "repo": "https://github.com/Timeroot/Lean-QuantumInfo",
+    "commit": "608ffd765bc8ecc68ff65026725e45c2fc5a75c9",
+    "lean": "leanprover/lean4:v4.11.0-rc2",
+    "name": "\u00abquantumInfo\u00bb",
+    "imports": [
+        "QuantumInfo"
+    ],
+    "metadata": {
+        "name": "quantumInfo",
+        "owner": "Timeroot",
+        "fullName": "Timeroot/quantumInfo",
+        "description": "Quantum information theory in Lean 4",
+        "keywords": [
+            "quantum-computing"
+        ],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2024-04-18T16:13:43Z",
+        "updatedAt": "2024-10-14T18:56:12Z",
+        "stars": 9,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLwA-4w",
+                "fullName": "Timeroot/Lean-QuantumInfo",
+                "repoUrl": "https://github.com/Timeroot/Lean-QuantumInfo",
+                "gitUrl": "https://github.com/Timeroot/Lean-QuantumInfo",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

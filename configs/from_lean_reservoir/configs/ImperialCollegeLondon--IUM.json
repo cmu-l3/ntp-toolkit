@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/ImperialCollegeLondon/IUM",
+    "commit": "4794c70cac60b13a328401b34a7522db52c7bc42",
+    "lean": "leanprover/lean4:v4.12.0",
+    "name": "\u00abIUM\u00bb",
+    "imports": [
+        "\u00abIUM\u00bb"
+    ],
+    "metadata": {
+        "name": "IUM",
+        "owner": "ImperialCollegeLondon",
+        "fullName": "ImperialCollegeLondon/IUM",
+        "description": "Lean formalisation of parts of Imperial College London's Introduction to University Mathematics course",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-03-09T10:35:22Z",
+        "updatedAt": "2024-10-03T15:08:18Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLd4Qww",
+                "fullName": "ImperialCollegeLondon/IUM",
+                "repoUrl": "https://github.com/ImperialCollegeLondon/IUM",
+                "gitUrl": "https://github.com/ImperialCollegeLondon/IUM",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

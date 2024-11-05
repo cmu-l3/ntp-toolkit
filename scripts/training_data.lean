@@ -93,9 +93,18 @@ def ppCommandInfo (module: ModuleName) (info : CommandInfo) : IO String :=
    (info.stx.getTailPos?.getD 0)).toString
 
 def ppDeclWithoutProof (module: ModuleName) (info: CommandInfo) : IO String := do
-    let ppDecl ← ppCommandInfo module info
-    let decl := (ppDecl.splitOn ":=").headD ""
-    return decl
+    -- (magic value) if this command is a declaration like theorem/def T := proof/definition
+    -- then the := syntax occurs at `stx[1][3][0]`
+    if info.stx[1][3][0].getAtomVal == ":=" then
+      let declStart := info.stx.getPos?.getD 0
+      let proofStart := info.stx[1][3].getPos?.getD 0
+      let proofEnd := info.stx.getTailPos?.getD 0
+      let moduleSource ← moduleSource module
+      let decl := (Substring.mk moduleSource declStart proofStart).toString
+      let proof := (Substring.mk moduleSource proofStart proofEnd).toString
+      return decl
+    else
+      return ""
 
 def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) : IO (String × Json) := do
   let declId := makeElabDeclId elabDeclInfo module hash

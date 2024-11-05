@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/pitmonticone/NewProject",
+    "commit": "e9e1de6b8eea86460f61496579ca72e769092241",
+    "lean": "leanprover/lean4:v4.12.0-rc1",
+    "name": "NewProject",
+    "imports": [
+        "NewProject"
+    ],
+    "metadata": {
+        "name": "NewProject",
+        "owner": "pitmonticone",
+        "fullName": "pitmonticone/NewProject",
+        "description": null,
+        "keywords": [],
+        "homepage": "https://pitmonticone.github.io/NewProject/",
+        "license": "Apache-2.0",
+        "createdAt": "2024-09-20T12:05:46Z",
+        "updatedAt": "2024-09-24T13:56:51Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOM0j-2w",
+                "fullName": "pitmonticone/NewProject",
+                "repoUrl": "https://github.com/pitmonticone/NewProject",
+                "gitUrl": "https://github.com/pitmonticone/NewProject",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

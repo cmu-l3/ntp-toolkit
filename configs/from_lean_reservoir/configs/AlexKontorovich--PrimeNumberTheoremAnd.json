@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/AlexKontorovich/PrimeNumberTheoremAnd",
+    "commit": "13084b62a75bae81ff4dd45eb19d8d4b7dc45d6a",
+    "lean": "leanprover/lean4:v4.12.0",
+    "name": "\u00abPrimeNumberTheoremAnd\u00bb",
+    "imports": [
+        "\u00abPrimeNumberTheoremAnd\u00bb"
+    ],
+    "metadata": {
+        "name": "PrimeNumberTheoremAnd",
+        "owner": "AlexKontorovich",
+        "fullName": "AlexKontorovich/PrimeNumberTheoremAnd",
+        "description": "blueprint for prime number theorem and more",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-01-09T18:15:43Z",
+        "updatedAt": "2024-10-22T02:58:31Z",
+        "stars": 131,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLCyDLA",
+                "fullName": "AlexKontorovich/PrimeNumberTheoremAnd",
+                "repoUrl": "https://github.com/AlexKontorovich/PrimeNumberTheoremAnd",
+                "gitUrl": "https://github.com/AlexKontorovich/PrimeNumberTheoremAnd",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

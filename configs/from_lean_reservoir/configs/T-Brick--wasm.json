@@ -1,0 +1,36 @@
+{
+    "repo": "https://github.com/T-Brick/lean-wasm",
+    "commit": "939e41c210dbadb037b6a3806cb79ff5c09e2799",
+    "lean": "leanprover/lean4:v4.8.0",
+    "name": "wasm",
+    "imports": [
+        "Wasm"
+    ],
+    "metadata": {
+        "name": "wasm",
+        "owner": "T-Brick",
+        "fullName": "T-Brick/wasm",
+        "description": "Formalising the WASM spec in Lean",
+        "keywords": [
+            "formal-verification",
+            "wasm"
+        ],
+        "homepage": null,
+        "license": "GPL-3.0",
+        "createdAt": "2023-07-28T14:13:33Z",
+        "updatedAt": "2024-08-22T19:50:02Z",
+        "stars": 11,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKA0b0w",
+                "fullName": "T-Brick/lean-wasm",
+                "repoUrl": "https://github.com/T-Brick/lean-wasm",
+                "gitUrl": "https://github.com/T-Brick/lean-wasm",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

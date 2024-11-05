@@ -1,0 +1,36 @@
+{
+    "repo": "https://github.com/argumentcomputer/ZKSnark.lean",
+    "commit": "a92ff01fac8e59ffb0de13a41eac6461af6d7cf0",
+    "lean": "leanprover/lean4:nightly-2022-06-14",
+    "name": "ZkSNARK",
+    "imports": [
+        "ZkSNARK"
+    ],
+    "metadata": {
+        "name": "ZKSnark.lean",
+        "owner": "argumentcomputer",
+        "fullName": "argumentcomputer/ZKSnark.lean",
+        "description": "https://yatima-inc.github.io/ZKSnark.lean/",
+        "keywords": [
+            "zk-snarks",
+            "zkp"
+        ],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2021-12-09T23:29:25Z",
+        "updatedAt": "2024-10-16T02:35:06Z",
+        "stars": 7,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGgjmHA",
+                "fullName": "argumentcomputer/ZKSnark.lean",
+                "repoUrl": "https://github.com/argumentcomputer/ZKSnark.lean",
+                "gitUrl": "https://github.com/argumentcomputer/ZKSnark.lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/bergmannjg/time",
+    "commit": "dc472e02f519ba5267322a105b3c73293343e0ea",
+    "lean": "leanprover/lean4:v4.12.0",
+    "name": "time",
+    "imports": [
+        "Time"
+    ],
+    "metadata": {
+        "name": "time",
+        "owner": "bergmannjg",
+        "fullName": "bergmannjg/time",
+        "description": "Port of the haskell time library to Lean 4",
+        "keywords": [],
+        "homepage": "https://bergmannjg.github.io/time/Time.html",
+        "license": "MIT",
+        "createdAt": "2023-04-14T14:33:31Z",
+        "updatedAt": "2024-10-04T14:53:36Z",
+        "stars": 5,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJW2Z8A",
+                "fullName": "bergmannjg/time",
+                "repoUrl": "https://github.com/bergmannjg/time",
+                "gitUrl": "https://github.com/bergmannjg/time",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

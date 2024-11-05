@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/vbeffara/RMT4",
+    "commit": "c2a092d029d0e6d29a381ac4ad9e85b10d97391c",
+    "lean": "leanprover/lean4:v4.7.0-rc2",
+    "name": "\u00abrMT4\u00bb",
+    "imports": [
+        "RMT4"
+    ],
+    "metadata": {
+        "name": "rMT4",
+        "owner": "vbeffara",
+        "fullName": "vbeffara/rMT4",
+        "description": "The Riemann mapping theorem",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-06-17T11:26:57Z",
+        "updatedAt": "2024-05-04T17:47:30Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJwmAMA",
+                "fullName": "vbeffara/RMT4",
+                "repoUrl": "https://github.com/vbeffara/RMT4",
+                "gitUrl": "https://github.com/vbeffara/RMT4",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

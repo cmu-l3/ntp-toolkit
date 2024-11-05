@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/argumentcomputer/Bellanova.lean",
+    "commit": "e0929d903d9f4092c3f203c2370f9ba6cee6ecbc",
+    "lean": "leanprover/lean4:nightly-2023-01-10",
+    "name": "BellaNova",
+    "imports": [
+        "BellaNova"
+    ],
+    "metadata": {
+        "name": "Bellanova.lean",
+        "owner": "argumentcomputer",
+        "fullName": "argumentcomputer/Bellanova.lean",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2022-11-25T13:35:13Z",
+        "updatedAt": "2023-12-13T21:04:30Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOIgII_g",
+                "fullName": "argumentcomputer/Bellanova.lean",
+                "repoUrl": "https://github.com/argumentcomputer/Bellanova.lean",
+                "gitUrl": "https://github.com/argumentcomputer/Bellanova.lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

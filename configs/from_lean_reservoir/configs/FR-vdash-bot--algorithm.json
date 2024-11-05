@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/FR-vdash-bot/Algorithm",
+    "commit": "5c7520493f09de8bc5df26d618c476b299112821",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "algorithm",
+    "imports": [
+        "Algorithm"
+    ],
+    "metadata": {
+        "name": "algorithm",
+        "owner": "FR-vdash-bot",
+        "fullName": "FR-vdash-bot/algorithm",
+        "description": "Verified efficient algorithms in Lean4.",
+        "keywords": [],
+        "homepage": "https://FR-vdash-bot.github.io/Algorithm/",
+        "license": "Apache-2.0",
+        "createdAt": "2023-02-17T18:58:24Z",
+        "updatedAt": "2024-10-24T14:37:00Z",
+        "stars": 19,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOI_OY1A",
+                "fullName": "FR-vdash-bot/Algorithm",
+                "repoUrl": "https://github.com/FR-vdash-bot/Algorithm",
+                "gitUrl": "https://github.com/FR-vdash-bot/Algorithm",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

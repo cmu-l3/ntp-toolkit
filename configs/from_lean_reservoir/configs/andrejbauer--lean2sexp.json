@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/andrejbauer/lean2sexp",
+    "commit": "7da759ce26c8aba7b2b459bebad9b248e4c197b8",
+    "lean": "leanprover/lean4:nightly",
+    "name": "\u00ablean2sexp\u00bb",
+    "imports": [
+        "Sexp"
+    ],
+    "metadata": {
+        "name": "lean2sexp",
+        "owner": "andrejbauer",
+        "fullName": "andrejbauer/lean2sexp",
+        "description": "Convert Lean .olean files to s-expressions",
+        "keywords": [],
+        "homepage": null,
+        "license": "BSD-2-Clause",
+        "createdAt": "2023-06-01T15:48:55Z",
+        "updatedAt": "2024-10-03T13:13:37Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJqP2EA",
+                "fullName": "andrejbauer/lean2sexp",
+                "repoUrl": "https://github.com/andrejbauer/lean2sexp",
+                "gitUrl": "https://github.com/andrejbauer/lean2sexp",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

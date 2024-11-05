@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/siddhartha-gadgil/LeanAideTools",
+    "commit": "7da48d21dea4d1b8f2b0f02ea287fdf27774414b",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "\u00abLeanAideTools\u00bb",
+    "imports": [
+        "\u00abLeanAideTools\u00bb"
+    ],
+    "metadata": {
+        "name": "LeanAideTools",
+        "owner": "siddhartha-gadgil",
+        "fullName": "siddhartha-gadgil/LeanAideTools",
+        "description": "Tools, specifically for running tactics in the background, with minimal dependencies",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-04-01T05:24:39Z",
+        "updatedAt": "2024-09-23T11:08:07Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLoHvDw",
+                "fullName": "siddhartha-gadgil/LeanAideTools",
+                "repoUrl": "https://github.com/siddhartha-gadgil/LeanAideTools",
+                "gitUrl": "https://github.com/siddhartha-gadgil/LeanAideTools",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

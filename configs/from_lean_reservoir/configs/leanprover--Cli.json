@@ -1,0 +1,35 @@
+{
+    "repo": "https://github.com/leanprover/lean4-cli",
+    "commit": "2cf1030dc2ae6b3632c84a09350b675ef3e347d0",
+    "lean": "leanprover/lean4:v4.9.0",
+    "name": "Cli",
+    "imports": [
+        "Cli"
+    ],
+    "metadata": {
+        "name": "Cli",
+        "owner": "leanprover",
+        "fullName": "leanprover/Cli",
+        "description": "A Lean 4 library for configuring Command Line Interfaces and parsing command line arguments.",
+        "keywords": [
+            "cli"
+        ],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2021-02-22T23:07:25Z",
+        "updatedAt": "2024-10-24T19:40:05Z",
+        "stars": 68,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOFFjKnA",
+                "fullName": "leanprover/lean4-cli",
+                "repoUrl": "https://github.com/leanprover/lean4-cli",
+                "gitUrl": "https://github.com/leanprover/lean4-cli",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

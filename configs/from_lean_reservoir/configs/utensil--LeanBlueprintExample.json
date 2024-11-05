@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/utensil/LeanBlueprintExample",
+    "commit": "8e508b6a8fd8f478f73a69958e72e67ceda180cf",
+    "lean": "leanprover/lean4:v4.2.0-rc1",
+    "name": "\u00abLeanBlueprintExample\u00bb",
+    "imports": [
+        "\u00abLeanBlueprintExample\u00bb"
+    ],
+    "metadata": {
+        "name": "LeanBlueprintExample",
+        "owner": "utensil",
+        "fullName": "utensil/LeanBlueprintExample",
+        "description": null,
+        "keywords": [],
+        "homepage": "https://utensil.github.io/LeanBlueprintExample/blueprint/",
+        "license": "Apache-2.0",
+        "createdAt": "2023-10-03T11:47:11Z",
+        "updatedAt": "2024-08-12T03:12:19Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKbZGxg",
+                "fullName": "utensil/LeanBlueprintExample",
+                "repoUrl": "https://github.com/utensil/LeanBlueprintExample",
+                "gitUrl": "https://github.com/utensil/LeanBlueprintExample",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/argumentcomputer/LSpec",
+    "commit": "504a8cecf8da601b9466ac727aebb6b511aae4ab",
+    "lean": "leanprover/lean4:v4.12.0",
+    "name": "LSpec",
+    "imports": [
+        "LSpec"
+    ],
+    "metadata": {
+        "name": "LSpec",
+        "owner": "argumentcomputer",
+        "fullName": "argumentcomputer/LSpec",
+        "description": "A Testing Framework for Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2022-05-12T20:09:28Z",
+        "updatedAt": "2024-10-21T14:54:26Z",
+        "stars": 43,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOHU4J1w",
+                "fullName": "argumentcomputer/LSpec",
+                "repoUrl": "https://github.com/argumentcomputer/LSpec",
+                "gitUrl": "https://github.com/argumentcomputer/LSpec",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

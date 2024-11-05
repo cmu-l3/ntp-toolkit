@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/apnelson1/Matroid",
+    "commit": "4ab1e071fecd35769e4d9ab69ca01fdbb375df86",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "\u00abmatroid\u00bb",
+    "imports": [
+        "\u00abMatroid\u00bb"
+    ],
+    "metadata": {
+        "name": "matroid",
+        "owner": "apnelson1",
+        "fullName": "apnelson1/matroid",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-06-26T20:36:09Z",
+        "updatedAt": "2024-10-24T16:51:35Z",
+        "stars": 9,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJ0a2qA",
+                "fullName": "apnelson1/Matroid",
+                "repoUrl": "https://github.com/apnelson1/Matroid",
+                "gitUrl": "https://github.com/apnelson1/Matroid",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

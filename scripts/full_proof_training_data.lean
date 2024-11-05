@@ -48,21 +48,30 @@ def getElabDeclInfo (trees : List InfoTree) : IO (List ElabDeclInfo) := do
         out := ⟨FileMap.stxRange ctxInfo.fileMap cmdInfo.stx, cmdInfo, ctxInfo.currNamespace⟩ :: out
     return out
 
-def ppCommandInfo (module: ModuleName) (info : CommandInfo) : IO String :=
-   return (Substring.mk (← moduleSource module)
-   (info.stx.getPos?.getD 0)
-   (info.stx.getTailPos?.getD 0)).toString
+-- def ppCommandInfo (module: ModuleName) (info : CommandInfo) : IO String :=
+--    return (Substring.mk (← moduleSource module)
+--    (info.stx.getPos?.getD 0)
+--    (info.stx.getTailPos?.getD 0)).toString
 
 def makeElabDeclId (info: ElabDeclInfo) (module: Name) (hash: String) : String :=
   let ⟨x, y⟩ := info.range.fst
   let declId := s!"{module}.{x}_{y}.{hash}"
   declId
 
-def ppDeclAndProof (module: ModuleName) (info: CommandInfo) : IO (String × String) := do
-    let ppDecl ← ppCommandInfo module info
-    let decl := (ppDecl.splitOn ":=").headD ""
-    let proof := ((ppDecl.dropPrefix? decl).getD "").toString
-    return (decl, proof)
+def ppDeclAndProof (module: ModuleName) (info: CommandInfo) : IO (Option (String × String)) := do
+    -- let ppDecl ← ppCommandInfo module info
+    -- (magic value) if this command is a declaration like theorem/def T := proof/definition
+    -- then the := syntax occurs at `stx[1][3][0]`
+    if info.stx[1][3][0].getAtomVal == ":=" then
+      let declStart := info.stx.getPos?.getD 0
+      let proofStart := info.stx[1][3].getPos?.getD 0
+      let proofEnd := info.stx.getTailPos?.getD 0
+      let moduleSource ← moduleSource module
+      let decl := (Substring.mk moduleSource declStart proofStart).toString
+      let proof := (Substring.mk moduleSource proofStart proofEnd).toString
+      return (decl, proof)
+    else
+      return none
 
 def validateDecl (decl : String) (keep : Bool) : IO Bool :=
   return keep
@@ -72,25 +81,36 @@ def validateProof (proof : String) (keep : Bool) : IO Bool :=
     && proof.trim != ""
     -- we allow "sorry" in proof (for extracting miniCTX data)
 
+def fullName (elabDeclInfo : ElabDeclInfo) : Option Name :=
+  let cmdInfo := elabDeclInfo.cmdInfo
+  -- (magic value) if this command is a declaration (theorem, lemma, def, etc), then
+  -- `stx[1][1][0]` should contain the identifier
+  if cmdInfo.stx[1][1][0].isIdent then
+    let name := cmdInfo.stx[1][1][0].getId
+    let isRootName := (`_root_).isPrefixOf name
+    let declName := if isRootName then name.replacePrefix `_root_ Name.anonymous else elabDeclInfo.currNamespace ++ name
+    some declName
+  else
+    none
+
 def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : String) : IO (Bool × (String × Json)) := do
   let declId := makeElabDeclId elabDeclInfo module hash
   let cmdInfo := elabDeclInfo.cmdInfo
   let sourceUpToDecl := Substring.mk (← moduleSource module) 0 (cmdInfo.stx.getPos?.getD 0)
-  let ⟨decl, proof⟩ ← ppDeclAndProof module cmdInfo
 
-  -- (magic value) if this command is a declaration (theorem, lemma, def, etc), then
-  -- stx[1][1][0] should contain the identifier
-  let keep := cmdInfo.stx[1][1][0].isIdent
+  let declAndProof? ← ppDeclAndProof module cmdInfo
+  let (decl, proof) := declAndProof?.getD default
+
+  let declName? := fullName elabDeclInfo
+  let declName := declName?.getD Name.anonymous
+
+  let keep := declName?.isSome && declAndProof?.isSome && !declName.isInternal
   let keep ← validateDecl decl keep
   let keep ← validateProof proof keep
 
-  let name := cmdInfo.stx[1][1][0].getId
-  let isRootName := (`_root_).isPrefixOf name
-  let declName := if isRootName then name.replacePrefix `_root_ Name.anonymous else elabDeclInfo.currNamespace ++ name
-
   let json : Json :=
     Json.mkObj [
-      ("declId", Json.str declId),
+      -- ("declId", Json.str declId),
       ("file", Json.str <| (← findLean module).toString.stripPrefix "./.lake/packages/"),
       ("module", Json.str module.toString),
       ("declName", Json.str declName.toString),
@@ -98,7 +118,8 @@ def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : Str
       ("proof", Json.str proof),
       ("srcUpToDecl", Json.str sourceUpToDecl.toString)
     ]
-  return ⟨keep, (declId, json)⟩
+
+  return (keep, declId, json)
 
 def trainingData (args : Cli.Parsed) : IO UInt32 := do
     searchPathRef.set compile_time_search_path%

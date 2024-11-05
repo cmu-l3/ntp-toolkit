@@ -34,7 +34,6 @@ lean_exe state_comments where
 lean_exe premises where
   root := `scripts.premises
 
-@[default_target]
 lean_exe training_data_with_premises where
   root := `scripts.training_data_with_premises
 
@@ -46,3 +45,11 @@ lean_exe tactic_benchmark where
 lean_exe add_imports where
   root := `scripts.add_imports
 
+lean_exe all_modules where
+  root := `scripts.all_modules
+
+lean_exe declarations where
+  root := `scripts.declarations
+
+lean_exe imports where
+  root := `scripts.imports

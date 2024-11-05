@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/dupuisf/BibtexQuery",
+    "commit": "85e1e7143dd4cfa2b551826c27867bada60858e8",
+    "lean": "leanprover/lean4:v4.12.0-rc1",
+    "name": "BibtexQuery",
+    "imports": [
+        "BibtexQuery"
+    ],
+    "metadata": {
+        "name": "BibtexQuery",
+        "owner": "dupuisf",
+        "fullName": "dupuisf/BibtexQuery",
+        "description": "A simple command-line bibtex query utility written in Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2022-07-05T01:28:19Z",
+        "updatedAt": "2024-09-20T11:55:17Z",
+        "stars": 11,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOHm5dCg",
+                "fullName": "dupuisf/BibtexQuery",
+                "repoUrl": "https://github.com/dupuisf/BibtexQuery",
+                "gitUrl": "https://github.com/dupuisf/BibtexQuery",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

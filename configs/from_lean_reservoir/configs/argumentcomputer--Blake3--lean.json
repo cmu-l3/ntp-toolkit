@@ -1,0 +1,35 @@
+{
+    "repo": "https://github.com/argumentcomputer/Blake3.lean",
+    "commit": "0acd9070d95b170439bc0761f8e80c4d70b4d334",
+    "lean": "leanprover/lean4:nightly-2023-01-10",
+    "name": "Blake3",
+    "imports": [
+        "Blake3"
+    ],
+    "metadata": {
+        "name": "Blake3.lean",
+        "owner": "argumentcomputer",
+        "fullName": "argumentcomputer/Blake3.lean",
+        "description": "Lean4 bindings to the Blake3",
+        "keywords": [
+            "blake3"
+        ],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2021-10-08T12:00:37Z",
+        "updatedAt": "2023-03-23T22:03:56Z",
+        "stars": 5,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGLvuxA",
+                "fullName": "argumentcomputer/Blake3.lean",
+                "repoUrl": "https://github.com/argumentcomputer/Blake3.lean",
+                "gitUrl": "https://github.com/argumentcomputer/Blake3.lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/ElifUskuplu/Stlc_deBruijn",
+    "commit": "42e5caf2f86568898f6050241f142df72743c4ea",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "\u00abstlc\u00bb",
+    "imports": [
+        "\u00abStlc\u00bb"
+    ],
+    "metadata": {
+        "name": "stlc",
+        "owner": "ElifUskuplu",
+        "fullName": "ElifUskuplu/stlc",
+        "description": "Simply Typed Lambda Calculus with de Bruijn indices",
+        "keywords": [],
+        "homepage": "https://elifuskuplu.github.io/Stlc_deBruijn/",
+        "license": "MIT",
+        "createdAt": "2023-07-12T06:28:25Z",
+        "updatedAt": "2024-10-25T00:24:26Z",
+        "stars": 6,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJ6lW_A",
+                "fullName": "ElifUskuplu/Stlc_deBruijn",
+                "repoUrl": "https://github.com/ElifUskuplu/Stlc_deBruijn",
+                "gitUrl": "https://github.com/ElifUskuplu/Stlc_deBruijn",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

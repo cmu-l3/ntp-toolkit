@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/tydeu/lean4-alloy",
+    "commit": "a712058ff5ca47f670f6d25ea2b2a7385d9523ae",
+    "lean": "leanprover/lean4:v4.9.1",
+    "name": "alloy",
+    "imports": [
+        "Alloy"
+    ],
+    "metadata": {
+        "name": "alloy",
+        "owner": "tydeu",
+        "fullName": "tydeu/alloy",
+        "description": "Write C shims from within Lean code.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2021-11-19T01:54:10Z",
+        "updatedAt": "2024-09-20T10:01:33Z",
+        "stars": 50,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGZu_wQ",
+                "fullName": "tydeu/lean4-alloy",
+                "repoUrl": "https://github.com/tydeu/lean4-alloy",
+                "gitUrl": "https://github.com/tydeu/lean4-alloy",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}
