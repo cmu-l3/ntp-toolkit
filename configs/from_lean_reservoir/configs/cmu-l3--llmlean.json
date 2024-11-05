@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/cmu-l3/llmlean",
+    "commit": "77448d68e51166f60bd43c6284b43d65209321b0",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "\u00abllmlean\u00bb",
+    "imports": [
+        "\u00abLLMlean\u00bb"
+    ],
+    "metadata": {
+        "name": "llmlean",
+        "owner": "cmu-l3",
+        "fullName": "cmu-l3/llmlean",
+        "description": "LLMs + Lean, on your laptop or in the cloud",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2024-03-31T17:07:56Z",
+        "updatedAt": "2024-10-25T01:02:09Z",
+        "stars": 120,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLn8xSA",
+                "fullName": "cmu-l3/llmlean",
+                "repoUrl": "https://github.com/cmu-l3/llmlean",
+                "gitUrl": "https://github.com/cmu-l3/llmlean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

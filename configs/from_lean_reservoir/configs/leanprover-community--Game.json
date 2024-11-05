@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/leanprover-community/NNG4",
+    "commit": "66b27f382aa68b1651cc41a855447079a952d678",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "Game",
+    "imports": [
+        "Game"
+    ],
+    "metadata": {
+        "name": "Game",
+        "owner": "leanprover-community",
+        "fullName": "leanprover-community/Game",
+        "description": "Natural Number Game",
+        "keywords": [],
+        "homepage": "https://adam.math.hhu.de",
+        "license": "Apache-2.0",
+        "createdAt": "2023-04-25T16:28:58Z",
+        "updatedAt": "2024-10-20T06:19:45Z",
+        "stars": 111,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJbPwPw",
+                "fullName": "leanprover-community/NNG4",
+                "repoUrl": "https://github.com/leanprover-community/NNG4",
+                "gitUrl": "https://github.com/leanprover-community/NNG4",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

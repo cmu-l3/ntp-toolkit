@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/pitmonticone/LeanProject",
+    "commit": "308c0b5b35a73e3ad8e98fd28b47740531b3d7fc",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "Project",
+    "imports": [
+        "Project"
+    ],
+    "metadata": {
+        "name": "Project",
+        "owner": "pitmonticone",
+        "fullName": "pitmonticone/Project",
+        "description": "Template for blueprint-driven formalization projects in Lean.",
+        "keywords": [],
+        "homepage": "https://pitmonticone.github.io/LeanProject/",
+        "license": "Apache-2.0",
+        "createdAt": "2024-07-26T08:02:47Z",
+        "updatedAt": "2024-10-21T15:35:38Z",
+        "stars": 23,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMbXVww",
+                "fullName": "pitmonticone/LeanProject",
+                "repoUrl": "https://github.com/pitmonticone/LeanProject",
+                "gitUrl": "https://github.com/pitmonticone/LeanProject",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

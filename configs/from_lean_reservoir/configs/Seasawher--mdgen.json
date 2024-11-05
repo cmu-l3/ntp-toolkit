@@ -1,0 +1,36 @@
+{
+    "repo": "https://github.com/Seasawher/mdgen",
+    "commit": "3500acfb8036a4e11b047ef14f52b5b1d315005b",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abmdgen\u00bb",
+    "imports": [
+        "\u00abMdgen\u00bb"
+    ],
+    "metadata": {
+        "name": "mdgen",
+        "owner": "Seasawher",
+        "fullName": "Seasawher/mdgen",
+        "description": "Tool to generate markdown files from lean files.",
+        "keywords": [
+            "cli",
+            "markdown"
+        ],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-12-29T14:29:58Z",
+        "updatedAt": "2024-10-24T12:31:14Z",
+        "stars": 13,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOK-3goA",
+                "fullName": "Seasawher/mdgen",
+                "repoUrl": "https://github.com/Seasawher/mdgen",
+                "gitUrl": "https://github.com/Seasawher/mdgen",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

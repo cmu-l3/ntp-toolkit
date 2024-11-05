@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/leanprover-community/duper",
+    "commit": "f7ec49ecf7254a3dfe1d77fb9b0702ae34229e20",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "Duper",
+    "imports": [
+        "Duper"
+    ],
+    "metadata": {
+        "name": "Duper",
+        "owner": "leanprover-community",
+        "fullName": "leanprover-community/Duper",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2021-11-03T15:35:41Z",
+        "updatedAt": "2024-10-24T04:40:49Z",
+        "stars": 47,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGUoFZQ",
+                "fullName": "leanprover-community/duper",
+                "repoUrl": "https://github.com/leanprover-community/duper",
+                "gitUrl": "https://github.com/leanprover-community/duper",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

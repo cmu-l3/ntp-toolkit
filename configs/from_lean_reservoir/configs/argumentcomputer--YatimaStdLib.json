@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/argumentcomputer/YatimaStdLib.lean",
+    "commit": "3037f0c14128751b95510c2723f067ec7a494f08",
+    "lean": "leanprover/lean4:v4.4.0-rc1",
+    "name": "YatimaStdLib",
+    "imports": [
+        "YatimaStdLib"
+    ],
+    "metadata": {
+        "name": "YatimaStdLib",
+        "owner": "argumentcomputer",
+        "fullName": "argumentcomputer/YatimaStdLib",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2022-06-24T12:30:28Z",
+        "updatedAt": "2024-10-21T19:00:47Z",
+        "stars": 8,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOHjhAIA",
+                "fullName": "argumentcomputer/YatimaStdLib.lean",
+                "repoUrl": "https://github.com/argumentcomputer/YatimaStdLib.lean",
+                "gitUrl": "https://github.com/argumentcomputer/YatimaStdLib.lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

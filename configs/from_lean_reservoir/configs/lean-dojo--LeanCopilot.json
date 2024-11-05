@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/lean-dojo/LeanCopilot",
+    "commit": "880f820ecbc128166a9a07b19497d1b4fa8090ae",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "LeanCopilot",
+    "imports": [
+        "LeanCopilot"
+    ],
+    "metadata": {
+        "name": "LeanCopilot",
+        "owner": "lean-dojo",
+        "fullName": "lean-dojo/LeanCopilot",
+        "description": "LLMs as Copilots for Theorem Proving in Lean",
+        "keywords": [],
+        "homepage": "https://leandojo.org",
+        "license": "MIT",
+        "createdAt": "2023-09-09T01:52:22Z",
+        "updatedAt": "2024-10-23T08:41:32Z",
+        "stars": 979,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKRPv5g",
+                "fullName": "lean-dojo/LeanCopilot",
+                "repoUrl": "https://github.com/lean-dojo/LeanCopilot",
+                "gitUrl": "https://github.com/lean-dojo/LeanCopilot",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

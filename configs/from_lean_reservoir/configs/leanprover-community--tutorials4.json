@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/leanprover-community/tutorials4",
+    "commit": "155202ce11bd32fa184bc2854b15dd9639dc4678",
+    "lean": "leanprover/lean4:v4.1.0-rc1",
+    "name": "tutorials",
+    "imports": [
+        "Tutorials"
+    ],
+    "metadata": {
+        "name": "tutorials4",
+        "owner": "leanprover-community",
+        "fullName": "leanprover-community/tutorials4",
+        "description": "Lean 4 tutorial files",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-05-02T18:35:48Z",
+        "updatedAt": "2024-10-15T10:39:48Z",
+        "stars": 28,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJeBW7w",
+                "fullName": "leanprover-community/tutorials4",
+                "repoUrl": "https://github.com/leanprover-community/tutorials4",
+                "gitUrl": "https://github.com/leanprover-community/tutorials4",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

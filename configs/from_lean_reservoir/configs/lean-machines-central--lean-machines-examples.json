@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/lean-machines-central/lean-machines-examples",
+    "commit": "df2ac22bf3bfe835209878904401df49addf2023",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "\u00ablean-machines-examples\u00bb",
+    "imports": [
+        "\u00abLeanMachinesExamples\u00bb"
+    ],
+    "metadata": {
+        "name": "lean-machines-examples",
+        "owner": "lean-machines-central",
+        "fullName": "lean-machines-central/lean-machines-examples",
+        "description": "Example specifications for the Lean Machines modelling framework",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-08-07T13:16:48Z",
+        "updatedAt": "2024-10-10T12:35:36Z",
+        "stars": 3,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMge4vA",
+                "fullName": "lean-machines-central/lean-machines-examples",
+                "repoUrl": "https://github.com/lean-machines-central/lean-machines-examples",
+                "gitUrl": "https://github.com/lean-machines-central/lean-machines-examples",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

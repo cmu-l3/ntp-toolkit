@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/leanprover/LNSym",
+    "commit": "1b67f50f31463142b8c62f5341a7b22bbb6a73d9",
+    "lean": "leanprover/lean4:nightly-2024-10-07",
+    "name": "\u00ablnsym\u00bb",
+    "imports": [
+        "\u00abArm\u00bb"
+    ],
+    "metadata": {
+        "name": "lnsym",
+        "owner": "leanprover",
+        "fullName": "leanprover/lnsym",
+        "description": "Armv8 Native Code Symbolic Simulator in Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-01-04T14:50:35Z",
+        "updatedAt": "2024-10-24T21:46:02Z",
+        "stars": 59,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLAxLyg",
+                "fullName": "leanprover/LNSym",
+                "repoUrl": "https://github.com/leanprover/LNSym",
+                "gitUrl": "https://github.com/leanprover/LNSym",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

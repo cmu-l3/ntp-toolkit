@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/mo271/FormalBook",
+    "commit": "869ad05e6e6f36654fed04a3f141999a44be3b30",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "FormalBook",
+    "imports": [
+        "FormalBook"
+    ],
+    "metadata": {
+        "name": "FormalBook",
+        "owner": "mo271",
+        "fullName": "mo271/FormalBook",
+        "description": "Formalizing \"Proofs from THE BOOK\"",
+        "keywords": [],
+        "homepage": "http://firsching.ch/FormalBook/",
+        "license": "Apache-2.0",
+        "createdAt": "2022-09-15T12:01:05Z",
+        "updatedAt": "2024-10-25T06:02:53Z",
+        "stars": 50,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOIAIQZQ",
+                "fullName": "mo271/FormalBook",
+                "repoUrl": "https://github.com/mo271/FormalBook",
+                "gitUrl": "https://github.com/mo271/FormalBook",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

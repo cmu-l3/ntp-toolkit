@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/teorth/pfr",
+    "commit": "ee35aa0228d40a96b36dff66e10b5f420770856e",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "PFR",
+    "imports": [
+        "PFR"
+    ],
+    "metadata": {
+        "name": "PFR",
+        "owner": "teorth",
+        "fullName": "teorth/PFR",
+        "description": "Repository for formalization of the Polynomial Freiman Ruzsa conjecture (and related results)",
+        "keywords": [],
+        "homepage": "https://teorth.github.io/pfr/",
+        "license": "Apache-2.0",
+        "createdAt": "2023-11-12T23:57:47Z",
+        "updatedAt": "2024-10-19T11:42:22Z",
+        "stars": 134,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKspfzw",
+                "fullName": "teorth/pfr",
+                "repoUrl": "https://github.com/teorth/pfr",
+                "gitUrl": "https://github.com/teorth/pfr",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/dagurtomas/LeanCondensed",
+    "commit": "ad30c8df673baa36a735e45f1b1254f9a9c3d4b6",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "\u00abLeanCondensed\u00bb",
+    "imports": [
+        "\u00abLeanCondensed\u00bb"
+    ],
+    "metadata": {
+        "name": "LeanCondensed",
+        "owner": "dagurtomas",
+        "fullName": "dagurtomas/LeanCondensed",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-04-17T11:51:26Z",
+        "updatedAt": "2024-10-04T11:08:29Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLvZgPg",
+                "fullName": "dagurtomas/LeanCondensed",
+                "repoUrl": "https://github.com/dagurtomas/LeanCondensed",
+                "gitUrl": "https://github.com/dagurtomas/LeanCondensed",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

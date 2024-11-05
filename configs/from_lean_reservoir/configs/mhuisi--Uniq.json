@@ -1,0 +1,36 @@
+{
+    "repo": "https://github.com/mhuisi/Uniq",
+    "commit": "e622cfd23bed7a0b29bdbe358529ae76e4968919",
+    "lean": "leanprover/lean4:v4.12.0",
+    "name": "uniq",
+    "imports": [
+        "Uniq"
+    ],
+    "metadata": {
+        "name": "Uniq",
+        "owner": "mhuisi",
+        "fullName": "mhuisi/Uniq",
+        "description": "Static Uniqueness Analysis for the Lean 4 Theorem Prover",
+        "keywords": [
+            "linear-types",
+            "uniqueness-types"
+        ],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-01-29T12:19:56Z",
+        "updatedAt": "2024-08-19T20:53:30Z",
+        "stars": 8,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOI3KbKQ",
+                "fullName": "mhuisi/Uniq",
+                "repoUrl": "https://github.com/mhuisi/Uniq",
+                "gitUrl": "https://github.com/mhuisi/Uniq",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

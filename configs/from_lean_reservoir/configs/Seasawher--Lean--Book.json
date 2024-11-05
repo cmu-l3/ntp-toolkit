@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/Seasawher/lean-book",
+    "commit": "ce20d402b9e685b103114dafc53ed0f86fe546cb",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abLean",
+    "imports": [
+        "\u00abSrc\u00bb"
+    ],
+    "metadata": {
+        "name": "Lean Book",
+        "owner": "Seasawher",
+        "fullName": "Seasawher/Lean Book",
+        "description": "mdbook template for lean project",
+        "keywords": [],
+        "homepage": "https://seasawher.github.io/lean-book/",
+        "license": "Apache-2.0",
+        "createdAt": "2024-03-15T00:31:41Z",
+        "updatedAt": "2024-10-24T12:31:27Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLgigYA",
+                "fullName": "Seasawher/lean-book",
+                "repoUrl": "https://github.com/Seasawher/lean-book",
+                "gitUrl": "https://github.com/Seasawher/lean-book",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

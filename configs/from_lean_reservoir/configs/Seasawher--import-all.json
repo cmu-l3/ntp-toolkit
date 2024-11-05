@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/Seasawher/import-all",
+    "commit": "b7299338754d36499cbc2398a5b3382332cf9e02",
+    "lean": "leanprover/lean4:nightly-2024-03-25",
+    "name": "\u00abimport-all\u00bb",
+    "imports": [
+        "\u00abImportAll\u00bb"
+    ],
+    "metadata": {
+        "name": "import-all",
+        "owner": "Seasawher",
+        "fullName": "Seasawher/import-all",
+        "description": "This script can check and auto-generate `import` statements in a lean4 repository.",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2024-01-06T14:29:33Z",
+        "updatedAt": "2024-09-07T14:12:03Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLBgxOg",
+                "fullName": "Seasawher/import-all",
+                "repoUrl": "https://github.com/Seasawher/import-all",
+                "gitUrl": "https://github.com/Seasawher/import-all",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

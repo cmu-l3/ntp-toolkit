@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/algebraic-dev/colorized",
+    "commit": "e631ffd114535e1ace876e1b7062d672f718454f",
+    "lean": "leanprover/lean4:stable",
+    "name": "\u00abColorized\u00bb",
+    "imports": [
+        "\u00abColorized\u00bb"
+    ],
+    "metadata": {
+        "name": "Colorized",
+        "owner": "algebraic-dev",
+        "fullName": "algebraic-dev/Colorized",
+        "description": "\ud83c\udf08 | A Lean 4 library designed to enhance terminal output with vibrant ANSI escape sequences.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-12-18T21:51:52Z",
+        "updatedAt": "2024-09-11T06:01:11Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOK7RQeQ",
+                "fullName": "algebraic-dev/colorized",
+                "repoUrl": "https://github.com/algebraic-dev/colorized",
+                "gitUrl": "https://github.com/algebraic-dev/colorized",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/hargoniX/socket.lean",
+    "commit": "b5e4c863a1462487da12e85a6b1e7cd2d38f9f15",
+    "lean": "leanprover/lean4:v4.10.0-rc1",
+    "name": "\u00absocket\u00bb",
+    "imports": [
+        "\u00abSocket\u00bb"
+    ],
+    "metadata": {
+        "name": "socket",
+        "owner": "hargoniX",
+        "fullName": "hargoniX/socket",
+        "description": "sockets for Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-08-19T22:19:59Z",
+        "updatedAt": "2024-09-20T03:09:12Z",
+        "stars": 17,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKJGvtw",
+                "fullName": "hargoniX/socket.lean",
+                "repoUrl": "https://github.com/hargoniX/socket.lean",
+                "gitUrl": "https://github.com/hargoniX/socket.lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

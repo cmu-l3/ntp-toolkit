@@ -1,0 +1,36 @@
+{
+    "repo": "https://github.com/functionally/crypto-lean4",
+    "commit": "1991acb35eaf78e7aa3a0c535c2b07b48f9ccfa6",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "\u00abCrypto\u00bb",
+    "imports": [
+        "\u00abCrypto\u00bb"
+    ],
+    "metadata": {
+        "name": "Crypto",
+        "owner": "functionally",
+        "fullName": "functionally/Crypto",
+        "description": "Implementation of various cryptographic functions in Lean4",
+        "keywords": [
+            "cryptography",
+            "elliptic-curves"
+        ],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2024-08-04T21:51:18Z",
+        "updatedAt": "2024-09-20T12:12:28Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMfQO6g",
+                "fullName": "functionally/crypto-lean4",
+                "repoUrl": "https://github.com/functionally/crypto-lean4",
+                "gitUrl": "https://github.com/functionally/crypto-lean4",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/nomeata/lean-calcify",
+    "commit": "dbc14d28fad2b090158ad60e490da9067b4519be",
+    "lean": "leanprover/lean4:v4.12.0",
+    "name": "calcify",
+    "imports": [
+        "Calcify"
+    ],
+    "metadata": {
+        "name": "calcify",
+        "owner": "nomeata",
+        "fullName": "nomeata/calcify",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-03-01T16:40:24Z",
+        "updatedAt": "2024-10-14T11:56:28Z",
+        "stars": 10,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLaU58Q",
+                "fullName": "nomeata/lean-calcify",
+                "repoUrl": "https://github.com/nomeata/lean-calcify",
+                "gitUrl": "https://github.com/nomeata/lean-calcify",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

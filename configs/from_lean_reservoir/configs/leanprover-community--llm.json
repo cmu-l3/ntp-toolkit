@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/leanprover-community/llm",
+    "commit": "d666d155610677658b6a5d3c81959d3ceb848b41",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
+    "name": "llm",
+    "imports": [
+        "LLM"
+    ],
+    "metadata": {
+        "name": "llm",
+        "owner": "leanprover-community",
+        "fullName": "leanprover-community/llm",
+        "description": "Interfacing with Large Language Models (remote and local) from Lean.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-05-05T06:51:17Z",
+        "updatedAt": "2024-10-06T16:59:42Z",
+        "stars": 24,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJfFZYg",
+                "fullName": "leanprover-community/llm",
+                "repoUrl": "https://github.com/leanprover-community/llm",
+                "gitUrl": "https://github.com/leanprover-community/llm",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

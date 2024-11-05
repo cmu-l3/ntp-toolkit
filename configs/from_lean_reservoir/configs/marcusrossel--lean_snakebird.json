@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/marcusrossel/lean-snakebird",
+    "commit": "222dda8532dae269f42b9c77ac59d087da149f91",
+    "lean": "leanprover/lean4:v4.8.0-rc1",
+    "name": "lean_snakebird",
+    "imports": [
+        "Snakebird"
+    ],
+    "metadata": {
+        "name": "lean_snakebird",
+        "owner": "marcusrossel",
+        "fullName": "marcusrossel/lean_snakebird",
+        "description": "An implementation of Snakebird in Lean.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2021-12-09T16:57:53Z",
+        "updatedAt": "2024-05-05T18:19:38Z",
+        "stars": 5,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGgdtbw",
+                "fullName": "marcusrossel/lean-snakebird",
+                "repoUrl": "https://github.com/marcusrossel/lean-snakebird",
+                "gitUrl": "https://github.com/marcusrossel/lean-snakebird",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

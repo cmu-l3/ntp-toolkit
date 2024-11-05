@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/fpvandoorn/BonnAnalysis",
+    "commit": "92592f5150337a9e03caaee5b050320950ce1bf4",
+    "lean": "leanprover/lean4:v4.10.0-rc1",
+    "name": "\u00abbonnAnalysis\u00bb",
+    "imports": [
+        "\u00abBonnAnalysis\u00bb"
+    ],
+    "metadata": {
+        "name": "bonnAnalysis",
+        "owner": "fpvandoorn",
+        "fullName": "fpvandoorn/bonnAnalysis",
+        "description": "repository for the collaborative formalization seminar in Analysis in Bonn",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-04-11T11:45:40Z",
+        "updatedAt": "2024-10-24T15:57:48Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLs0adA",
+                "fullName": "fpvandoorn/BonnAnalysis",
+                "repoUrl": "https://github.com/fpvandoorn/BonnAnalysis",
+                "gitUrl": "https://github.com/fpvandoorn/BonnAnalysis",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

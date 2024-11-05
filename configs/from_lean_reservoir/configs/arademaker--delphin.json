@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/arademaker/delphin",
+    "commit": "def30873684e8e247c459d03c1d71c27f3470da3",
+    "lean": "leanprover/lean4:v4.10.0",
+    "name": "delphin",
+    "imports": [
+        "\u00abMrs\u00bb"
+    ],
+    "metadata": {
+        "name": "delphin",
+        "owner": "arademaker",
+        "fullName": "arademaker/delphin",
+        "description": "The Lean port of PyDelphin, a library to integrate DELPH-IN toolsets",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-11-06T00:14:03Z",
+        "updatedAt": "2024-10-01T18:45:45Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKpuYXw",
+                "fullName": "arademaker/delphin",
+                "repoUrl": "https://github.com/arademaker/delphin",
+                "gitUrl": "https://github.com/arademaker/delphin",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

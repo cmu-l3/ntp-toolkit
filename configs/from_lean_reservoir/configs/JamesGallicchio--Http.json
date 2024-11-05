@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/JamesGallicchio/http",
+    "commit": "6f0ad6723d3b1cc1ee9903d4a877f9be480dfab3",
+    "lean": "leanprover/lean4:v4.5.0-rc1",
+    "name": "Http",
+    "imports": [
+        "Http"
+    ],
+    "metadata": {
+        "name": "Http",
+        "owner": "JamesGallicchio",
+        "fullName": "JamesGallicchio/Http",
+        "description": "Basic HTTP definitions and parsing for Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-09-09T19:49:57Z",
+        "updatedAt": "2024-08-22T09:20:31Z",
+        "stars": 7,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKRfzcw",
+                "fullName": "JamesGallicchio/http",
+                "repoUrl": "https://github.com/JamesGallicchio/http",
+                "gitUrl": "https://github.com/JamesGallicchio/http",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

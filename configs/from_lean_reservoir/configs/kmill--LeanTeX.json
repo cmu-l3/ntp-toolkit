@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/kmill/LeanTeX",
+    "commit": "b1a7bf06d552360b0b96d47f234a8271cf48f0d1",
+    "lean": "leanprover/lean4:v4.8.0-rc2",
+    "name": "LeanTeX",
+    "imports": [
+        "LeanTeX"
+    ],
+    "metadata": {
+        "name": "LeanTeX",
+        "owner": "kmill",
+        "fullName": "kmill/LeanTeX",
+        "description": "Lean 4 library for pretty printing expressions as LaTeX",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-08-30T15:07:39Z",
+        "updatedAt": "2024-09-25T18:54:00Z",
+        "stars": 13,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKNYoPQ",
+                "fullName": "kmill/LeanTeX",
+                "repoUrl": "https://github.com/kmill/LeanTeX",
+                "gitUrl": "https://github.com/kmill/LeanTeX",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

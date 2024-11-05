@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/remimimimimi/leansec",
+    "commit": "0b5119fcbbbe7b89bd684e9a33ac11d46d26f052",
+    "lean": "leanprover/lean4:v4.7.0-rc2",
+    "name": "\u00ableansec\u00bb",
+    "imports": [
+        "\u00abLeansec\u00bb"
+    ],
+    "metadata": {
+        "name": "leansec",
+        "owner": "remimimimimi",
+        "fullName": "remimimimimi/leansec",
+        "description": "Total parser combinators library for Lean4",
+        "keywords": [],
+        "homepage": null,
+        "license": "AGPL-3.0",
+        "createdAt": "2024-03-30T14:31:19Z",
+        "updatedAt": "2024-07-18T17:03:06Z",
+        "stars": 6,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLnkfRg",
+                "fullName": "remimimimimi/leansec",
+                "repoUrl": "https://github.com/remimimimimi/leansec",
+                "gitUrl": "https://github.com/remimimimimi/leansec",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

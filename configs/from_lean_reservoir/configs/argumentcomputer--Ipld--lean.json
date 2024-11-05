@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/argumentcomputer/Ipld.lean",
+    "commit": "d8bd0cdb96cdbef512d417dcf662d06ac1c53e42",
+    "lean": "leanprover/lean4:nightly-2023-01-10",
+    "name": "Ipld",
+    "imports": [
+        "Ipld"
+    ],
+    "metadata": {
+        "name": "Ipld.lean",
+        "owner": "argumentcomputer",
+        "fullName": "argumentcomputer/Ipld.lean",
+        "description": "a Lean4 implementation of the IPLD format",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2021-11-10T15:42:10Z",
+        "updatedAt": "2023-12-13T21:23:05Z",
+        "stars": 8,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOGW6fgQ",
+                "fullName": "argumentcomputer/Ipld.lean",
+                "repoUrl": "https://github.com/argumentcomputer/Ipld.lean",
+                "gitUrl": "https://github.com/argumentcomputer/Ipld.lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

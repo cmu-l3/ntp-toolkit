@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/verse-lab/lean-ssr",
+    "commit": "cd4292736317102a8dfc9cc05bc2c4b976087b22",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
+    "name": "ssreflect",
+    "imports": [
+        "Ssreflect"
+    ],
+    "metadata": {
+        "name": "ssreflect",
+        "owner": "verse-lab",
+        "fullName": "verse-lab/ssreflect",
+        "description": "LeanSSR: an SSReflect-Like Tactic Language for Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-02-16T10:17:38Z",
+        "updatedAt": "2024-09-13T06:51:42Z",
+        "stars": 31,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLTTWBA",
+                "fullName": "verse-lab/lean-ssr",
+                "repoUrl": "https://github.com/verse-lab/lean-ssr",
+                "gitUrl": "https://github.com/verse-lab/lean-ssr",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

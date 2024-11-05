@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/bridgekat/filter-game",
+    "commit": "5a56539b5a17432c39d37ff1b0d294bc1ff1fd34",
+    "lean": "leanprover/lean4:nightly-2023-06-20",
+    "name": "filtergame",
+    "imports": [
+        "FilterGame"
+    ],
+    "metadata": {
+        "name": "filter-game",
+        "owner": "bridgekat",
+        "fullName": "bridgekat/filter-game",
+        "description": "Lean 4 version of the filter game.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-07-03T12:37:25Z",
+        "updatedAt": "2024-05-27T10:39:03Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJ3CbSg",
+                "fullName": "bridgekat/filter-game",
+                "repoUrl": "https://github.com/bridgekat/filter-game",
+                "gitUrl": "https://github.com/bridgekat/filter-game",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

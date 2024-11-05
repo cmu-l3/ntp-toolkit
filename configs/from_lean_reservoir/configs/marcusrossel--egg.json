@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/marcusrossel/lean-egg",
+    "commit": "7ffdf1429d3d9035cfe710ab59a7080b05b007d8",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "egg",
+    "imports": [
+        "Egg"
+    ],
+    "metadata": {
+        "name": "egg",
+        "owner": "marcusrossel",
+        "fullName": "marcusrossel/egg",
+        "description": "A (WIP) equality saturation tactic for Lean based on egg.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-01-15T08:14:47Z",
+        "updatedAt": "2024-10-25T13:10:02Z",
+        "stars": 38,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLE_ZUQ",
+                "fullName": "marcusrossel/lean-egg",
+                "repoUrl": "https://github.com/marcusrossel/lean-egg",
+                "gitUrl": "https://github.com/marcusrossel/lean-egg",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

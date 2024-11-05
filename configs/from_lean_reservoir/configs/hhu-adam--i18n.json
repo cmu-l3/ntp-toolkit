@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/hhu-adam/lean-i18n",
+    "commit": "5ed8ee21df6c132a49b36d7ff650d224fe6c5075",
+    "lean": "leanprover/lean4:v4.12.0-rc1",
+    "name": "i18n",
+    "imports": [
+        "I18n"
+    ],
+    "metadata": {
+        "name": "i18n",
+        "owner": "hhu-adam",
+        "fullName": "hhu-adam/i18n",
+        "description": "i18n library for Lean.",
+        "keywords": [],
+        "homepage": "https://reservoir.lean-lang.org/@hhu-adam/i18n",
+        "license": "Apache-2.0",
+        "createdAt": "2024-02-28T23:09:52Z",
+        "updatedAt": "2024-09-12T12:17:11Z",
+        "stars": 6,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLZd8Uw",
+                "fullName": "hhu-adam/lean-i18n",
+                "repoUrl": "https://github.com/hhu-adam/lean-i18n",
+                "gitUrl": "https://github.com/hhu-adam/lean-i18n",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

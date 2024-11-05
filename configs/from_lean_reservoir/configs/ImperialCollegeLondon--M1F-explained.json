@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/ImperialCollegeLondon/M1F-explained",
+    "commit": "10bdd7ff1d59bdfb67828495abb6cca81135cca8",
+    "lean": "leanprover/lean4:nightly-2023-08-05",
+    "name": "\u00abm1F-Explained\u00bb",
+    "imports": [
+        "\u00abM1FExplained\u00bb"
+    ],
+    "metadata": {
+        "name": "M1F-explained",
+        "owner": "ImperialCollegeLondon",
+        "fullName": "ImperialCollegeLondon/M1F-explained",
+        "description": "A computer formalisation of parts of Martin Liebeck's book \"a concise introduction to pure mathematics\"",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-07-03T09:43:26Z",
+        "updatedAt": "2024-05-05T18:03:48Z",
+        "stars": 10,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJ2-jkQ",
+                "fullName": "ImperialCollegeLondon/M1F-explained",
+                "repoUrl": "https://github.com/ImperialCollegeLondon/M1F-explained",
+                "gitUrl": "https://github.com/ImperialCollegeLondon/M1F-explained",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

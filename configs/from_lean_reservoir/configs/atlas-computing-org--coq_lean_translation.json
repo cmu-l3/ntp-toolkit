@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/atlas-computing-org/CoqLeanTranslation",
+    "commit": "2fb870d5e4e6154295d55451f6bdf3de464bd94f",
+    "lean": "leanprover/lean4:v4.5.0-rc1",
+    "name": "\u00abcoq_lean_translation\u00bb",
+    "imports": [
+        "\u00abCoqLeanTranslation\u00bb"
+    ],
+    "metadata": {
+        "name": "coq_lean_translation",
+        "owner": "atlas-computing-org",
+        "fullName": "atlas-computing-org/coq_lean_translation",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2024-01-30T03:53:43Z",
+        "updatedAt": "2024-05-29T04:46:24Z",
+        "stars": 3,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLLY57A",
+                "fullName": "atlas-computing-org/CoqLeanTranslation",
+                "repoUrl": "https://github.com/atlas-computing-org/CoqLeanTranslation",
+                "gitUrl": "https://github.com/atlas-computing-org/CoqLeanTranslation",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

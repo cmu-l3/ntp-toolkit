@@ -1,0 +1,37 @@
+{
+    "repo": "https://github.com/goens/lost-pop-lean",
+    "commit": "bcad3ee83c6cccc584efc219a964df5908f97f25",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "lost-pop-lean",
+    "imports": [
+        "Pop"
+    ],
+    "metadata": {
+        "name": "lost-pop-lean",
+        "owner": "goens",
+        "fullName": "goens/lost-pop-lean",
+        "description": "POP Memory Model in Lean",
+        "keywords": [
+            "heterogeneous",
+            "memory-models",
+            "weak-memory-models"
+        ],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2022-07-01T20:49:36Z",
+        "updatedAt": "2024-09-30T15:20:23Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOHl-oJQ",
+                "fullName": "goens/lost-pop-lean",
+                "repoUrl": "https://github.com/goens/lost-pop-lean",
+                "gitUrl": "https://github.com/goens/lost-pop-lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

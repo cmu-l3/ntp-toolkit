@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/Joonas-vonlerber/Type-Theory-Game",
+    "commit": "7f9847f42852355546c4f477befd8680b0c2d05e",
+    "lean": "leanprover/lean4:v4.6.0",
+    "name": "Game",
+    "imports": [
+        "Game"
+    ],
+    "metadata": {
+        "name": "Game",
+        "owner": "Joonas-vonlerber",
+        "fullName": "Joonas-vonlerber/Game",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2024-04-05T09:22:29Z",
+        "updatedAt": "2024-05-23T10:17:36Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLqLesw",
+                "fullName": "Joonas-vonlerber/Type-Theory-Game",
+                "repoUrl": "https://github.com/Joonas-vonlerber/Type-Theory-Game",
+                "gitUrl": "https://github.com/Joonas-vonlerber/Type-Theory-Game",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

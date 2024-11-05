@@ -1,0 +1,38 @@
+{
+    "repo": "https://github.com/T-Brick/ControlFlow",
+    "commit": "781eafdbda869f142ff05f07c7a4da926bf4ec39",
+    "lean": "leanprover/lean4:v4.8.0",
+    "name": "controlflow",
+    "imports": [
+        "ControlFlow"
+    ],
+    "metadata": {
+        "name": "controlflow",
+        "owner": "T-Brick",
+        "fullName": "T-Brick/controlflow",
+        "description": "A control flow graph library for Lean",
+        "keywords": [
+            "graph-theory",
+            "graph-algorithms",
+            "cfg",
+            "control-flow-graph"
+        ],
+        "homepage": null,
+        "license": "GPL-3.0",
+        "createdAt": "2023-09-06T23:41:55Z",
+        "updatedAt": "2024-06-22T19:44:26Z",
+        "stars": 6,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKQWPHw",
+                "fullName": "T-Brick/ControlFlow",
+                "repoUrl": "https://github.com/T-Brick/ControlFlow",
+                "gitUrl": "https://github.com/T-Brick/ControlFlow",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

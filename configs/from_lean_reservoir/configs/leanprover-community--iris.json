@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/leanprover-community/iris-lean",
+    "commit": "f63fd7711157e423b74be5c6ac1ba8e13abacfe2",
+    "lean": "leanprover/lean4:nightly-2023-07-30",
+    "name": "iris",
+    "imports": [
+        "iris"
+    ],
+    "metadata": {
+        "name": "iris",
+        "owner": "leanprover-community",
+        "fullName": "leanprover-community/iris",
+        "description": "Lean 4 port of Iris, a higher-order concurrent separation logic framework",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2022-03-12T12:48:13Z",
+        "updatedAt": "2024-10-25T07:54:24Z",
+        "stars": 65,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOG_Wazg",
+                "fullName": "leanprover-community/iris-lean",
+                "repoUrl": "https://github.com/leanprover-community/iris-lean",
+                "gitUrl": "https://github.com/leanprover-community/iris-lean",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

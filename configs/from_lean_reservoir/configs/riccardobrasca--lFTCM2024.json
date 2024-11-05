@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/riccardobrasca/LFTCM2024",
+    "commit": "33e1d8ee15893db8bc48ed380ecb688109bd1d47",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "\u00ablFTCM2024\u00bb",
+    "imports": [
+        "\u00abLFTCM2024\u00bb"
+    ],
+    "metadata": {
+        "name": "lFTCM2024",
+        "owner": "riccardobrasca",
+        "fullName": "riccardobrasca/lFTCM2024",
+        "description": "Repository for the conference LFTCM2024",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-02-23T10:35:39Z",
+        "updatedAt": "2024-07-10T07:49:57Z",
+        "stars": 6,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLW6gCw",
+                "fullName": "riccardobrasca/LFTCM2024",
+                "repoUrl": "https://github.com/riccardobrasca/LFTCM2024",
+                "gitUrl": "https://github.com/riccardobrasca/LFTCM2024",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

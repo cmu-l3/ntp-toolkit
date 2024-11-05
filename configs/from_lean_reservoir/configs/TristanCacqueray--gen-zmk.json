@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/TristanCacqueray/gen-zmk",
+    "commit": "488026fcba09386e2ec3a0e2dc594ab8f1ad4bb4",
+    "lean": "leanprover/lean4:v4.9.0",
+    "name": "\u00abgen-zmk\u00bb",
+    "imports": [
+        "\u00abGenZmk\u00bb"
+    ],
+    "metadata": {
+        "name": "gen-zmk",
+        "owner": "TristanCacqueray",
+        "fullName": "TristanCacqueray/gen-zmk",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-12-05T23:50:00Z",
+        "updatedAt": "2024-10-06T15:09:46Z",
+        "stars": 3,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOK2PPFQ",
+                "fullName": "TristanCacqueray/gen-zmk",
+                "repoUrl": "https://github.com/TristanCacqueray/gen-zmk",
+                "gitUrl": "https://github.com/TristanCacqueray/gen-zmk",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

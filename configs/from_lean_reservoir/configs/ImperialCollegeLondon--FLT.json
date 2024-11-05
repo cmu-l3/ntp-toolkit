@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/ImperialCollegeLondon/FLT",
+    "commit": "1b353be2f133346fa7c28cdeaa30effb5017a6f5",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "FLT",
+    "imports": [
+        "FLT"
+    ],
+    "metadata": {
+        "name": "FLT",
+        "owner": "ImperialCollegeLondon",
+        "fullName": "ImperialCollegeLondon/FLT",
+        "description": "Ongoing Lean formalisation of the proof of Fermat's Last Theorem",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-11-19T17:37:05Z",
+        "updatedAt": "2024-10-25T09:35:27Z",
+        "stars": 241,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKvbQyQ",
+                "fullName": "ImperialCollegeLondon/FLT",
+                "repoUrl": "https://github.com/ImperialCollegeLondon/FLT",
+                "gitUrl": "https://github.com/ImperialCollegeLondon/FLT",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

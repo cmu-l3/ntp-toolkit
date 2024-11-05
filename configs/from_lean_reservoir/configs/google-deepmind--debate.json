@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/google-deepmind/debate",
+    "commit": "de3a6e500ae1a65dfeea2f91ef519ebad9704be0",
+    "lean": "leanprover/lean4:v4.8.0",
+    "name": "debate",
+    "imports": [
+        "Debate"
+    ],
+    "metadata": {
+        "name": "debate",
+        "owner": "google-deepmind",
+        "fullName": "google-deepmind/debate",
+        "description": "Formalizing stochastic doubly-efficient debate",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-11-24T16:14:28Z",
+        "updatedAt": "2024-10-21T17:53:48Z",
+        "stars": 92,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKxlE6w",
+                "fullName": "google-deepmind/debate",
+                "repoUrl": "https://github.com/google-deepmind/debate",
+                "gitUrl": "https://github.com/google-deepmind/debate",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}
