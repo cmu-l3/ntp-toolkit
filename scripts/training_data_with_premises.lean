@@ -77,11 +77,10 @@ def makeElabDeclId (info: ElabDeclInfo) (module: Name) (hash: String) : String :
   let declId := s!"{module}.{x}_{y}.{hash}"
   declId
 
-def getInvocationTrees (module: ModuleName) : IO (List InfoTree) := do
-  let mut trees ← moduleInfoTrees module
-  trees := trees.bind InfoTree.retainTacticInfo
-  trees := trees.bind InfoTree.retainOriginal
-  trees := trees.bind InfoTree.retainSubstantive
+def getInvocationTrees (trees : List InfoTree) : IO (List InfoTree) := do
+  let trees := trees.bind InfoTree.retainTacticInfo
+  let trees := trees.bind InfoTree.retainOriginal
+  let trees := trees.bind InfoTree.retainSubstantive
   return trees
 
 namespace Lean.Elab.TacticInvocation
@@ -319,11 +318,46 @@ def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) 
     }
   return data
 
-/-- Creates a `SecondPassTrainingData` object based on the theorem `v`. This can be done in one pass because we only call
-    `trainingDataGivenTheoremVal` on theorems that are proved without entering tactic mode (so there is no need to do multiple
-    passes to gather information from multiple tactics). -/
-def trainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (cmd : CompilationStep) (v : TheoremVal)
-  : MetaM SecondPassTrainingData := do
+end Lean.Elab.TacticInvocation
+
+open TacticInvocation
+
+def secondPassTrainingDataToJson (d : SecondPassTrainingData) : Json :=
+  Json.mkObj [
+    -- ("declId", Json.str d.declId), -- Used internally
+    ("decl", Json.str d.decl),
+    -- ("goalDelta", Json.num d.goalDelta), -- Used internally but not output to JSON
+    ("declName", Json.str d.declName),
+    ("srcUpToTactic", Json.str d.srcUpToTactic),
+    ("declUpToTactic", Json.str d.declUpToTactic),
+    ("state", Json.str d.state),
+    ("nextTactic", Json.str d.nextTactic),
+    ("nextTacticIsSimpOrRwVariant", Json.bool d.nextTacticIsSimpOrRwVariant),
+    -- ("numNewGoalsOpened", Json.num d.numNewGoalsOpened), -- Only for testing and to compute goalDelta
+    ("nextTacticTermPremises", Json.arr (d.nextTacticTermPremises.map (fun n => s!"{n}"))),
+    ("nextTacticExplicitConstants", Json.arr (d.nextTacticExplicitConstants.map (fun n => s!"{n}"))),
+    ("nextTacticExplicitPremises", Json.arr (d.nextTacticExplicitPremises.map (fun n => s!"{n}"))),
+    ("nextTacticExplicitLocalHypotheses", Json.arr (d.nextTacticExplicitLocalHypotheses.map (fun n => s!"{n}"))),
+    ("nextTacticAllPremises", Json.arr (d.nextTacticAllPremises.map (fun n => s!"{n}"))),
+    ("nextTacticHammerRecommendation", Json.arr (d.nextTacticHammerRecommendation.map (fun n => s!"{n}"))),
+    ("declTermPremises", Json.arr (d.declTermPremises.map (fun n => s!"{n}"))),
+    ("declExplicitConstants", Json.arr (d.declExplicitConstants.map (fun n => s!"{n}"))),
+    ("declExplicitPremises", Json.arr (d.declExplicitPremises.map (fun n => s!"{n}"))),
+    ("declAllPremises", Json.arr (d.declAllPremises.map (fun n => s!"{n}"))),
+    ("declHammerRecommendation", Json.arr (d.declHammerRecommendation.map (fun n => s!"{n}"))),
+    ("termPremisesToEndOfGoal", Json.arr (d.termPremisesToEndOfGoal.map (fun n => s!"{n}"))),
+    ("explicitConstantsToEndOfGoal", Json.arr (d.explicitConstantsToEndOfGoal.map (fun n => s!"{n}"))),
+    ("explicitPremisesToEndOfGoal", Json.arr (d.explicitPremisesToEndOfGoal.map (fun n => s!"{n}"))),
+    ("allPremisesToEndOfGoal", Json.arr (d.allPremisesToEndOfGoal.map (fun n => s!"{n}"))),
+    ("hammerRecommendationToEndOfGoal", Json.arr (d.hammerRecommendationToEndOfGoal.map (fun n => s!"{n}")))
+    -- ("curGoalCount", Json.num d.curGoalCount) -- Only for testing
+  ]
+
+/-- Given a theorem `v`, prints Json information relating to `v` directly to stdout. `printTrainingDataGivenTheoremVal` directly
+    prints to stdout rather than return a `SecondPassTrainingData` object because unlike training data obtained from tactic invocations,
+    training data obtained directly from term proofs can be built all in one pass. -/
+def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (cmd : CompilationStep) (v : TheoremVal)
+  : MetaM Unit := do
   let thmInfo ← Info.ofConstantVal' v.toConstantVal
   let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (cmd.stx.getTailPos?.getD 0)
   let declUpToTactic := Substring.mk (← moduleSource module) (cmd.stx.getPos?.getD 0) (cmd.stx.getTailPos?.getD 0)
@@ -392,7 +426,7 @@ def trainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : ModuleNa
 
   let hammerRecommendation := allLemmas.filter (fun n => !isBlackListed s!"{n}")
 
-  let data := {
+  let data : SecondPassTrainingData := {
       declId := makeElabDeclId elabDeclInfo module hash,
       declName := v.name.toString,
       decl := decl,
@@ -420,16 +454,14 @@ def trainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : ModuleNa
       allPremisesToEndOfGoal := allLemmas,
       hammerRecommendationToEndOfGoal := hammerRecommendation,
     }
-  return data
-
-end Lean.Elab.TacticInvocation
-
-open TacticInvocation
+  IO.println s!"{v.name} data: {(secondPassTrainingDataToJson data).compress}"
+  return
 
 def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
   let infos ← getElabDeclInfo (← moduleInfoTrees module)
-  let trees ← getInvocationTrees module
+  let compilationSteps ← compileModule module
+  let trees ← getInvocationTrees $ compilationSteps.bind (fun c => c.trees)
   let hash ← generateRandomHash
   let mut firstPassData : Array FirstPassTrainingData := #[]
   -- Extract data from tactics
@@ -579,60 +611,29 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
         declAllPremises := activeDeclAllPremises
         declHammerRecommendation := activeDeclHammerRecommendation
       }
-  /- **TODO** Still debugging this code
-  -- Extract data from declarations that are proven without entering tactic mode (`theorem foo := t` is treated as `theorem foo := by exact t`)
-  let steps := compileModule' module
-  let targets := steps.bind fun c => (MLList.ofList c.diff).map fun i => (c, i)
+
+  -- Convert `secondPassData` to Json
+  let jsonRes : Array Json := secondPassData.map secondPassTrainingDataToJson
+  for jsonObj in jsonRes do
+    IO.println jsonObj.compress
+  -- Extract and print data from declarations that are proven without entering tactic mode (`theorem foo := t` is treated as `theorem foo := by exact t`)
+  let mut targets : Array (CompilationStep × ConstantInfo) := #[]
+  for c in compilationSteps do
+    targets := targets ++ (c.diff.map (fun i => (c, i)))
   for (cmd, ci) in targets do
     match ci with
     | .thmInfo v =>
       if firstPassData.any (fun x => x.declName == s!"{v.name}") then
         continue -- This pass is only for collecting data on declarations proven without entering tactic mode
+      else if isAuxLemma v.name then
+        continue
       else
         match getElabDeclOfCompilationStep infos cmd with
         | some elabDeclInfo =>
-          let data ←
-            CoreM.withImportModules #[`Mathlib.Lean.PrettyPrinter.Delaborator, `Lean.PrettyPrinter, module]
-              (trainingDataGivenTheoremVal elabDeclInfo module hash cmd v).run'
-          secondPassData := secondPassData.push data
+          CoreM.withImportModules #[`Mathlib.Lean.PrettyPrinter.Delaborator, `Lean.PrettyPrinter, module]
+            (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v).run'
         | none => continue
     | _ => continue
-  -/
-  -- Convert `secondPassData` to Json
-  let jsonRes : Array Json := secondPassData.map
-    (fun d =>
-      Json.mkObj [
-        -- ("declId", Json.str d.declId), -- Used internally
-        ("decl", Json.str d.decl),
-        -- ("goalDelta", Json.num d.goalDelta), -- Used internally but not output to JSON
-        ("declName", Json.str d.declName),
-        ("srcUpToTactic", Json.str d.srcUpToTactic),
-        ("declUpToTactic", Json.str d.declUpToTactic),
-        ("state", Json.str d.state),
-        ("nextTactic", Json.str d.nextTactic),
-        ("nextTacticIsSimpOrRwVariant", Json.bool d.nextTacticIsSimpOrRwVariant),
-        -- ("numNewGoalsOpened", Json.num d.numNewGoalsOpened), -- Only for testing and to compute goalDelta
-        ("nextTacticTermPremises", Json.arr (d.nextTacticTermPremises.map (fun n => s!"{n}"))),
-        ("nextTacticExplicitConstants", Json.arr (d.nextTacticExplicitConstants.map (fun n => s!"{n}"))),
-        ("nextTacticExplicitPremises", Json.arr (d.nextTacticExplicitPremises.map (fun n => s!"{n}"))),
-        ("nextTacticExplicitLocalHypotheses", Json.arr (d.nextTacticExplicitLocalHypotheses.map (fun n => s!"{n}"))),
-        ("nextTacticAllPremises", Json.arr (d.nextTacticAllPremises.map (fun n => s!"{n}"))),
-        ("nextTacticHammerRecommendation", Json.arr (d.nextTacticHammerRecommendation.map (fun n => s!"{n}"))),
-        ("declTermPremises", Json.arr (d.declTermPremises.map (fun n => s!"{n}"))),
-        ("declExplicitConstants", Json.arr (d.declExplicitConstants.map (fun n => s!"{n}"))),
-        ("declExplicitPremises", Json.arr (d.declExplicitPremises.map (fun n => s!"{n}"))),
-        ("declAllPremises", Json.arr (d.declAllPremises.map (fun n => s!"{n}"))),
-        ("declHammerRecommendation", Json.arr (d.declHammerRecommendation.map (fun n => s!"{n}"))),
-        ("termPremisesToEndOfGoal", Json.arr (d.termPremisesToEndOfGoal.map (fun n => s!"{n}"))),
-        ("explicitConstantsToEndOfGoal", Json.arr (d.explicitConstantsToEndOfGoal.map (fun n => s!"{n}"))),
-        ("explicitPremisesToEndOfGoal", Json.arr (d.explicitPremisesToEndOfGoal.map (fun n => s!"{n}"))),
-        ("allPremisesToEndOfGoal", Json.arr (d.allPremisesToEndOfGoal.map (fun n => s!"{n}"))),
-        ("hammerRecommendationToEndOfGoal", Json.arr (d.hammerRecommendationToEndOfGoal.map (fun n => s!"{n}")))
-        -- ("curGoalCount", Json.num d.curGoalCount) -- Only for testing
-      ]
-    )
-  for jsonObj in jsonRes do
-    IO.println jsonObj.compress
   return 0
 
 def trainingData (args : Cli.Parsed) : IO UInt32 :=
@@ -648,7 +649,7 @@ def training_data : Cmd := `[Cli|
     module : ModuleName; "Lean module to compile and export training data."
 ]
 
-/-- `lake exe training_data` -/
+/-- `lake exe training_data_with_premises` -/
 def main (args : List String) : IO UInt32 :=
   training_data.validate args
 

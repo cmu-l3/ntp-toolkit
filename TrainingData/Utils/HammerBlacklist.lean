@@ -162,6 +162,8 @@ def hammerRecommendationBlackList : Array String := #[
   "eq_true_of_ne_false",
   "ne_false_of_eq_true",
   "ne_true_of_eq_false",
+  "Inhabited.default",
+  "default",
   -- Init.Core.lean
   "Eq.ndrecOn",
   "Iff.intro",

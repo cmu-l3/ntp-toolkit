@@ -18,8 +18,6 @@ lean_lib TrainingData where
 
 lean_lib temp where
 
-lean_lib temp2 where
-
 lean_lib Examples where
 
 lean_exe training_data where
@@ -34,6 +32,7 @@ lean_exe state_comments where
 lean_exe premises where
   root := `scripts.premises
 
+@[default_target]
 lean_exe training_data_with_premises where
   root := `scripts.training_data_with_premises
 
