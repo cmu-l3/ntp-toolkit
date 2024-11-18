@@ -479,7 +479,7 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
         firstPassData := firstPassData.push data
       | none => pure ()
   -- Perform a second pass to gather data that potentially spans multiple tactics
-  let mut activeDeclId : String := firstPassData[0]!.1
+  let mut activeDeclId : String := (firstPassData.getD 0 default).declId
   let mut activeDeclTermPremises : Array Name := #[]
   let mut activeDeclExplicitConstants : Array Name := #[]
   let mut activeDeclExplicitPremises : Array Name := #[]
@@ -611,7 +611,6 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
         declAllPremises := activeDeclAllPremises
         declHammerRecommendation := activeDeclHammerRecommendation
       }
-
   -- Convert `secondPassData` to Json
   let jsonRes : Array Json := secondPassData.map secondPassTrainingDataToJson
   for jsonObj in jsonRes do
