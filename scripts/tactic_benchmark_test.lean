@@ -28,6 +28,19 @@ def jsonDir := "Examples/Mathlib/TrainingDataWithPremises"
    does, but the hammer's behavior requires investigation. The external prover can solve this example, and Duper
    itself can solve this example, but Duper's reconstruction in the hammer can't solve the example -/
 
+-- #eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Analysis.Analytic.Composition `Composition.length_gather withImportsDir jsonDir
+
+------------------------------------------------------------------------------------------------------------------------
+-- Simp_all testing
+
+--**NOTE** Set.not_subset has the wrong recommendation for simp_all (because we are currently using hammerRecommendation
+-- which blacklists some theorems that simp_all would otherwise benefit from)
+-- #eval Command.liftTermElabM $ simpAllBenchmarkAtDecl `Mathlib.Data.Set.Basic `Set.not_subset withImportsDir jsonDir
+
+-- #eval Command.liftTermElabM $ simpAllBenchmarkAtDecl `Mathlib.Data.Set.Basic `Set.ite_inter_self withImportsDir jsonDir
+
+-- #eval Command.liftTermElabM $ tacticBenchmarkAtDecl `Mathlib.Data.Set.Basic `Set.inclusion_mk useSimpAll
+
 ------------------------------------------------------------------------------------------------------------------------
 -- QuerySMT testing
 

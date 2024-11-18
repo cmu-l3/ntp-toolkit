@@ -454,7 +454,7 @@ def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : Mod
       allPremisesToEndOfGoal := allLemmas,
       hammerRecommendationToEndOfGoal := hammerRecommendation,
     }
-  IO.println s!"{v.name} data: {(secondPassTrainingDataToJson data).compress}"
+  IO.println s!"{(secondPassTrainingDataToJson data).compress}"
   return
 
 def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
@@ -640,7 +640,7 @@ def trainingData (args : Cli.Parsed) : IO UInt32 :=
   let module := args.positionalArg! "module" |>.as! ModuleName
   trainingDataGivenModule module
 
-/-- Setting up command line options and help text for `lake exe training_data`. -/
+/-- Setting up command line options and help text for `lake exe training_data_with_premises`. -/
 def training_data : Cmd := `[Cli|
   training_data VIA trainingData; ["0.0.1"]
 "Export training data from the given file."
