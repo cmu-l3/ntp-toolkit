@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/rahul3613/miniF2F-lean4",
     "commit": "d2e847c98dee1acf5355f5de2ab71f3fcd24849a",
-    "lean": "leanprover/lean4:v4.6.0",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "\u00abminiF2F-lean4\u00bb",
     "imports": [
         "\u00abMiniF2FLean4\u00bb"

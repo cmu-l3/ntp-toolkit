@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/fpvandoorn/BonnLeanSeminar",
     "commit": "5ae790f269f6cc1f1d638b0bc7072e99b6fc686a",
-    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "\u00abSeminar\u00bb",
     "imports": [
         "\u00abSeminar\u00bb"

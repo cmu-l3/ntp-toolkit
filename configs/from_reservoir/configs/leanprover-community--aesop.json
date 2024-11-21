@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/leanprover-community/aesop",
     "commit": "9ac12945862fa39eab7795c2f79bb9aa0c8e332c",
-    "lean": "leanprover/lean4:v4.13.0-rc1",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "aesop",
     "imports": [
         "Aesop"
@@ -15,8 +15,8 @@
         "homepage": null,
         "license": "Apache-2.0",
         "createdAt": "2021-06-01T13:02:59Z",
-        "updatedAt": "2024-10-22T22:55:03Z",
-        "stars": 200,
+        "updatedAt": "2024-10-26T21:13:36Z",
+        "stars": 201,
         "sources": [
             {
                 "type": "git",

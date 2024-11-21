@@ -4,6 +4,49 @@ import argparse
 import glob
 import json
 import os
+import subprocess
+import re
+
+
+def get_theorem_commit(theorem_name: str, repo_path):
+    try:
+        git_log_command = [
+            "git", "log", "--reverse", "--pretty=format:%H %ad", "--date=short", "-S", theorem_name
+        ]
+        result = subprocess.run(git_log_command, cwd=repo_path, capture_output=True, text=True, check=True)
+
+        if not result.stdout:
+            # Theorem not found; try removing top-level name segment and searching again
+            if "." in theorem_name:
+                return get_theorem_commit(theorem_name.split(".", 1)[1], repo_path)
+            else:
+                return (None, None)
+        first_commit_info = result.stdout.splitlines()[0]
+        commit_hash, commit_date = first_commit_info.split(" ", 1)
+        return commit_hash.strip() , commit_date.strip()
+    except Exception as e:
+        print(f"Error finding commit for {theorem_name}: {e}")
+        return (None, None)
+
+
+def get_file_commit(file_path, repo_path):
+    file_path = file_path.removeprefix(repo_path)
+
+    try:
+        git_log_command = [
+            "git", "log", "--reverse", "--pretty=format:%H %ad", "--date=short", file_path
+        ]
+        result = subprocess.run(git_log_command, cwd=repo_path, capture_output=True, text=True, check=True)
+
+        if not result.stdout:
+            print(f"File {file_path} not found")
+            return (None, None)
+        first_commit_info = result.stdout.splitlines()[0]
+        commit_hash, commit_date = first_commit_info.split(" ", 1)
+        return commit_hash.strip() , commit_date.strip()
+    except Exception as e:
+        print(f"Error finding commit for {file_path}: {e}")
+        return (None, None)
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -48,15 +91,24 @@ for filename in glob.glob(os.path.join(args.input_dir, 'FullProof/*.jsonl')):
                 has_in_file_dependency = None
                 has_repo_dependency = None
 
+            file_path = data['file']
+            # file_dir = os.path.dirname(file_path)  # a subdirectory in the repo
+            repo_path_match = re.search(r"^(\./)*\.lake/packages/[^/]+/", file_path)
+            if not repo_path_match:
+                raise ValueError(f"Unrecognized repository path in {file_path}")
+            repo_path = repo_path_match.group(0)
+            file_commit, file_date = get_file_commit(file_path, repo_path)
+            theorem_commit, theorem_date = get_theorem_commit(name, repo_path)
+            file_path_pretty = re.sub(r"(\./)*\.lake/packages/", "", file_path)
+
             theorems.append({
                 'srcContext': context,
                 'theoremStatement': data['decl'],
                 'theoremName': name,
-                # 'theoremId': data['declId'],
 
-                'fileCreated': None,  # TODO
-                'theoremCreated': None,  # TODO
-                'file': data['file'],
+                'fileCreated': {"commit": file_commit, "date": file_date},
+                'theoremCreated': {"commit": theorem_commit, "date": theorem_date},
+                'file': file_path_pretty,
                 'module': data['module'],
                 'jsonFile': os.path.basename(filename),
 

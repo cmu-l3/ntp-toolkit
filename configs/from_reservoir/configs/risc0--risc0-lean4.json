@@ -4,7 +4,10 @@
     "lean": "leanprover/lean4:nightly-2022-12-23",
     "name": "\u00abrisc0-lean4\u00bb",
     "imports": [
-        "Elf"
+        "Elf",
+        "R0sy",
+        "RiscV",
+        "Zkvm"
     ],
     "metadata": {
         "name": "risc0-lean4",

@@ -1,10 +1,10 @@
 {
     "repo": "https://github.com/jaalonso/Calculemus2_es",
-    "commit": "c1d887ff6eccfc3073f3a01fecfc20f56e8131d7",
-    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "commit": "a403af847115d82076b0ecfa1f5799abea0d20af",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "Calculemus2_es",
     "imports": [
-        "Calculemus2_es"
+        "glob:src.+"
     ],
     "metadata": {
         "name": "Calculemus2_es",
@@ -15,7 +15,7 @@
         "homepage": "https://jaalonso.github.io/calculemus/",
         "license": "GPL-3.0",
         "createdAt": "2024-08-26T09:44:14Z",
-        "updatedAt": "2024-10-23T11:03:40Z",
+        "updatedAt": "2024-10-27T08:10:53Z",
         "stars": 2,
         "sources": [
             {

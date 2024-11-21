@@ -4,7 +4,7 @@
     "lean": "leanprover/lean4:v4.2.0-rc1",
     "name": "fecssk",
     "imports": [
-        "Fecssk"
+        "glob:Fecssk.+"
     ],
     "metadata": {
         "name": "fecssk",

@@ -4,7 +4,10 @@
     "lean": "leanprover/lean4:v4.10.0-rc2",
     "name": "ssreflect",
     "imports": [
-        "Ssreflect"
+        "Ssreflect",
+        "glob:Examples.+",
+        "glob:Talk.+",
+        "glob:Tests.+"
     ],
     "metadata": {
         "name": "ssreflect",

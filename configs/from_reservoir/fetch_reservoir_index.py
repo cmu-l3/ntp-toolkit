@@ -21,20 +21,25 @@ import toml
 def analyze_lakefile_lean(lakefile_content) -> tuple[str, list[str]]:
     package_name_match = re.search(r"^package\s+(\S+)", lakefile_content, re.MULTILINE)
     # extract default lean_lib target names as import names
-    import_name_match = re.search(r"^@\[default_target\]\s*lean_lib\s+(\S+)", lakefile_content, re.MULTILINE)
+    import_name_match = list(re.finditer(r"^@\[default_target\]\s*lean_lib\s+(\S+)", lakefile_content, re.MULTILINE))
     if not import_name_match:
-        # if none exist, extract all lean_lib names
-        import_name_match = re.search(r"^lean_lib\s+(\S+)", lakefile_content, re.MULTILINE)
+        # if none exist, extract the first lean_lib
+        match = re.search(r"^lean_lib\s+(\S+)", lakefile_content, re.MULTILINE)
+        if match:
+            import_name_match = [match]
 
     if package_name_match and import_name_match:
         package_name = package_name_match.group(1)
         # in rare cases, the lakefile has a "globs" that asks to compile everything matching a glob
         # this misses many syntactic cases, but not many repositories use this so it is fine
-        import_glob_match = re.search(r'^\s*\{\s*globs\s*:=\s*\#\[\s*\.submodules\s*\`(\S+)\s*\]', lakefile_content[import_name_match.end(1):])
-        if import_glob_match:
-            import_names = [f"glob:{import_glob_match.group(1)}"]
-        else:
-            import_names = list(import_name_match.groups())
+        import_names = []
+        for match in import_name_match:
+            # for syntax, see Lake.Config.Glob; here we only process submodules (.+) (TODO)
+            import_glob_match = re.search(r'^\s*\{\s*globs\s*:=\s*\#\[\s*\.submodules\s*\`([^\]\s]+)', lakefile_content[match.end(1):])
+            if import_glob_match:
+                import_names.append(f"glob:{import_glob_match.group(1)}.+")
+            else:
+                import_names.append(match.group(1))
         return package_name, import_names
     elif not package_name_match:
         raise ValueError("Package name not found in lakefile.lean")
@@ -50,8 +55,13 @@ def analyze_lakefile_toml(lakefile_content) -> tuple[str, list[str]]:
 
     if "name" in content and "lean_lib" in content and len(content["lean_lib"]) >= 1:
         package_name = content["name"]
-        # extract default target names as import names
-        targets = content.get("defaultTargets", [lib["name"] for lib in content["lean_lib"] if "name" in lib])
+        all_import_names = [lib["name"] for lib in content["lean_lib"] if "name" in lib]
+        default_targets = [name for name in content.get("defaultTargets", []) if name in all_import_names]
+        # extract default target names as import names; the first lean_lib if none exist
+        if default_targets:
+            targets = default_targets
+        else:
+            targets = [all_import_names[0]]
         import_names = []
         for lib in content["lean_lib"]:
             if "name" in lib and lib["name"] in targets:
@@ -142,9 +152,9 @@ if __name__ == "__main__":
             print(f"Error processing {repo_url} at {commit_version}: {e}")
             continue
 
-        if package_name == "mathlib":
-            # We collect mathlib training data separately
-            print("Skipping mathlib")
+        # We collect Init, Batteries, Mathlib training data separately
+        if package_name in ["batteries", "mathlib"]:
+            print(f"Skipping {package_name}")
             continue
 
         config_data = {

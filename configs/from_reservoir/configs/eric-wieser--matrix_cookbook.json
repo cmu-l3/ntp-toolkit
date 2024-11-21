@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/eric-wieser/lean-matrix-cookbook",
     "commit": "7520e81244705edc1d1093c3d131c436f8332136",
-    "lean": "leanprover/lean4:v4.12.0",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "matrix_cookbook",
     "imports": [
         "MatrixCookbook"

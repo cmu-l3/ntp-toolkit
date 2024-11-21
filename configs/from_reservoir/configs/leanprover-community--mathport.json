@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/leanprover-community/mathport",
     "commit": "1826bb7206c4620a44fa425722c546cd4cf85918",
-    "lean": "leanprover/lean4:v4.10.0-rc2",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "mathport",
     "imports": [
         "Mathport"

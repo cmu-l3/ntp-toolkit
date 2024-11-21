@@ -2,8 +2,6 @@ import TrainingData.Frontend
 import TrainingData.InfoTree.ToJson
 import TrainingData.InfoTree.TacticInvocation.Basic
 import TrainingData.Utils.Range
-import Mathlib.Data.String.Defs
-import Mathlib.Lean.CoreM
 import Batteries
 import Lean
 import Cli

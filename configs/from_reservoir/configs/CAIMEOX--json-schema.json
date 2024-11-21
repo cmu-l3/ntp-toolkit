@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/CAIMEOX/json-schema-lean",
     "commit": "4586d995b0a2a6ebc34fc69ab4f0bb21c9513d17",
-    "lean": "leanprover/lean4:stable",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "\u00abjson-schema\u00bb",
     "imports": [
         "\u00abJsonSchema\u00bb"

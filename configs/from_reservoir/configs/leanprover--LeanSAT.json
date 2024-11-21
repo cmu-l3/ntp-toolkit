@@ -4,7 +4,7 @@
     "lean": "leanprover/lean4:nightly-2024-08-02",
     "name": "LeanSAT",
     "imports": [
-        "Test"
+        "LeanSAT"
     ],
     "metadata": {
         "name": "LeanSAT",

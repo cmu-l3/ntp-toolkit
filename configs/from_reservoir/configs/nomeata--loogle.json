@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/nomeata/loogle",
     "commit": "f46663afcd4067a606094dda363f67922e6990a4",
-    "lean": "leanprover/lean4:v4.10.0-rc2",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "\u00abloogle\u00bb",
     "imports": [
         "Seccomp"

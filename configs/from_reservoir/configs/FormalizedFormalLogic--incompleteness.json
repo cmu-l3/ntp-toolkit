@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/FormalizedFormalLogic/Incompleteness",
     "commit": "a8ad9e0408c932c95aca6dc136cb081f789aeab9",
-    "lean": "leanprover/lean4:v4.10.0-rc2",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "incompleteness",
     "imports": [
         "Incompleteness"

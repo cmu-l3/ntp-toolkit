@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/tydeu/lean4-alloy",
-    "commit": "a712058ff5ca47f670f6d25ea2b2a7385d9523ae",
-    "lean": "leanprover/lean4:v4.9.1",
+    "commit": "3c56f56c97c2c4cfe119fda2267c6a41c5f4c449",
+    "lean": "leanprover/lean4:v4.12.0",
     "name": "alloy",
     "imports": [
         "Alloy"
@@ -15,7 +15,7 @@
         "homepage": null,
         "license": "Apache-2.0",
         "createdAt": "2021-11-19T01:54:10Z",
-        "updatedAt": "2024-09-20T10:01:33Z",
+        "updatedAt": "2024-10-25T16:56:52Z",
         "stars": 50,
         "sources": [
             {

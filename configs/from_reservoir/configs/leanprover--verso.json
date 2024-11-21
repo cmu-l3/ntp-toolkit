@@ -1,10 +1,13 @@
 {
     "repo": "https://github.com/leanprover/verso",
-    "commit": "01ae20260e554368032af7a94bc4dd5bdbb38977",
-    "lean": "leanprover/lean4:v4.13.0-rc1",
+    "commit": "f323aacf146f5c49f3b36810918a14c6c1fe662e",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "verso",
     "imports": [
-        "Verso"
+        "Verso",
+        "VersoBlog",
+        "VersoManual",
+        "SimplePage"
     ],
     "metadata": {
         "name": "verso",
@@ -15,8 +18,8 @@
         "homepage": null,
         "license": "Apache-2.0",
         "createdAt": "2023-12-06T08:49:17Z",
-        "updatedAt": "2024-10-25T10:00:57Z",
-        "stars": 116,
+        "updatedAt": "2024-10-26T16:54:30Z",
+        "stars": 117,
         "sources": [
             {
                 "type": "git",

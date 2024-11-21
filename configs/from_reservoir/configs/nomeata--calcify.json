@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/nomeata/lean-calcify",
     "commit": "dbc14d28fad2b090158ad60e490da9067b4519be",
-    "lean": "leanprover/lean4:v4.12.0",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "calcify",
     "imports": [
         "Calcify"

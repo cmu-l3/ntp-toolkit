@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/hwatheod/galeshapley-lean",
     "commit": "69d595d16cc562697cdef3e5d8c997ae37c7a1b1",
-    "lean": "leanprover/lean4:v4.12.0-rc1",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "\u00abgaleShapley\u00bb",
     "imports": [
         "\u00abGaleShapley\u00bb"
