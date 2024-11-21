@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/kmill/LeanTeX",
     "commit": "b1a7bf06d552360b0b96d47f234a8271cf48f0d1",
-    "lean": "leanprover/lean4:v4.8.0-rc2",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "LeanTeX",
     "imports": [
         "LeanTeX"

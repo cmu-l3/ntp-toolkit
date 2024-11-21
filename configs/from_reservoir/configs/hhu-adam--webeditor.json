@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/hhu-adam/lean4web-tools",
     "commit": "7c6673988461fc5422c2f2ccb11b8addddd83ccd",
-    "lean": "leanprover/lean4:nightly",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "webeditor",
     "imports": [
         "Webeditor"

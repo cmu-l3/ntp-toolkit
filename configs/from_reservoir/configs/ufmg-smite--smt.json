@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/ufmg-smite/lean-smt",
     "commit": "f0e6b5645664e746c360765dc16541c52ba78c99",
-    "lean": "leanprover/lean4:v4.11.0",
+    "lean": "leanprover/lean4:v4.12.0",
     "name": "smt",
     "imports": [
         "Smt"
@@ -11,13 +11,11 @@
         "owner": "ufmg-smite",
         "fullName": "ufmg-smite/smt",
         "description": "Tactics for discharging Lean goals into SMT solvers.",
-        "keywords": [
-            "smt"
-        ],
+        "keywords": [],
         "homepage": null,
         "license": "Apache-2.0",
         "createdAt": "2021-11-23T20:54:14Z",
-        "updatedAt": "2024-10-23T06:16:01Z",
+        "updatedAt": "2024-10-26T21:12:02Z",
         "stars": 98,
         "sources": [
             {

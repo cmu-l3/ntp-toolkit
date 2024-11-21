@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/riccardobrasca/LFTCM2024",
     "commit": "33e1d8ee15893db8bc48ed380ecb688109bd1d47",
-    "lean": "leanprover/lean4:v4.7.0",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "\u00ablFTCM2024\u00bb",
     "imports": [
         "\u00abLFTCM2024\u00bb"

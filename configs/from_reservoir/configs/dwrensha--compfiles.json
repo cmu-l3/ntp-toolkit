@@ -1,10 +1,11 @@
 {
     "repo": "https://github.com/dwrensha/compfiles",
-    "commit": "9a01122e38ca4e1b4fd6e54d3355b57628ff4ebf",
-    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "commit": "95198f02b68c32044b4480f546b532a423d57252",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "compfiles",
     "imports": [
-        "ProblemExtraction"
+        "ProblemExtraction",
+        "Compfiles"
     ],
     "metadata": {
         "name": "compfiles",
@@ -15,8 +16,8 @@
         "homepage": "https://dwrensha.github.io/compfiles/",
         "license": "Apache-2.0",
         "createdAt": "2022-12-06T21:22:06Z",
-        "updatedAt": "2024-10-25T12:49:27Z",
-        "stars": 104,
+        "updatedAt": "2024-10-27T12:43:36Z",
+        "stars": 105,
         "sources": [
             {
                 "type": "git",

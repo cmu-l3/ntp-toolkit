@@ -4,7 +4,7 @@
     "lean": "leanprover/lean4:nightly-2023-07-12",
     "name": "thue",
     "imports": [
-        "Thue"
+        "glob:Thue.+"
     ],
     "metadata": {
         "name": "thue",

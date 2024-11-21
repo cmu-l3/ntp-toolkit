@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/anlucia/ChromaticPolynomial",
     "commit": "6fe1fcdab3684ad78cbdf08d1124b4f0fdac7a8b",
-    "lean": "leanprover/lean4:v4.11.0-rc1",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "\u00abchromatic_polynomial\u00bb",
     "imports": [
         "\u00abChromaticPolynomial\u00bb"

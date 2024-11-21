@@ -1,10 +1,13 @@
 {
     "repo": "https://github.com/dwrensha/animate-lean-proofs",
     "commit": "12df1c1b692659e046874d0549ca3d2f162fde50",
-    "lean": "leanprover/lean4:v4.11.0",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "\u00abanimate\u00bb",
     "imports": [
-        "Annotations"
+        "Annotations",
+        "Input",
+        "StringMatching",
+        "HighlightSyntax"
     ],
     "metadata": {
         "name": "animate",

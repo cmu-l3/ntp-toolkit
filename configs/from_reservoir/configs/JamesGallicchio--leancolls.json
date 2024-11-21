@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/JamesGallicchio/LeanColls",
     "commit": "49ecefbb99184b4062ff4588698af6aea5dd2683",
-    "lean": "leanprover/lean4:v4.11.0",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "leancolls",
     "imports": [
         "LeanColls"
@@ -15,7 +15,7 @@
         "homepage": "https://jamesgallicchio.github.io/LeanColls/docs/",
         "license": "Apache-2.0",
         "createdAt": "2022-02-15T20:32:03Z",
-        "updatedAt": "2024-10-25T06:12:23Z",
+        "updatedAt": "2024-10-27T06:11:10Z",
         "stars": 30,
         "sources": [
             {

@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/quangvdao/ZKLib",
-    "commit": "d2930576c3a22b17274f1bb6576d4fdbef6d3223",
-    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "commit": "016d71a4676b2c21add326e6852147c81ed64394",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "\u00abZklib\u00bb",
     "imports": [
         "\u00abZKLib\u00bb"
@@ -15,7 +15,7 @@
         "homepage": null,
         "license": "Apache-2.0",
         "createdAt": "2024-05-31T20:26:01Z",
-        "updatedAt": "2024-10-16T18:52:47Z",
+        "updatedAt": "2024-10-27T18:44:50Z",
         "stars": 8,
         "sources": [
             {

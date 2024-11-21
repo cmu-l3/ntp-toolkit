@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/knowsys/CertifyingDatalog",
     "commit": "ec5180c0544318ac217aa64e789db44e9d20a7ca",
-    "lean": "leanprover/lean4:v4.11.0",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "\u00abcertifyingDatalog\u00bb",
     "imports": [
         "\u00abCertifyingDatalog\u00bb"

@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/algebraic-dev/colorized",
     "commit": "e631ffd114535e1ace876e1b7062d672f718454f",
-    "lean": "leanprover/lean4:stable",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "\u00abColorized\u00bb",
     "imports": [
         "\u00abColorized\u00bb"

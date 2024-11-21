@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/FormalizedFormalLogic/Foundation",
     "commit": "1f1b1756951580ae80f8e9971ebc706dc135f9db",
-    "lean": "leanprover/lean4:v4.10.0-rc2",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "foundation",
     "imports": [
         "Foundation"
@@ -17,7 +17,7 @@
         "homepage": "https://formalizedformallogic.github.io/Foundation/docs/",
         "license": "Apache-2.0",
         "createdAt": "2023-02-11T18:48:33Z",
-        "updatedAt": "2024-10-24T21:46:05Z",
+        "updatedAt": "2024-10-25T20:38:03Z",
         "stars": 79,
         "sources": [
             {

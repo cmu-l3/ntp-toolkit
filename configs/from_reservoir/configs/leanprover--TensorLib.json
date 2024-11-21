@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/leanprover/TensorLib",
     "commit": "d1d385414f665926e3a5f5c7eea3b724ff9d5c91",
-    "lean": "leanprover/lean4:v4.10.0",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "\"TensorLib\"",
     "imports": [
         "\u00abTensorLib\u00bb"

@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/siddhartha-gadgil/MetaExamples",
     "commit": "1020b88369a776e620fe77af199808c5275f7865",
-    "lean": "leanprover/lean4:v4.12.0-rc1",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "\"MetaExamples\"",
     "imports": [
         "\u00abMetaExamples\u00bb"

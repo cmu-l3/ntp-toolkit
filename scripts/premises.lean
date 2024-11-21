@@ -24,7 +24,7 @@ def isAuxLemma : Name → Bool
 | _ => false
 
 partial def Lean.ConstantInfo.getUsedConstants' (c : ConstantInfo)
-    (constantsMap : HashMap Name ConstantInfo)
+    (constantsMap : ConstMap)
     (unfolding : Name → Bool := isAuxLemma) : NameSet × NameSet := Id.run do
   let mut direct : NameSet := ∅
   let mut unfolded : NameSet := ∅
@@ -46,7 +46,7 @@ The typical use case is to unfold `_auxLemma`s generated dynamically by the simp
 -/
 def allUsedConstants (moduleNames : Array Name) (unfolding : Name → Bool := isAuxLemma) :
     CoreM (NameMap (NameSet × NameSet)) := do
-  let constantsMap := (← getEnv).constants.map₁
+  let constantsMap := (← getEnv).constants
   let const2ModIdx := (← getEnv).const2ModIdx
   let moduleIdxs := moduleNames.filterMap (← getEnv).getModuleIdx?
   let mut result : NameMap (NameSet × NameSet) := ∅

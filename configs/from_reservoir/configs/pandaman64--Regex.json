@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/pandaman64/lean-regex",
     "commit": "684b65b90bb20499bbab863d51da5083cb232a67",
-    "lean": "leanprover/lean4:v4.10.0",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "Regex",
     "imports": [
         "Regex"

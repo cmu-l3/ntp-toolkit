@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/lean-machines-central/lean-machines",
     "commit": "b3a40d9a585d787c90d965ed3b34767c4a8d3770",
-    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "\u00ablean-machines\u00bb",
     "imports": [
         "\u00abLeanMachines\u00bb"

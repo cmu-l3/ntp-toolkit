@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/pitmonticone/NewProject",
     "commit": "e9e1de6b8eea86460f61496579ca72e769092241",
-    "lean": "leanprover/lean4:v4.12.0-rc1",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "NewProject",
     "imports": [
         "NewProject"

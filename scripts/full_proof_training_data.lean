@@ -1,9 +1,6 @@
 import TrainingData.Frontend
 import TrainingData.InfoTree.ToJson
 import TrainingData.InfoTree.TacticInvocation.Basic
-import Mathlib.Data.String.Defs
-import Mathlib.Lean.CoreM
-import Mathlib.Tactic.Change
 import Batteries
 import Lean
 import TrainingData.Utils.Range
@@ -112,7 +109,7 @@ def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : Str
   let json : Json :=
     Json.mkObj [
       -- ("declId", Json.str declId),
-      ("file", Json.str <| (← findLean module).toString.stripPrefix "./.lake/packages/"),
+      ("file", Json.str <| (← findLean module).toString),
       ("module", Json.str module.toString),
       ("declName", Json.str declName.toString),
       ("decl", Json.str decl),

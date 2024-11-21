@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/madvorak/read-lean",
+    "commit": "0f16b31bed2df015fa75e6f9e55485e268bc40f4",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "readLean",
+    "imports": [
+        "ReadLean"
+    ],
+    "metadata": {
+        "name": "readLean",
+        "owner": "madvorak",
+        "fullName": "madvorak/readLean",
+        "description": "How to read Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "Unlicense",
+        "createdAt": "2024-09-16T12:17:07Z",
+        "updatedAt": "2024-10-26T12:16:24Z",
+        "stars": 16,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMyZ65w",
+                "fullName": "madvorak/read-lean",
+                "repoUrl": "https://github.com/madvorak/read-lean",
+                "gitUrl": "https://github.com/madvorak/read-lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

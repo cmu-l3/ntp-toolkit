@@ -1,10 +1,11 @@
 {
     "repo": "https://github.com/siddhartha-gadgil/LeanAide",
-    "commit": "328620490df72d4f30d317b477917b8e63e26086",
-    "lean": "leanprover/lean4:v4.11.0",
+    "commit": "419c7eca3a2ce606d35995960e91c69528ee28aa",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "leanaide",
     "imports": [
-        "LeanAide"
+        "LeanAide",
+        "LeanCodePrompts"
     ],
     "metadata": {
         "name": "leanaide",
@@ -15,7 +16,7 @@
         "homepage": null,
         "license": "Apache-2.0",
         "createdAt": "2022-09-05T08:49:47Z",
-        "updatedAt": "2024-10-25T12:50:55Z",
+        "updatedAt": "2024-10-27T13:59:45Z",
         "stars": 65,
         "sources": [
             {

@@ -1,10 +1,10 @@
 {
     "repo": "https://github.com/gsierra99/ExFormMathL4",
-    "commit": "e7993dc0b2c3af372ffa9a51c3856fb255005a7a",
-    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "commit": "b599f669fbc3863ebdbb7e0ab8d63125b356b146",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
     "name": "ExFormMathL4",
     "imports": [
-        "ExFormMathL4"
+        "glob:ExFormMathL4.+"
     ],
     "metadata": {
         "name": "ExFormMathL4",
@@ -15,7 +15,7 @@
         "homepage": null,
         "license": "GPL-3.0",
         "createdAt": "2024-10-02T09:09:00Z",
-        "updatedAt": "2024-10-23T16:41:20Z",
+        "updatedAt": "2024-10-27T16:46:36Z",
         "stars": 2,
         "sources": [
             {
