@@ -112,7 +112,7 @@ def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : Str
   let json : Json :=
     Json.mkObj [
       ("declId", Json.str declId),
-      ("file", Json.str <| (← findLean module).toString.stripPrefix "./.lake/packages/"),
+      ("file", Json.str <| (← findLean module).toString),
       ("module", Json.str module.toString),
       ("declName", Json.str declName.toString),
       ("decl", Json.str decl),

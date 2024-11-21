@@ -2,7 +2,8 @@
 .lake
 *.tar.gz
 out/
-Examples
+Examples*/
+instructions/
 Extracted
 .vscode
 *.olean
