@@ -173,7 +173,10 @@ def simpVariants : List String := [
   "simpa",
   "simpa?",
   "simpa!",
-  "simpa?!"
+  "simpa?!",
+  "dsimp",
+  "dsimp?",
+  "dsimp?!"
 ]
 
 def rewriteVariants : List String := [
