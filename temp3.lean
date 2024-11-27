@@ -6,23 +6,14 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Convex.Strict
 
---------------------------------------------------------------------------------------------------------
--- Scratchwork from Avigad meeting
-#eval 1
-#eval Nat.succ Nat.zero
-#print Nat.cast_succ
-
-set_option pp.all true in
-#check 1 + 2
-
-example : 100 = 50 + 50 := by
-  apply @Classical.byContradiction
-  intro negGoal
-  duper [negGoal] {portfolioInstance := 1}
-
--- This is a definitional fact
-example : x + 0 = x := by rfl
-example : x + 0 = x := by dsimp only [Nat.add_zero]
+set_option trace.auto.lamFOL2SMT true in
+set_option trace.auto.mono.match true in
+set_option trace.auto.mono.printLemmaInst true in
+set_option trace.auto.mono true in
+set_option trace.auto.mono.printResult true in
+example (x y : Nat) (h : x = match y with | 0 => 0 | Nat.succ ys => ys) : x < y := by
+  querySMT -- Investigating how lean-auto processes match statements
+  sorry
 
 --------------------------------------------------------------------------------------------------------
 -- Original theorem from `Mathlib.Data.Nat.Cast.Defs`
@@ -34,12 +25,61 @@ set_option trace.auto.tptp.printQuery true in
 theorem cast_one_test1 [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by
   hammer [Nat.cast_succ, Nat.cast_zero, zero_add] {simpTarget := no_target}
 
+/-
+With only `Mathlib.Data.Nat.Cast.Defs` imported:
+hammer successfully translated the problem to TPTP, but the external prover was unable to solve it. Error: runAutoGetHints :: External TPTP solver unable to solve the goal
+[auto.tptp.printQuery]
+    thf(sortdecl_nat, type, s_nat: $tType).
+    thf(sortdecl_int, type, s_int: $tType).
+    thf(sortdecl_string, type, s_string: $tType).
+    thf(sortdecl_empty, type, s_empty: $tType).
+    thf(sortdecl_0, type, s_a0: $tType).
+
+    thf(typedecl_icst_t_natVal_1, type, t_natVal_1: s_nat).
+    thf(typedecl_icst_t_natVal_0, type, t_natVal_0: s_nat).
+    thf(typedecl_icst_t_nadd, type, t_nadd: (s_nat > (s_nat > s_nat))).
+    thf(typedecl_t_a3, type, t_a3: s_a0).
+    thf(typedecl_t_a2, type, t_a2: (s_nat > s_a0)).
+    thf(typedecl_t_a0, type, t_a0: (s_a0 > (s_a0 > s_a0))).
+
+    thf(fact0, axiom, (! [X0 : s_a0] : (((^ [L : s_a0, R : s_a0] : L = R) @ ((t_a0 @ (t_a2 @ t_natVal_0)) @ X0)) @ X0))).
+    thf(fact1, axiom, (! [X0 : s_nat] : (((^ [L : s_a0, R : s_a0] : L = R) @ (t_a2 @ ((t_nadd @ X0) @ t_natVal_1))) @ ((t_a0 @ (t_a2 @ X0)) @ t_a3)))).
+    thf(fact2, axiom, ((~) @ (((^ [L : s_a0, R : s_a0] : L = R) @ (t_a2 @ t_natVal_1)) @ t_a3))).
+
+With all imports:
+hammer successfully translated the problem to TPTP and obtained an unsat core from an external prover, but was unable to reconstruct the proof. Error: getDuperCoreSMTLemmas :: Unable to use hints from external solver to reconstruct proof. Duper threw the following error:
+
+Duper encountered a (deterministic) timeout. The maximum number of heartbeats 200000 has been reached (use 'set_option maxHeartbeats <num>' to set the limit)
+[auto.tptp.printQuery]
+    thf(sortdecl_nat, type, s_nat: $tType).
+    thf(sortdecl_int, type, s_int: $tType).
+    thf(sortdecl_string, type, s_string: $tType).
+    thf(sortdecl_empty, type, s_empty: $tType).
+    thf(sortdecl_0, type, s_a0: $tType).
+
+    thf(typedecl_icst_t_natVal_1, type, t_natVal_1: s_nat).
+    thf(typedecl_icst_t_natVal_0, type, t_natVal_0: s_nat).
+    thf(typedecl_icst_t_nadd, type, t_nadd: (s_nat > (s_nat > s_nat))).
+    thf(typedecl_t_a4, type, t_a4: s_a0).
+    thf(typedecl_t_a3, type, t_a3: (s_nat > s_a0)).
+    thf(typedecl_t_a2, type, t_a2: (s_nat > s_nat)).
+    thf(typedecl_t_a0, type, t_a0: (s_a0 > (s_a0 > s_a0))).
+
+    thf(fact0, axiom, (! [X0 : s_nat] : (((^ [L : s_nat, R : s_nat] : L = R) @ ((t_nadd @ t_natVal_0) @ X0)) @ X0))).
+    thf(fact1, axiom, (! [X0 : s_a0] : (((^ [L : s_a0, R : s_a0] : L = R) @ ((t_a0 @ (t_a3 @ t_natVal_0)) @ X0)) @ X0))).
+    thf(fact2, axiom, (((^ [L : s_nat, R : s_nat] : L = R) @ (t_a2 @ t_natVal_0)) @ t_natVal_0)).
+    thf(fact3, axiom, (! [X0 : s_nat] : (((^ [L : s_nat, R : s_nat] : L = R) @ (t_a2 @ ((t_nadd @ X0) @ t_natVal_1))) @ ((t_nadd @ (t_a2 @ X0)) @ t_natVal_1)))).
+    thf(fact4, axiom, (! [X0 : s_nat] : (((^ [L : s_a0, R : s_a0] : L = R) @ (t_a3 @ ((t_nadd @ X0) @ t_natVal_1))) @ ((t_a0 @ (t_a3 @ X0)) @ t_a4)))).
+    thf(fact5, axiom, ((~) @ (((^ [L : s_a0, R : s_a0] : L = R) @ (t_a3 @ t_natVal_1)) @ t_a4))).
+
+-/
+
 def one_eq_succ_zero : 1 = Nat.succ 0 := by rfl
 
 -- External prover succeeds when given the additional fact: `1 = 0.succ` which is used implicitly
 -- in the originally proof (Duper fails to reconstruct the proof, but that's an unrelated issue)
 theorem cast_one_test2 [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by
-  sorry -- hammer [one_eq_succ_zero, Nat.cast_succ, Nat.cast_zero, zero_add] {simpTarget := no_target}
+  hammer [one_eq_succ_zero, Nat.cast_succ, Nat.cast_zero, zero_add] {simpTarget := no_target}
   -- Note: `hammer` behaves differently depending on set of imports!!!
 
 #check zero_add
@@ -133,6 +173,8 @@ theorem length_gather_test3 (a : Composition n) (b : Composition a.length) :
 theorem length_gather_test4 (a : Composition n) (b : Composition a.length) :
   length (a.gather b) = b.length := by -- Original recommendation + `Composition.gather`
   hammer [*, Composition.gather, List.length_map, List.length_splitWrtComposition] {simpTarget := no_target}
+  -- Fails to process with `Composition.gather`. But `length_gather_test2` shows that unfolding `Composition.gather`
+  -- should be sufficient, so look into improving this situation.
 
 end Composition
 --------------------------------------------------------------------------------------------------------
@@ -172,5 +214,6 @@ theorem ind {R A} [AddZeroClass R] [AddZeroClass A] {P : Unitization R A → Pro
 
 --------------------------------------------------------------------------------------------------------
 
--- Using `NonnegSpectrumClass.iff_spectrum_nonneg` from `Mathlib.Algebra.Algebra.Quasispectrum` creates problems
--- because...
+-- Using `NonUnitalStarAlgHomClass.toStarHomClass` and `NonnegSpectrumClass.quasispectrum_nonneg_of_nonneg` in
+-- `Mathlib.Algebra.Algebra.Quasispectrum` creates similar problems also because the output type is dependent
+-- on one of the inputs
