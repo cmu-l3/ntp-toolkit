@@ -4,7 +4,7 @@
     "lean": "leanprover/lean4:v4.11.0",
     "name": "duality",
     "imports": [
-        "glob:Duality.+"
+        "Duality"
     ],
     "metadata": {
         "name": "duality",

@@ -2,9 +2,7 @@
 .lake
 *.tar.gz
 out/
-instructions/
-Examples*/
-reservoir-index/
+Examples
 Extracted
 .vscode
 *.olean

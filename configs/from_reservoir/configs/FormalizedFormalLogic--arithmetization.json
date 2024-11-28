@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/FormalizedFormalLogic/Arithmetization",
     "commit": "85e327734277b7f5b91d272d34a060ed21cbfdfa",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
     "name": "arithmetization",
     "imports": [
         "Arithmetization"
@@ -17,7 +17,7 @@
         "homepage": "https://formalizedformallogic.github.io/Arithmetization/docs/",
         "license": "Apache-2.0",
         "createdAt": "2024-01-07T18:56:34Z",
-        "updatedAt": "2024-10-26T15:18:42Z",
+        "updatedAt": "2024-10-15T03:47:13Z",
         "stars": 10,
         "sources": [
             {

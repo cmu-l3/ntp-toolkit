@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/YaelDillies/ChandraFurstLipton",
     "commit": "9a475b9048c9a99ccfc6c4d8b6331065af89c419",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.12.0-rc1",
     "name": "ChandraFurstLipton",
     "imports": [
         "ChandraFurstLipton"
@@ -15,8 +15,8 @@
         "homepage": "https://yaeldillies.github.io/ChandraFurstLipton/",
         "license": "Apache-2.0",
         "createdAt": "2024-07-24T19:50:41Z",
-        "updatedAt": "2024-10-27T16:27:28Z",
-        "stars": 3,
+        "updatedAt": "2024-09-30T17:27:52Z",
+        "stars": 2,
         "sources": [
             {
                 "type": "git",

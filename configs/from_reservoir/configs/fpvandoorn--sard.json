@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/fpvandoorn/sard",
     "commit": "77da83ff581fc9bf8af67e18ba8949cf555cc41c",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.12.0",
     "name": "sard",
     "imports": [
         "Sard"

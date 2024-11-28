@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/YaelDillies/LeanAPAP",
     "commit": "ece13c901dde033807bd3c72c40c9ae48f060f7b",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "LeanAPAP",
     "imports": [
         "LeanAPAP"
@@ -15,7 +15,7 @@
         "homepage": "https://yaeldillies.github.io/LeanAPAP/",
         "license": "Apache-2.0",
         "createdAt": "2023-03-15T09:31:38Z",
-        "updatedAt": "2024-10-27T18:45:07Z",
+        "updatedAt": "2024-10-19T11:19:25Z",
         "stars": 13,
         "sources": [
             {

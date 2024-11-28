@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/rahul3613/ProofNet-lean4",
     "commit": "60efffb605ee07bf723db4fb8058129a7c8a89bb",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.6.0",
     "name": "\u00abproofNet-lean4\u00bb",
     "imports": [
         "\u00abProofNetLean4\u00bb"

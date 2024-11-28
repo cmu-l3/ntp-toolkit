@@ -4,8 +4,7 @@
     "lean": "leanprover/lean4:nightly-2023-06-10",
     "name": "\u00ablean-trying-multivariable\u00bb",
     "imports": [
-        "\u00abDivision\u00bb",
-        "\u00abGroebner\u00bb"
+        "\u00abDivision\u00bb"
     ],
     "metadata": {
         "name": "lean-groebner",

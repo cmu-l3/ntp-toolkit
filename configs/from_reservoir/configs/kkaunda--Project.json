@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/kkaunda/spgf",
     "commit": "1afbe396fd2cb4d9b5a3cb3a60be687f64cdd5c9",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.11.0-rc2",
     "name": "Project",
     "imports": [
         "Project"

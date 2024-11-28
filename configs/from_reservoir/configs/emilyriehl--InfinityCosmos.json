@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/emilyriehl/infinity-cosmos",
     "commit": "fbc043dc908a6e1215d5765f4b85c63ba36562d3",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "\u00abInfinityCosmos\u00bb",
     "imports": [
         "\u00abInfinityCosmos\u00bb"

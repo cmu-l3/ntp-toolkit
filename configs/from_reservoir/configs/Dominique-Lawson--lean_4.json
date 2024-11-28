@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/Dominique-Lawson/Directed-Topology-Lean-4",
     "commit": "009529606c66d37ef93b4b81b8587f71ce4d2c56",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.6.0-rc1",
     "name": "\u00ablean_4\u00bb",
     "imports": [
         "\u00abLean4\u00bb"

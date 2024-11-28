@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/fpvandoorn/LeanCourse24",
     "commit": "28fec273d751b90bcf8124dd7254ce725f27f340",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "\u00abLeanCourse\u00bb",
     "imports": [
         "\u00abLeanCourse\u00bb"

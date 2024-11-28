@@ -1,5 +1,4 @@
 import argparse
-import glob
 import os
 import subprocess
 import json
@@ -9,7 +8,7 @@ from pathlib import Path
 # TODO: only add necessary lean_exe into lakefile.lean
 doc_gen = """
 require «doc-gen4» from git
-  "https://github.com/leanprover/doc-gen4.git" @ "v4.13.0-rc1"
+  "https://github.com/leanprover/doc-gen4.git" @ "v4.9.0"
 """
 
 def _lakefile(repo, commit, name, cwd, require_doc_gen=False):
@@ -17,12 +16,7 @@ def _lakefile(repo, commit, name, cwd, require_doc_gen=False):
 open Lake DSL
 
 package «lean-training-data» {
-  moreLeanArgs := #[
-    "-Dlinter.unusedVariables=false",
-    -- for supporting more lean versions, some usages in the code are deprecated
-    -- a macro TODO is to make the code more future proof (e.g. name change of HashMap)
-    "-Dlinter.deprecated=false"
-  ]
+  -- add any package configuration options here
 }
 
 require %s from git
@@ -75,51 +69,21 @@ def _lean_toolchain(lean, cwd):
     with open(os.path.join(cwd, 'lean-toolchain'), 'w') as f:
         f.write(contents)
 
-def _lake_update(cwd):
-    if Path(os.path.join(cwd, '.lake')).exists():
-        subprocess.run(['rm', '-rf', '.lake'], cwd=cwd, check=True)
-    if Path(os.path.join(cwd, 'lake-packages')).exists():
-        subprocess.run(['rm', '-rf', 'lake-packages'], cwd=cwd, check=True)
-    if Path(os.path.join(cwd, 'lake-manifest.json')).exists():
-        subprocess.run(['rm', '-rf', 'lake-manifest.json'], cwd=cwd, check=True)
-    print("Running lake udpate ...")
-    subprocess.run(['lake', 'update'], check=True)
-
-def _lake_build(cwd):
+def _setup(cwd):
     print("Building...")
+    if Path(os.path.join(cwd, '.lake')).exists():
+        subprocess.run(['rm', '-rf', '.lake'], check=True)
+    if Path(os.path.join(cwd, 'lake-packages')).exists():
+        subprocess.run(['rm', '-rf', 'lake-packages'], check=True)
+    if Path(os.path.join(cwd, 'lake-manifest.json')).exists():
+        subprocess.run(['rm', '-rf', 'lake-manifest.json'], check=True)
+    subprocess.run(['lake', 'update'], check=True)
     # this depends on mathlib; if the package does not require mathlib it will fail
-    try:
-        subprocess.run(['lake', 'exe', 'cache', 'get'], cwd=cwd, check=True)
-    except subprocess.CalledProcessError:
-        print("'lake exe cache get' command failed. This is probably because mathlib is not a dependency. Continuing...")
-    subprocess.run(['lake', 'build'], cwd=cwd, check=True)
+    # TODO: decrease or eliminate overall dependency on mathlib so that we can extract packages that don't depend on mathlib
+    subprocess.run(['lake', 'exe', 'cache', 'get'], check=True)
+    subprocess.run(['lake', 'build'], check=True)
 
-def _get_imports(cwd, name, imports: list[str]) -> list[str]:
-    import_modules = []
-    for module in imports:
-        # The lakefile can (*very rarely*) specify a glob pattern
-        # The "glob:" prefix is user-added in the config (or see fetch_reservoir_index.py)
-        if module.startswith("glob:"):
-            pattern = module.removeprefix("glob:")
-            # See Lake.Config.Glob
-            if not pattern.endswith("+"):
-                import_modules.append(pattern)
-                continue
-            elif pattern.endswith(".+"):
-                pattern = pattern.removesuffix(".+") + "/**/*.lean"
-            elif pattern.endswith(".*"):
-                import_modules.append(pattern.removesuffix(".*"))
-                pattern = pattern.removesuffix(".*") + "/**/*.lean"
-            root_dir = os.path.join(cwd, ".lake", "packages", _unescape_lean_name(name))
-            print(pattern, root_dir)
-            for import_file_path in glob.glob(pattern, root_dir=root_dir, recursive=True):
-                import_modules.append(import_file_path.removesuffix(".lean").replace(os.path.sep, "."))
-        else:
-            import_modules.append(module)
-    print(f"All import modules: {import_modules}")
-    return import_modules
-
-def _unescape_lean_name(name: str):
+def unescape_lean_name(name: str):
     name = name.replace('«', '').replace('»', '')
     return name
 
@@ -137,10 +101,10 @@ def _run(cwd, name, import_module, max_workers, flags):
     subprocess.run([
         'python3',
         '%s/scripts/run_pipeline.py' % cwd,
-        '--output-base-dir', os.path.join('Examples', _unescape_lean_name(name)),
+        '--output-base-dir', 'Examples/%s' % unescape_lean_name(name),
         '--cwd', cwd,
         '--import-module', *import_module,
-        '--name', _unescape_lean_name(name),
+        '--name', unescape_lean_name(name),
         *flags
     ], check=True)
 
@@ -228,36 +192,30 @@ if __name__ == '__main__':
     for source in sources:
         print("=== %s ===" % (source['repo']))
         print(source)
+        _lakefile(
+            repo=source['repo'],
+            commit=source['commit'],
+            name=source['name'],
+            cwd=args.cwd,
+            # extracting declarations require doc-gen4
+            require_doc_gen=args.declarations,
+        )
+        _examples(
+            imports=source['imports'],
+            cwd=args.cwd
+        )
+        _lean_toolchain(
+            lean=source['lean'],
+            cwd=args.cwd
+        )
         if not args.skip_setup:
-            _lean_toolchain(
-                lean=source['lean'],
+            _setup(
                 cwd=args.cwd
             )
-            _lakefile(
-                repo=source['repo'],
-                commit=source['commit'],
-                name=source['name'],
-                cwd=args.cwd,
-                # extracting declarations require doc-gen4
-                require_doc_gen=args.declarations,
-            )
-            _lake_update(
-                cwd=args.cwd
-            )
-            imports = _get_imports(args.cwd, source['name'], source['imports'])
-            _examples(
-                imports=imports,
-                cwd=args.cwd
-            )
-            _lake_build(
-                cwd=args.cwd
-            )
-        else:
-            imports = _get_imports(args.cwd, source['name'], source['imports'])
         _run(
             cwd=args.cwd,
             name=source['name'],
-            import_module=imports,
+            import_module=source['imports'],
             # import_file=source['import_file'],
             # old_version=False if 'old_version' not in source else source['old_version'],
             max_workers=args.max_workers,

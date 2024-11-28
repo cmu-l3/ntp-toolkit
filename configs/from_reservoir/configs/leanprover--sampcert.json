@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/leanprover/SampCert",
     "commit": "9cb42e1befdf5968b61cda66355607e5571a4039",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.10.0",
     "name": "\u00absampcert\u00bb",
     "imports": [
         "\u00abSampCert\u00bb"

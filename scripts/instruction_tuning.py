@@ -30,8 +30,6 @@ def prompt_fn(x, prompt_type, truncation):
         return prompt_full_proof_states(x)
     elif prompt_type == 'context_full_proof_states':
         return prompt_context_full_proof_states(x, truncation)
-    else:
-        raise ValueError(f'invalid prompt_type {prompt_type}')
 
 
 def prompt_state_tactic(x):
@@ -55,8 +53,8 @@ def _truncate_context(context, truncation):
         if len(enc.encode(context)) > truncation:
             if random.random() > 0.5:
                 context = (
-                    enc.decode(enc.encode(context)[:truncation//2]) +
-                    '\n\n /- [LONG FILE TRUNCATED] -/\n\n' +
+                    enc.decode(enc.encode(context)[:truncation//2]) + 
+                    '\n\n /- [LONG FILE TRUNCATED] -/\n\n' + 
                     enc.decode(enc.encode(context)[-truncation//2:])
                 )
             else:
@@ -82,6 +80,23 @@ Put the next tactic inside [TAC]...[/TAC]
 [/STATE]
 [TAC]
 """ % (context, x['state'])
+    out = """%s\n[/TAC]""" % x['nextTactic']
+    return inp, out
+
+
+def prompt_state_tactic(x):
+    inp = """/- You are proving a theorem in Lean 4.
+You are given the following information:
+- The current proof state, inside [STATE]...[/STATE]
+
+Your task is to generate the next tactic in the proof.
+Put the next tactic inside [TAC]...[/TAC]
+-/
+[STATE]
+%s
+[/STATE]
+[TAC]
+""" % (x['state'])
     out = """%s\n[/TAC]""" % x['nextTactic']
     return inp, out
 
@@ -160,33 +175,24 @@ Put the proof inside [PROOF-WITH-STATES]...[/PROOF-WITH-STATES]
     return inp, out
 
 
-def validate(x):
-    if 'proof' in x and 'sorry' in x['proof']:
-        return False
-    if 'nextTactic' in x and 'sorry' in x['nextTactic']:
-        return False
-    return True
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--name', default='state_tactic')
     parser.add_argument('--output-base-dir', default='instructions/state_tactic')
     parser.add_argument('--pipeline-output-base-dir', default='Examples')
     parser.add_argument(
-        '--prompt',
-        default='state_tactic',
-        nargs='*',
+        '--prompt', 
+        default='state_tactic', 
+        nargs='*', 
         choices=[
-            'state_tactic',
-            'context_state_tactic',
-            'full_proof',
+            'state_tactic', 
+            'context_state_tactic', 
+            'full_proof', 
             'context_full_proof',
             'full_proof_states',
             'context_full_proof_states'
         ]
     )
-    parser.add_argument('--blacklist', default=['equational_theories.Generated'], nargs='*')
     parser.add_argument('--num-dev-examples', type=int, default=0.025)
     parser.add_argument('--num-eval-dev-files', type=float, default=0.00)
     parser.add_argument('--num-eval-test-files', type=float, default=0.00)
@@ -203,7 +209,7 @@ if __name__ == '__main__':
 
     from collections import defaultdict
     files = defaultdict(lambda: defaultdict(str))
-    projects = sorted(glob.glob(os.path.join(args.pipeline_output_base_dir, '*')))
+    projects = glob.glob(os.path.join(args.pipeline_output_base_dir, '*'))
 
     examples = {
         'train': [],
@@ -225,8 +231,7 @@ if __name__ == '__main__':
         print(project)
 
         files_ = glob.glob(os.path.join(project, 'TacticPrediction', '*.jsonl'))
-        files_ = [f for f in files_ if not any(Path(f).name.startswith(b) for b in args.blacklist)]
-        files_ = [f for f in files_ if os.path.getsize(f) > 0]
+        files_ = [f for f in files_ if len(open(f, 'r').readlines()) > 1]
 
         random.shuffle(files_)
         n_dev = int(len(files_)*args.num_eval_dev_files)
@@ -252,8 +257,6 @@ if __name__ == '__main__':
                         f = f.replace('TacticPrediction', 'FullProof')
                     jsons = [json.loads(line) for line in open(f, 'r').readlines()]
                     for item in jsons:
-                            if not validate(item):
-                                continue
                             prompt, completion = prompt_fn(item, prompt_name, args.context_truncation)
                             examples[split].append({
                                 'task': 'tactic_predition',
@@ -264,7 +267,7 @@ if __name__ == '__main__':
                                     'task': 'full_proof' if 'full_proof' in prompt_name else 'tactic_prediction',
                                     'project': project,
                                     'file': f,
-                                    'declId': item.get('declName', item.get('declId')),
+                                    'declId': item['declId'],
                                     'target': item['proof' if 'proof' in prompt_name else 'nextTactic'],
                                     'split': split
                                 }
@@ -275,11 +278,6 @@ if __name__ == '__main__':
 
     decl_ids = list(set([x['metadata']['declId'] for x in train]))
     random.shuffle(decl_ids)
-
-    # put all declName = None (which is minority, but still can be many) to train
-    if None in decl_ids:
-        decl_ids.remove(None)
-    decl_ids.append(None)
 
     n_eval_decls = int(2*(args.num_dev_examples)*len(decl_ids))
 
@@ -312,7 +310,7 @@ if __name__ == '__main__':
 
     for k, v in examples.items():
         stats['num_%s' % k] = len(v)
-
+    
     for k, v in stats.items():
         print(k, v, sep='\t')
 
@@ -328,5 +326,5 @@ if __name__ == '__main__':
     for split, files in all_split_files.items():
         with open(os.path.join(args.output_base_dir, '%s_files.json' % split), 'w') as f:
             json.dump(files, f)
-
+    
     print(args.output_base_dir)

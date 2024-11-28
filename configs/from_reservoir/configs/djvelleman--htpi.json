@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/djvelleman/HTPILeanPackage",
     "commit": "f21ef3517e6e48a00d27eb0b7825a463ecfda998",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.11.0",
     "name": "htpi",
     "imports": [
         "HTPILib"
@@ -15,8 +15,8 @@
         "homepage": null,
         "license": "Apache-2.0",
         "createdAt": "2022-09-27T13:39:37Z",
-        "updatedAt": "2024-10-26T19:45:34Z",
-        "stars": 24,
+        "updatedAt": "2024-10-22T09:17:54Z",
+        "stars": 23,
         "sources": [
             {
                 "type": "git",

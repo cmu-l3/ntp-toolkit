@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/lindy-labs/aegis",
     "commit": "b5e24d6d38e9c4bcffc949407b14751cbe916a3c",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
     "name": "\u00abaegis\u00bb",
     "imports": [
         "Aegis"

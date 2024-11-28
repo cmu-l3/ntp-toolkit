@@ -1,5 +1,6 @@
 from typing import Optional
 from dataclasses import dataclass
+import glob
 import json
 import os
 import argparse
@@ -39,6 +40,9 @@ TASKS = [
 TASK_NAME_TO_TASK = {task.name: task for task in TASKS}
 
 
+def _convert_to_module_name(lean_path: str):
+    return lean_path.removesuffix(".lean").replace(os.pathsep, ".")
+
 def _run_cmd(cmd, cwd, inputs, output_file):
     if isinstance(inputs, str):
         inputs = [inputs]
@@ -63,7 +67,7 @@ def _extract_module(input_module: str, output_base_dir: str, cwd: str, tasks: li
             # For full_proof_training_data, it takes the output .lean files from state_comments as input module
             input_task = TASK_NAME_TO_TASK[task.input_file_from_task]
             input_module = '.'.join([
-                output_base_dir.replace(os.path.sep, '.'),
+                output_base_dir.replace(os.pathsep, '.'),
                 input_task.output_dir,
                 input_module,
             ])
@@ -123,6 +127,15 @@ if __name__ == '__main__':
         args.output_base_dir,
         'Modules.jsonl'
     )
+    entry_points = []
+    for module in args.import_module:
+        if module.startswith("glob:"):
+            module_pattern = module.removeprefix("glob:")
+            for found_module in glob.glob(module_pattern, root_dir=os.path.join(args.cwd, ".lake", "packages", args.name)):
+                found_module = _convert_to_module_name(found_module)
+                entry_points.append(found_module)
+        else:
+            entry_points.append(module)
     _run_cmd(
         cmd='all_modules',
         cwd=args.cwd,
@@ -160,7 +173,7 @@ if __name__ == '__main__':
     print("Elapsed %.2f" % (round(end - start, 2)))
 
     subprocess.run(
-        ['python', 'scripts/data_stats.py', '--pipeline-output-base-dir', args.output_base_dir, '--out-json', os.path.join(args.output_base_dir, 'stats.json')],
+        ['python', 'scripts/data_stats.py', '--pipeline-output-base-dir', args.output_base_dir],
         cwd=args.cwd,
         check=True
     )

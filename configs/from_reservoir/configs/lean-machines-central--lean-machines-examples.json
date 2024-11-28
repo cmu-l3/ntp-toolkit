@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/lean-machines-central/lean-machines-examples",
     "commit": "df2ac22bf3bfe835209878904401df49addf2023",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "\u00ablean-machines-examples\u00bb",
     "imports": [
         "\u00abLeanMachinesExamples\u00bb"

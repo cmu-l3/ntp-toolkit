@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/alexjbest/leaff",
     "commit": "234aa2d96c8385c670883ad2fb60ec15847446b7",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.11.0-rc3",
     "name": "\u00ableaff\u00bb",
     "imports": [
         "\u00abLeaff\u00bb"

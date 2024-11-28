@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/tydeu/lean4-itertools",
     "commit": "d4275eb4ddc5d9756b8dd0172e5d20d121e46113",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.3.0",
     "name": "itertools",
     "imports": [
         "Itertools"

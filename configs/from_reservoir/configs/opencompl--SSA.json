@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/opencompl/lean-mlir",
-    "commit": "6e76106791a32338882c53685cd860527adda64d",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "5a4957b4a7de452ee5da34dca3b4f0e4d3018a4a",
+    "lean": "leanprover/lean4:nightly-2024-10-24",
     "name": "SSA",
     "imports": [
         "SSA"
@@ -15,7 +15,7 @@
         "homepage": null,
         "license": null,
         "createdAt": "2023-02-18T12:18:37Z",
-        "updatedAt": "2024-10-27T19:41:55Z",
+        "updatedAt": "2024-10-25T14:11:58Z",
         "stars": 82,
         "sources": [
             {

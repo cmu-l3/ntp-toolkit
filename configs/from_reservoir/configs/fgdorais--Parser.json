@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/fgdorais/lean4-parser",
     "commit": "469bc3db0dfc3b9f4c3b445a736c6550420408eb",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "Parser",
     "imports": [
         "Parser"

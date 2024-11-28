@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/leanprover-community/ProofWidgets4",
     "commit": "c6672b46db2fa3e5ff4fecd617871fc22eda9d9c",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.13.0-rc1",
     "name": "proofwidgets",
     "imports": [
         "ProofWidgets"

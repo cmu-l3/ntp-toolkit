@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/bergmannjg/leanCurl",
     "commit": "54a64ed6bd3fe39eb18d3f017a93e42d3bfa34d5",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.11.0",
     "name": "Curl",
     "imports": [
         "Curl"

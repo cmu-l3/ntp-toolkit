@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/leanprover/LeanInk",
     "commit": "799e0fa7abd4ea6ec0c54301f5543960b42599ae",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.6.0-rc1",
     "name": "leanInk",
     "imports": [
         "LeanInk"

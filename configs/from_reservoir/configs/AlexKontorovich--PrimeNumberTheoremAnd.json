@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/AlexKontorovich/PrimeNumberTheoremAnd",
     "commit": "13084b62a75bae81ff4dd45eb19d8d4b7dc45d6a",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.12.0",
     "name": "\u00abPrimeNumberTheoremAnd\u00bb",
     "imports": [
         "\u00abPrimeNumberTheoremAnd\u00bb"

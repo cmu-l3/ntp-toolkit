@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/cmu-l3/llmlean",
     "commit": "77448d68e51166f60bd43c6284b43d65209321b0",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "\u00abllmlean\u00bb",
     "imports": [
         "\u00abLLMlean\u00bb"

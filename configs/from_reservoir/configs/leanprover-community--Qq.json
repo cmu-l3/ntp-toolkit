@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/leanprover-community/quote4",
     "commit": "1357f4f49450abb9dfd4783e38219f4ce84f9785",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "Qq",
     "imports": [
         "Qq"

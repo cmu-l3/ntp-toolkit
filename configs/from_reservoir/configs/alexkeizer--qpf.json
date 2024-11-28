@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/alexkeizer/QpfTypes",
     "commit": "fc4fe055d0b704996c663d741bfe8272fff27dde",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.12.0",
     "name": "qpf",
     "imports": [
         "Qpf"

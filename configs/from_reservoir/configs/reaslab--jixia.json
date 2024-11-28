@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/reaslab/jixia",
-    "commit": "917aa48ece36ad6a40952bf4958d59707cbf6822",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "6f30c06e2345f55bd7712be7c775d9a7c6638406",
+    "lean": "leanprover/lean4:v4.11.0",
     "name": "jixia",
     "imports": [
         "Analyzer"
@@ -15,7 +15,7 @@
         "homepage": null,
         "license": "Apache-2.0",
         "createdAt": "2024-06-20T12:01:43Z",
-        "updatedAt": "2024-10-26T03:30:43Z",
+        "updatedAt": "2024-10-25T06:10:17Z",
         "stars": 44,
         "sources": [
             {

@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/arthurpaulino/viper",
     "commit": "cc2385005a6b64ced2e46028a90a64320a0541f7",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.0.0",
     "name": "viper",
     "imports": [
         "Viper"

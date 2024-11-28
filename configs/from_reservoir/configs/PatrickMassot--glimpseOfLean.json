@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/PatrickMassot/GlimpseOfLean",
     "commit": "dc93d861d34a319c62a05c199d558b62b7508eda",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.12.0-rc1",
     "name": "glimpseOfLean",
     "imports": [
         "GlimpseOfLean"
@@ -15,8 +15,8 @@
         "homepage": null,
         "license": "Apache-2.0",
         "createdAt": "2023-05-08T22:01:10Z",
-        "updatedAt": "2024-10-27T07:39:05Z",
-        "stars": 102,
+        "updatedAt": "2024-10-21T09:25:55Z",
+        "stars": 101,
         "sources": [
             {
                 "type": "git",

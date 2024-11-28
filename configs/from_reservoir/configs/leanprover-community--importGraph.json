@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/leanprover-community/import-graph",
     "commit": "0ea83a676d288220ba227808568cbb80fe43ace0",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.13.0-rc1",
     "name": "importGraph",
     "imports": [
         "ImportGraph"

@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/yuma-mizuno/lean-math-workshop",
     "commit": "204831b880903afe6854aa633af3cbfb1ace863d",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
     "name": "\u00ablean-math-workshop\u00bb",
     "imports": [
         "\u00abSolution\u00bb"

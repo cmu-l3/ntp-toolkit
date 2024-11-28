@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/ImperialCollegeLondon/FLT",
-    "commit": "aded09c1eab2871c22d59fc7902aabfacea4d178",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "1b353be2f133346fa7c28cdeaa30effb5017a6f5",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "FLT",
     "imports": [
         "FLT"
@@ -15,8 +15,8 @@
         "homepage": null,
         "license": "Apache-2.0",
         "createdAt": "2023-11-19T17:37:05Z",
-        "updatedAt": "2024-10-26T05:37:03Z",
-        "stars": 242,
+        "updatedAt": "2024-10-25T09:35:27Z",
+        "stars": 241,
         "sources": [
             {
                 "type": "git",

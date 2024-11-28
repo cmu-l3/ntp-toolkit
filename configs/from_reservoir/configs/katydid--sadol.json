@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/katydid/symbolic-automatic-derivatives",
     "commit": "3d6d72f4662c43fba86b3b1797b8ef0a30871b6f",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.11.0-rc2",
     "name": "sadol",
     "imports": [
         "Sadol"

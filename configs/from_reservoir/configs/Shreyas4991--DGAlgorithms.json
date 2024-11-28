@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/Shreyas4991/DGAlgorithms",
     "commit": "425cc7928f9d891614cabcdd1a6d23f28ebc0c06",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.10.0",
     "name": "\u00abDGAlgorithms\u00bb",
     "imports": [
         "\u00abDGAlgorithms\u00bb"

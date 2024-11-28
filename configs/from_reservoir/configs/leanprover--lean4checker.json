@@ -1,11 +1,10 @@
 {
     "repo": "https://github.com/leanprover/lean4checker",
     "commit": "195075616d904735ceb644d3b0bf06d72fc1a311",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "lean4checker",
     "imports": [
-        "glob:Lean4Checker.*",
-        "glob:Lean4CheckerTests.*"
+        "Lean4Checker"
     ],
     "metadata": {
         "name": "lean4checker",

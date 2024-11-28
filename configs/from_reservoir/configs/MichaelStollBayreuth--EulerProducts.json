@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/MichaelStollBayreuth/EulerProducts",
-    "commit": "d12b9fea44ee1bd4a83e0eba4e3fbf2e2823a1d8",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "5e5b5081467a18f2b1f7444c79e1839ecc0c329a",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "\u00abEulerProducts\u00bb",
     "imports": [
         "\u00abEulerProducts\u00bb"
@@ -15,7 +15,7 @@
         "homepage": null,
         "license": "GPL-2.0",
         "createdAt": "2023-11-06T15:15:33Z",
-        "updatedAt": "2024-10-27T18:57:10Z",
+        "updatedAt": "2024-10-21T20:14:16Z",
         "stars": 9,
         "sources": [
             {

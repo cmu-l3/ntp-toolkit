@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/leanprover/lean4export",
     "commit": "d7978498941853b4ff8003b058f66e2142d3a763",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.12.0",
     "name": "lean4export",
     "imports": [
         "Export"

@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/HEPLean/HepLean",
-    "commit": "0fc7fb99802bb589a7eed7b57868694788e33070",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "5f1fb57efde2fb873aae590441104d0fa20c952e",
+    "lean": "leanprover/lean4:v4.12.0",
     "name": "hep_lean",
     "imports": [
         "HepLean"
@@ -15,7 +15,7 @@
         "homepage": "https://heplean.github.io/HepLean/",
         "license": "Apache-2.0",
         "createdAt": "2024-04-16T19:31:13Z",
-        "updatedAt": "2024-10-27T17:07:48Z",
+        "updatedAt": "2024-10-25T13:55:00Z",
         "stars": 58,
         "sources": [
             {

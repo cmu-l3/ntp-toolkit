@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/teorth/pfr",
     "commit": "ee35aa0228d40a96b36dff66e10b5f420770856e",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "PFR",
     "imports": [
         "PFR"
@@ -15,8 +15,8 @@
         "homepage": "https://teorth.github.io/pfr/",
         "license": "Apache-2.0",
         "createdAt": "2023-11-12T23:57:47Z",
-        "updatedAt": "2024-10-27T07:49:59Z",
-        "stars": 135,
+        "updatedAt": "2024-10-19T11:42:22Z",
+        "stars": 134,
         "sources": [
             {
                 "type": "git",

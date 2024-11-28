@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/kmill/lean4-raytracer",
     "commit": "205143b32c006199c914cf6f340004137aaaa72a",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.8.0-rc1",
     "name": "render",
     "imports": [
         "Render"

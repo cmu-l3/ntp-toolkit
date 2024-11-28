@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/lean-ja/lean-by-example",
     "commit": "772f071006c0e8f0f7902e21b0959504eaa95da9",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "\u00abLean",
     "imports": [
         "LeanByExample"
@@ -21,7 +21,7 @@
         "homepage": "https://lean-ja.github.io/lean-by-example/",
         "license": "MIT",
         "createdAt": "2023-09-15T18:37:04Z",
-        "updatedAt": "2024-10-27T05:39:43Z",
+        "updatedAt": "2024-10-24T20:10:16Z",
         "stars": 46,
         "sources": [
             {

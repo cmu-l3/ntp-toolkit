@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/jsm28/AperiodicMonotilesLean",
-    "commit": "4221e41f07817c5e52fee99c6de468be6a96312f",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "e84763b438c4d05a6ac86c2e80d06100325cc0e9",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "AM",
     "imports": [
         "AM"
@@ -15,7 +15,7 @@
         "homepage": null,
         "license": "Apache-2.0",
         "createdAt": "2024-02-15T14:52:53Z",
-        "updatedAt": "2024-10-27T17:40:26Z",
+        "updatedAt": "2024-10-21T11:45:01Z",
         "stars": 12,
         "sources": [
             {

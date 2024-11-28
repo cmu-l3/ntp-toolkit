@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/teorth/equational_theories",
-    "commit": "8ddda840521c12b7f4b5188083278d6813dee871",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "commit": "91a9314328f51e1c3f82936a4ad2a197cdcbc9e3",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "equational_theories",
     "imports": [
         "equational_theories"
@@ -15,8 +15,8 @@
         "homepage": "https://teorth.github.io/equational_theories/",
         "license": "Apache-2.0",
         "createdAt": "2024-09-26T15:39:21Z",
-        "updatedAt": "2024-10-27T08:58:33Z",
-        "stars": 194,
+        "updatedAt": "2024-10-25T10:02:09Z",
+        "stars": 191,
         "sources": [
             {
                 "type": "git",

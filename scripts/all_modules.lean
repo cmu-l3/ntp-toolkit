@@ -2,25 +2,10 @@
 Prints all imported modules of a project, in order. Takes as input the base module name(s).
 -/
 
-import Lean
+import Mathlib.Lean.CoreM
 import Batteries
 
-open Lean Meta System.FilePath Core
-
-/--
-Copied from mathlib (not importing mathlib, so we can extract from non-mathlib-dependent Lean):
-Run a `CoreM α` in a fresh `Environment` with specified `modules : List Name` imported.
--/
-def CoreM.withImportModules' {α : Type} (modules : Array Name) (run : CoreM α)
-    (searchPath : Option SearchPath := none) (options : Options := {})
-    (trustLevel : UInt32 := 0) (fileName := "") :
-    IO α := unsafe do
-  if let some sp := searchPath then searchPathRef.set sp
-  Lean.withImportModules (modules.map (Import.mk · false)) options trustLevel fun env =>
-    let ctx := {fileName, options, fileMap := default}
-    let state := {env}
-    Prod.fst <$> (CoreM.toIO · ctx state) do
-      run
+open Lean Meta System.FilePath
 
 /-- Extracts modules imported by a lean module (eg Mathlib) that starts with this name (eg Mathlib.*) -/
 def main (args : List String) : IO UInt32 := do
@@ -29,7 +14,7 @@ def main (args : List String) : IO UInt32 := do
   | [] => #[`Mathlib]
   | args => args.toArray.map fun s => s.toName
   searchPathRef.set compile_time_search_path%
-  CoreM.withImportModules' modules (options := options) do
+  CoreM.withImportModules modules (options := options) do
     let env ← getEnv
     let allModules := env.allImportedModuleNames.filter fun module =>
       modules.contains module.components.head!

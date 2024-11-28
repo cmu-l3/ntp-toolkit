@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/jtristan/UnicodeSkipListTable",
     "commit": "7b73ca0807f55d538629098310b812e24bf4a528",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
     "name": "\"UnicodeSkipListTable\"",
     "imports": [
         "UnicodeSkipListTable"

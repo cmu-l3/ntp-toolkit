@@ -1,7 +1,7 @@
 {
     "repo": "https://github.com/ElifUskuplu/Stlc_deBruijn",
     "commit": "42e5caf2f86568898f6050241f142df72743c4ea",
-    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "\u00abstlc\u00bb",
     "imports": [
         "\u00abStlc\u00bb"
