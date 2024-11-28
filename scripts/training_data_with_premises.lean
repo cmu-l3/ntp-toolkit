@@ -4,8 +4,9 @@ import TrainingData.InfoTree.TacticInvocation.Basic
 import TrainingData.Utils.Range
 import Mathlib.Data.String.Defs
 import Mathlib.Lean.CoreM
-import Batteries
-import Lean
+import Batteries.Lean.Util.Path
+import Batteries.Data.String.Basic
+import Mathlib.Tactic.Change
 import Cli
 
 open Lean Elab IO Meta

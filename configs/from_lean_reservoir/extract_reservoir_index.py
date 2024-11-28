@@ -15,59 +15,32 @@ import re
 import subprocess
 
 import requests
-import toml
 
-
-def analyze_lakefile_lean(lakefile_content) -> tuple[str, list[str]]:
+def analyze_lakefile_lean(lakefile_content):
     package_name_match = re.search(r"^package\s+(\S+)", lakefile_content, re.MULTILINE)
-    # extract default lean_lib target names as import names
     import_name_match = re.search(r"^@\[default_target\]\s*lean_lib\s+(\S+)", lakefile_content, re.MULTILINE)
     if not import_name_match:
-        # if none exist, extract all lean_lib names
         import_name_match = re.search(r"^lean_lib\s+(\S+)", lakefile_content, re.MULTILINE)
 
     if package_name_match and import_name_match:
         package_name = package_name_match.group(1)
-        # in rare cases, the lakefile has a "globs" that asks to compile everything matching a glob
-        # this misses many syntactic cases, but not many repositories use this so it is fine
-        import_glob_match = re.search(r'^\s*\{\s*globs\s*:=\s*\#\[\s*\.submodules\s*\`(\S+)\s*\]', lakefile_content[import_name_match.end(1):])
-        if import_glob_match:
-            import_names = [f"glob:{import_glob_match.group(1)}"]
-        else:
-            import_names = list(import_name_match.groups())
-        return package_name, import_names
-    elif not package_name_match:
-        raise ValueError("Package name not found in lakefile.lean")
+        import_name = import_name_match.group(1)
+        return package_name, import_name
     else:
-        raise ValueError("Import name not found in lakefile.lean")
+        raise ValueError("Required patterns not found in lakefile.lean")
 
-def analyze_lakefile_toml(lakefile_content) -> tuple[str, list[str]]:
-    try:
-        content = toml.loads(lakefile_content)
-    except toml.TomlDecodeError:
-        print("Bad lakefile.toml")
-        raise
+def analyze_lakefile_toml(lakefile_content):
+    package_name_match = re.search(r'^name\s*=\s*"([^"]+)"', lakefile_content, re.MULTILINE)
+    import_name_match = re.search(r'^\[\[lean_lib\]\]\s*name\s*=\s*"([^"]+)"', lakefile_content, re.MULTILINE)
 
-    if "name" in content and "lean_lib" in content and len(content["lean_lib"]) >= 1:
-        package_name = content["name"]
-        # extract default target names as import names
-        targets = content.get("defaultTargets", [lib["name"] for lib in content["lean_lib"] if "name" in lib])
-        import_names = []
-        for lib in content["lean_lib"]:
-            if "name" in lib and lib["name"] in targets:
-                # in rare cases, the lakefile has a "globs" that asks to compile everything matching a glob
-                if "globs" in lib:
-                    for glob in lib["globs"]:
-                        import_names.append(f"glob:{glob}")
-                else:
-                    import_names.append(lib["name"])
-        return package_name, import_names
-    elif "name" not in content:
-        raise ValueError("Package name not found in lakefile.toml")
+    if package_name_match and import_name_match:
+        package_name = package_name_match.group(1)
+        import_name = import_name_match.group(1)
+        return package_name, import_name
     else:
-        raise ValueError("Import name not found in lakefile.toml")
+        raise ValueError("Required patterns not found in lakefile.toml")
 
-def analyze_lakefile(repo_url, commit_version="HEAD") -> tuple[str, list[str]]:
+def analyze_lakefile(repo_url, commit_version="HEAD"):
     # try lakefile.toml and lakefile.lean
     lakefile_toml_url = f"{repo_url}/raw/{commit_version}/lakefile.toml"
     lakefile_lean_url = f"{repo_url}/raw/{commit_version}/lakefile.lean"
@@ -137,14 +110,9 @@ if __name__ == "__main__":
         data.update(most_recent_successful_build)
 
         try:
-            package_name, import_names = analyze_lakefile(repo_url, commit_version)
+            package_name, import_name = analyze_lakefile(repo_url, commit_version)
         except Exception as e:
             print(f"Error processing {repo_url} at {commit_version}: {e}")
-            continue
-
-        if package_name == "mathlib":
-            # We collect mathlib training data separately
-            print("Skipping mathlib")
             continue
 
         config_data = {
@@ -152,14 +120,9 @@ if __name__ == "__main__":
             "commit": commit_version,
             "lean": toolchain_version,
             "name": package_name,
-            "imports": import_names,
+            "imports": [import_name],
             "metadata": metadata,
         }
-
-        # Hot fix: the specific commit for LeanCamCombi is broken on 2024-10-27; probably because of some git rebase/squash
-        if repo_url == "https://github.com/YaelDillies/LeanCamCombi" and commit_version == "6fe1d16e9176584ebc45810385d7b1f29512caac":
-            config_data["commit"] = "ef325f10fab9bfde5184048021dad23c94461e1d"
-            config_data["lean"] = "leanprover/lean4:v4.13.0-rc3"
 
         safe_title = re.sub(r'[^a-zA-Z0-9_\-]', '--', metadata["fullName"])
         output_file = os.path.join(output_dir, f"{safe_title}.json")

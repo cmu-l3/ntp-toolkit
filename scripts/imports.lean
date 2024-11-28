@@ -3,8 +3,7 @@ Prints all (transitively) imported modules of a module.
 -/
 
 import Mathlib.Lean.CoreM
-import Batteries
-import Lean
+import Batteries.Lean.Util.Path
 
 open Lean Meta
 

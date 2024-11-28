@@ -1,6 +1,6 @@
 {
     "repo": "https://github.com/YaelDillies/LeanCamCombi",
-    "commit": "ef325f10fab9bfde5184048021dad23c94461e1d",
+    "commit": "6fe1d16e9176584ebc45810385d7b1f29512caac",
     "lean": "leanprover/lean4:v4.13.0-rc3",
     "name": "LeanCamCombi",
     "imports": [

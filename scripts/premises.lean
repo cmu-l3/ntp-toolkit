@@ -9,8 +9,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 import Mathlib.Lean.CoreM
 import Mathlib.Control.Basic
 import Mathlib.Lean.Expr.Basic
-import Batteries
-import Lean
+import Batteries.Lean.HashMap
+import Batteries.Lean.Util.Path
 
 /-!
 Generate declaration dependencies up to a target file.

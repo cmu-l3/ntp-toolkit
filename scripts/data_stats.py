@@ -63,3 +63,4 @@ if __name__ == '__main__':
 
     with open(os.path.join(args.pipeline_output_base_dir, 'stats.json'), 'w') as f:
         json.dump(stats, f)
+    
