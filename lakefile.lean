@@ -47,8 +47,14 @@ lean_exe add_imports where
 lean_exe all_modules where
   root := `scripts.all_modules
 
+@[default_target]
 lean_exe declarations where
   root := `scripts.declarations
 
+@[default_target]
 lean_exe imports where
   root := `scripts.imports
+
+@[default_target]
+lean_exe update_hammer_blacklist where
+  root := `scripts.update_hammer_blacklist
