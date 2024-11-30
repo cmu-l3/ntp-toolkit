@@ -21,8 +21,10 @@ def jsonDir := "Examples/Mathlib/TrainingDataWithPremises"
    and the actual hammer's performance. One example is `Set.disjoint_right` which `hammer` handles fine
    when you actually run it but appears to have Duper's proof reconstruction fail for in
    `hammerBenchmarkFromModule` -/
--- #eval Command.liftTermElabM $ hammerBenchmarkFromModule `Mathlib.Data.Set.Basic withImportsDir jsonDir
+-- #eval Command.liftTermElabM $ hammerBenchmarkFromModule `Mathlib.Data.Set.Basic withImportsDir jsonDir 10
 -- #eval Command.liftTermElabM $ tacticBenchmarkFromModule `Mathlib.Data.Set.Basic useDuper
+
+-- #eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Data.Set.Basic `Set.subset_insert_diff_singleton withImportsDir jsonDir 10
 
 /- Note: `subset_insert_diff_singleton` is an example where the evaluation faithfully represents what the hammer
    does, but the hammer's behavior requires investigation. The external prover can solve this example, and Duper

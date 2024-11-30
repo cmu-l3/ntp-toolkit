@@ -27,11 +27,12 @@ def useSimpAllWithRecommendation (simpAllRecommendation : Array String) : Tactic
 def useOmega : TacticM Unit := do evalTactic (← `(tactic| intros; omega))
 def useDuper : TacticM Unit := do evalTactic (← `(tactic| duper [*]))
 def useQuerySMT : TacticM Unit := do evalTactic (← `(tactic| querySMT))
-def useHammer (hammerRecommendation : Array String) : TacticM Unit := do
-  let hammerRecommendation : Array Name := hammerRecommendation.map String.toName
-  let hammerRecommendation : Array Ident := hammerRecommendation.map mkIdent
-  let hammerRecommendation : Array Term := hammerRecommendation.map (fun i => ⟨i.raw⟩)
-  evalTactic (← `(tactic| hammer [*, $(hammerRecommendation),*]))
+def useHammer (hammerRecommendation : Array String) (externalProverTimeout : Nat) : TacticM Unit := do
+  withOptions (fun o => o.set ``auto.tptp.timeout externalProverTimeout) do
+    let hammerRecommendation : Array Name := hammerRecommendation.map String.toName
+    let hammerRecommendation : Array Ident := hammerRecommendation.map mkIdent
+    let hammerRecommendation : Array Term := hammerRecommendation.map (fun i => ⟨i.raw⟩)
+    evalTactic (← `(tactic| hammer [*, $(hammerRecommendation),*]))
 
 /--
 Compile the designated module, and run a monadic function with each new `ConstantInfo`,
@@ -258,7 +259,7 @@ def runTacticAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → Met
         | some true => pure .success
     return some ⟨type, seconds, heartbeats⟩
 
-def runHammerAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String) :
+def runHammerAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String) (externalProverTimeout : Nat) :
   MLList IO (ConstantInfo × HammerResult) := do
   runAtDecls mod (some withImportsPath) fun ci => do
     if ! (← decls ci) then return none
@@ -284,7 +285,7 @@ def runHammerAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withImp
       try
         TermElabM.run' (do
           dbg_trace "About to use hammer for {ci.name} (recommendation: {hammerRecommendation})"
-          let gs ← Tactic.run g.mvarId! $ useHammer hammerRecommendation
+          let gs ← Tactic.run g.mvarId! $ useHammer hammerRecommendation externalProverTimeout
           match gs with
           | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate the hammer on Prop declarations
           | _ :: _ => pure .subgoals)
@@ -301,7 +302,7 @@ def runHammerAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withImp
     return some ⟨res, seconds, heartbeats⟩
 
 /-- Like `runHammerAtDecls` but only tests a single declaration (indicated by `declName`). -/
-def runHammerAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String) :
+def runHammerAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String) (externalProverTimeout : Nat) :
   IO (Option (ConstantInfo × HammerResult)) := do
   runAtDecl mod declName (some withImportsPath) fun ci => do
     if ! (← decls ci) then return none
@@ -327,7 +328,7 @@ def runHammerAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → Met
       try
         TermElabM.run' (do
           dbg_trace "About to use hammer for {ci.name} in module {mod} (recommendation: {hammerRecommendation})"
-          let gs ← Tactic.run g.mvarId! $ useHammer hammerRecommendation
+          let gs ← Tactic.run g.mvarId! $ useHammer hammerRecommendation externalProverTimeout
           match gs with
           | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate the hammer on Prop declarations
           | _ :: _ => pure .subgoals)
@@ -477,18 +478,18 @@ def tacticBenchmarkAtDecl (module : ModuleName) (declName : Name) (tac : TacticM
     IO.println s!"Encountered an issue attempting to run tactic benchmark at {declName} in module {module}"
     return 0
 
-def hammerBenchmarkFromModule (module : ModuleName) (withImportsDir : String) (jsonDir : String) : IO UInt32 := do
+def hammerBenchmarkFromModule (module : ModuleName) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
-  let result := runHammerAtDecls module (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir
+  let result := runHammerAtDecls module (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout
   IO.println s!"{module}"
   for (ci, ⟨type, seconds, heartbeats⟩) in result do
     IO.println <| (hammerResultTypeToEmojiString type) ++ " " ++ ci.name.toString ++
       s!" ({seconds}s) ({heartbeats} heartbeats)"
   return 0
 
-def hammerBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) : IO UInt32 := do
+def hammerBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
-  let result ← runHammerAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir
+  let result ← runHammerAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout
   match result with
   | some (ci, ⟨type, seconds, heartbeats⟩) =>
     IO.println $ (hammerResultTypeToEmojiString type) ++ " " ++ ci.name.toString ++ s!" ({seconds}s) ({heartbeats} heartbeats)"
