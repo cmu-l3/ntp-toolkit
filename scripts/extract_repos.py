@@ -16,11 +16,15 @@ package «lean-training-data» {
 require %s from git
   "%s.git" @ "%s"
 
-require «doc-gen4» from git
-  "https://github.com/leanprover/doc-gen4.git" @ "v4.9.0"
+require QuerySMT from git
+  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "48757019d1d2680d4764aba59dfd5e020c450fe8"
+
+require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.12.0"
 
 @[default_target]
 lean_lib TrainingData where
+
+lean_lib temp where
 
 lean_lib Examples where
 
@@ -36,8 +40,17 @@ lean_exe state_comments where
 lean_exe premises where
   root := `scripts.premises
 
+@[default_target]
 lean_exe training_data_with_premises where
   root := `scripts.training_data_with_premises
+
+@[default_target]
+lean_exe tactic_benchmark where
+  root := `scripts.tactic_benchmark
+
+@[default_target]
+lean_exe add_imports where
+  root := `scripts.add_imports
 
 lean_exe all_modules where
   root := `scripts.all_modules
@@ -140,6 +153,10 @@ if __name__ == '__main__':
         action='store_true'
     )
     parser.add_argument(
+        '--add_imports',
+        action='store_true'
+    )
+    parser.add_argument(    
         '--declarations',
         action='store_true'
     )
@@ -165,6 +182,8 @@ if __name__ == '__main__':
         flags.append('--full_proof_training_data_states')
     if args.training_data_with_premises:
         flags.append('--training_data_with_premises')
+    if args.add_imports:
+        flags.append('--add_imports')
     if args.declarations:
         flags.append('--declarations')
     if args.imports:

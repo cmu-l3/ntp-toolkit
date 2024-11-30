@@ -4,7 +4,6 @@ import TrainingData.InfoTree.TacticInvocation.Basic
 import TrainingData.Utils.Range
 import Mathlib.Data.String.Defs
 import Mathlib.Lean.CoreM
-import Batteries.Lean.Util.Path
 import Batteries.Data.String.Basic
 import Mathlib.Tactic.Change
 import Cli
@@ -13,15 +12,15 @@ open Lean Elab IO Meta
 open Cli System
 
 
-def DeclIdMap := HashMap String (List Json)
+def DeclIdMap := Std.HashMap String (List Json)
 
 def addToMap (map : DeclIdMap) (declId : String) (jsonObj : Json) : DeclIdMap :=
-  match map.find? declId with
+  match map.get? declId with
   | some jsonList => map.insert declId (jsonObj :: jsonList)
   | none => map.insert declId [jsonObj]
 
 def groupByDecl (idJsons : List (String × Json)) : IO DeclIdMap := do
-  let mut map : DeclIdMap := HashMap.empty
+  let mut map : DeclIdMap := Std.HashMap.empty
   for ⟨declId, json⟩ in idJsons do
     map := addToMap map declId json
   return map

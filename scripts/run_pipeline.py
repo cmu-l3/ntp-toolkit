@@ -15,8 +15,9 @@ DIR_NAMES = {
     'full_proof_training_data_states': 'FullProofWithStates',
     'premises': 'Premises',
     'training_data_with_premises': 'TrainingDataWithPremises',
+    'add_imports': 'WithImports',
     'imports': 'Imports',
-    'declarations': 'Declarations',
+    'declarations': 'Declarations'
 }
 
 def _get_stem(input_module, input_file_mode):
@@ -38,7 +39,7 @@ def _run_cmd(cmd, cwd, input_file, output_file):
         )
 
 def _extract_module(input_module, input_file_mode, output_base_dir, cwd, training_data, full_proof_training_data,
-                    premises, state_comments, full_proof_training_data_states, training_data_with_premises,
+                    premises, state_comments, full_proof_training_data_states, training_data_with_premises, add_imports,
                     declarations, imports):
     # Tactic prediction
     if training_data:
@@ -118,7 +119,20 @@ def _extract_module(input_module, input_file_mode, output_base_dir, cwd, trainin
                 _get_stem(input_module, input_file_mode) + '.jsonl'
             )
         )
-
+    
+    # Reproduces source code with additional specified imports
+    if add_imports:
+        _run_cmd(
+            cmd='add_imports',
+            cwd=cwd,
+            input_file=input_module,
+            output_file=os.path.join(
+                output_base_dir,
+                DIR_NAMES['add_imports'],
+                _get_stem(input_module, input_file_mode) + '.lean'
+            )
+        )
+    
     if declarations:
         _run_cmd(
             cmd='declarations',
@@ -187,6 +201,10 @@ if __name__ == '__main__':
         action='store_true'
     )
     parser.add_argument(
+        '--add_imports',
+        action='store_true'
+    )
+    parser.add_argument(
         '--declarations',
         action='store_true'
     )
@@ -197,11 +215,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if ((not args.training_data) and (not args.full_proof_training_data) and (not args.premises) and (not args.state_comments)
-        and (not args.full_proof_training_data_states) and (not args.training_data_with_premises) and (not args.declarations)
-        and (not args.imports)):
+        and (not args.full_proof_training_data_states) and (not args.training_data_with_premises) and (not args.add_imports)
+        and (not args.declarations) and (not args.imports)):
         raise AssertionError('''At least one of the following flags must be set: [--training_data, --full_proof_training_data,
                              --premises, --state_comments, --full_proof_training_data_states, --training_data_with_premises,
-                             --declarations, --imports]''')
+                             --add_imports, --declarations, --imports]''')
 
     Path(args.output_base_dir).mkdir(parents=True, exist_ok=True)
     for name in DIR_NAMES.values():
@@ -213,6 +231,7 @@ if __name__ == '__main__':
     subprocess.run(['lake', 'build', 'full_proof_training_data'], check=True)
     subprocess.run(['lake', 'build', 'premises'], check=True)
     subprocess.run(['lake', 'build', 'training_data_with_premises'], check=True)
+    subprocess.run(['lake', 'build', 'add_imports'], check=True)
     subprocess.run(['lake', 'build', 'declarations'], check=True)
     subprocess.run(['lake', 'build', 'imports'], check=True)
 
@@ -248,6 +267,7 @@ if __name__ == '__main__':
                 state_comments=args.state_comments,
                 full_proof_training_data_states=args.full_proof_training_data_states,
                 training_data_with_premises=args.training_data_with_premises,
+                add_imports=args.add_imports,
                 declarations=args.declarations,
                 imports=args.imports
             )

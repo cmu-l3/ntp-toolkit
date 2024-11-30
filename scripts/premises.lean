@@ -10,7 +10,6 @@ import Mathlib.Lean.CoreM
 import Mathlib.Control.Basic
 import Mathlib.Lean.Expr.Basic
 import Batteries.Lean.HashMap
-import Batteries.Lean.Util.Path
 
 /-!
 Generate declaration dependencies up to a target file.
@@ -24,13 +23,13 @@ def isAuxLemma : Name → Bool
 | _ => false
 
 partial def Lean.ConstantInfo.getUsedConstants' (c : ConstantInfo)
-    (constantsMap : HashMap Name ConstantInfo)
+    (constantsMap : Std.HashMap Name ConstantInfo)
     (unfolding : Name → Bool := isAuxLemma) : NameSet × NameSet := Id.run do
   let mut direct : NameSet := ∅
   let mut unfolded : NameSet := ∅
   for n in c.getUsedConstantsAsSet do
     if unfolding n then
-      if let some c := constantsMap.find? n then
+      if let some c := constantsMap.get? n then
         unfolded := unfolded ++ c.getUsedConstantsAsSet
     else
       direct := direct.insert n
@@ -53,7 +52,7 @@ def allUsedConstants (moduleNames : Array Name) (unfolding : Name → Bool := is
   for (n, c) in constantsMap do
     -- We omit all internally generated auxiliary statements.
     -- We restrict to declarations in the module
-    if let some modIdx := const2ModIdx.find? n then
+    if let some modIdx := const2ModIdx.get? n then
       if moduleIdxs.contains modIdx && ! (← n.isBlackListed) then
         result := result.insert n (c.getUsedConstants' constantsMap unfolding)
   return result
@@ -100,7 +99,7 @@ def allExplicitConstants (moduleNames : Array Name) : MetaM (NameMap NameSet) :=
   for (n, c) in r do
     -- We omit all internally generated auxiliary statements.
     -- We restrict to declarations in the module
-    if let some modIdx := const2ModIdx.find? n then
+    if let some modIdx := const2ModIdx.get? n then
       if moduleIdxs.contains modIdx && ! (← n.isBlackListed) then
         result := result.insert n (← c.explicitConstants)
   return result
