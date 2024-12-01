@@ -3,6 +3,7 @@ Prints all imported modules of a project, in order. Takes as input the base modu
 -/
 
 import Mathlib.Lean.CoreM
+import Lean.Util.SearchPath
 
 open Lean Meta System.FilePath
 

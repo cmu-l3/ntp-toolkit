@@ -17,9 +17,9 @@ require %s from git
   "%s.git" @ "%s"
 
 require QuerySMT from git
-  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "48757019d1d2680d4764aba59dfd5e020c450fe8"
+  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "2ddce76272df57b64b0e15b22bd38d63f352d324"
 
-require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.12.0"
+require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.13.0"
 
 @[default_target]
 lean_lib TrainingData where
@@ -55,11 +55,17 @@ lean_exe add_imports where
 lean_exe all_modules where
   root := `scripts.all_modules
 
+@[default_target]
 lean_exe declarations where
   root := `scripts.declarations
 
+@[default_target]
 lean_exe imports where
   root := `scripts.imports
+
+@[default_target]
+lean_exe update_hammer_blacklist where
+  root := `scripts.update_hammer_blacklist
 """ % (name, repo, commit)
     with open(os.path.join(cwd, 'lakefile.lean'), 'w') as f:
         f.write(contents)
