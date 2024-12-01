@@ -6,12 +6,12 @@ package «lean-training-data» {
 }
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git" @ "809c3fb3b5c8f5d7dace56e200b426187516535a"
+  "https://github.com/leanprover-community/mathlib4.git" @ "d7317655e2826dc1f1de9a0c138db2775c4bb841"
 
 require QuerySMT from git
-  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "48757019d1d2680d4764aba59dfd5e020c450fe8"
+  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "2ddce76272df57b64b0e15b22bd38d63f352d324"
 
-require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.12.0"
+require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.13.0"
 
 @[default_target]
 lean_lib TrainingData where
