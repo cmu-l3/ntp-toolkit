@@ -10,6 +10,7 @@ import Batteries.Data.String.Basic
 import Batteries.Data.String.Matcher
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Change
+import Mathlib.Tactic.Simps.Basic
 import Cli
 
 open Lean Elab IO Meta Cli System TheoremPrettyPrinting DocGen4.Process
@@ -141,7 +142,15 @@ partial def syntaxPremises (lctx : LocalContext) (s : Syntax) : MetaM (NameSet �
       catch _ => -- This case covers syntax like `intro h` where `h` is neither a local hypothesis nor a global constant
         return (∅, ∅)
 
-def isAuxLemma : Name → Bool
+def Name.isTheoremOrAxiom (name : Name) : CoreM Bool := do
+  let .some ci := (← getEnv).find? name
+    | throwError "Name.isTheorem :: Cannot find name {name}"
+  match ci with
+  | .thmInfo _ => return true
+  | .axiomInfo _ => return true
+  | _ => return false
+
+def Name.isAuxLemma : Name → Bool
 | .num (.str _ "_auxLemma") _ => true
 | _ => false
 
@@ -194,112 +203,183 @@ def nextTacticIsSimpOrRwVariant (t : String) : Bool :=
   rewriteVariants.any (fun p => (p ++ " ").isPrefixOf t) ||
   rewriteVariants.any (fun p => (p ++ "[").isPrefixOf t)
 
-/-- This structure stores all of the data that can easily be obtained from a single tactic information. It contains a subset of the total
-    data output by `trainingDataGivenModule` and `trainingData` (because these also provide fields containing information that spans across
-    multiple tactics) -/
-structure FirstPassTrainingData where
+/-- `SimpAllHint` is used to tag names in `hammer` recommendations to indicate whether the name in correction should be passed to `hammer`'s
+    `simp_all` preprocessing call, and if so, whether it should be modified with `←`, `-`, `↑`, or `↓`. Note that the `↑` and `↓` modifiers can
+    be present alone or in conjunction with the `←` modifer, so there are different hints corresponding to each different possible combination. -/
+inductive SimpAllHint where
+| notInSimpAll -- Don't pass the current hint to the `simp_all` preprocessing step
+| unmodified -- Pass the current hint to `simp_all` without modification
+| simpErase -- Pass the current hint to `simp_all` with the `-` modifier
+| simpPreOnly -- Pass the current hint to `simp_all` with just the `↓` modifier
+| simpPostOnly -- Pass the current hint to `simp_all` with just the `↑` modifier
+| backwardOnly -- Pass the current hint to `simp_all` with just the `←` modifier
+| simpPreAndBackward -- Pass the current hint to `simp_all` with both the `↓` and `←` modifiers
+| simpPostAndBackward -- Pass the current hint to `simp_all` with both the `↑` and `←` modifier
+deriving Inhabited, BEq
+
+open SimpAllHint
+
+def simpAllHintToString : SimpAllHint → String
+  | notInSimpAll => "notInSimpAll"
+  | unmodified => "unmodified"
+  | simpErase => "simpErase"
+  | simpPreOnly => "simpPreOnly"
+  | simpPostOnly => "simpPostOnly"
+  | backwardOnly => "backwardOnly"
+  | simpPreAndBackward => "simpPreAndBackward"
+  | simpPostAndBackward => "simpPostAndBackward"
+
+instance : ToString SimpAllHint := ⟨simpAllHintToString⟩
+
+structure TrainingData where
   declId : String
   declName : String
   decl : String
   srcUpToTactic : String
   declUpToTactic : String
   state : String
-  nextTactic : String
-  nextTacticIsSimpOrRwVariant : Bool
-  numNewGoalsOpened : Int -- Counts the number of ` by `s in `nextTactic` to determine the number of new goals created not captured by `numGoalsAfterTactic`
-  nextTacticTermPremises : Array Name
-  nextTacticExplicitConstants : Array Name
-  nextTacticExplicitPremises : Array Name
-  nextTacticExplicitLocalHypotheses : Array Name
-  nextTacticAllPremises : Array Name
-  nextTacticHammerRecommendation : Array Name
-  goalDelta : Int -- `goalDelta` = `numNewGoalsOpened + numGoalsAfterTactic` - `numGoalsBeforeTactic`.
-                  -- This is used to help determine when the scope of a goal ends.
+  nextTactic : Option String -- `none` if the proof is completed in term mode
+  nextTacticHammerRecommendation : Std.HashMap Name SimpAllHint
+  declHammerRecommendation : Std.HashMap Name SimpAllHint
 deriving Inhabited
 
-/-- This structure stores all of the data to eventually be output in the final JSON file. It contains all of the data in `FirstPassTrainingData`
-    along with some fields containing containing information that span across multiple tactics. -/
-structure SecondPassTrainingData extends FirstPassTrainingData where
-  declTermPremises : Array Name
-  declExplicitConstants : Array Name
-  declExplicitPremises : Array Name
-  declAllPremises : Array Name
-  declHammerRecommendation : Array Name
-  termPremisesToEndOfGoal : Array Name
-  explicitConstantsToEndOfGoal : Array Name
-  explicitPremisesToEndOfGoal : Array Name
-  allPremisesToEndOfGoal : Array Name
-  hammerRecommendationToEndOfGoal : Array Name
-  curGoalCount := 1 -- This is the only field that is not output in the final JSON file. It is used internally to track whether the tactic's goal
-                    -- is "currently" open during the loop that builds `SecondPassTrainingData`. If `curGoalCount` is 0, then the goal is not
-                    -- currently open. If `curGoalCount > 0`, then `curGoalCount` is the number of goals that need to be closed before the current
-                    -- tactic's goal should be considered closed. A tactic with `curGoalCount` = 1 and `goalDelta` = -1 is both opened and closed
-                    -- by the same tactic (e.g. when a goal is proven in just one tactic)
-deriving Inhabited
+/-- If the same name appears in assigned multiple distinct hints over the course of the data extraction, `mergeSimpAllHints` determines what its
+    final hint should be. The priority structure `mergeSimpAllHints` applies to hints is as follows:
+    - `simpErase` > `unmodified` > `backwardOnly` > `simpPreOnly` > `simpPostOnly` > `simpPreAndBackward` > `simpPostAndBackward` > `notInSimpAll`
 
-/-- Creates a `FirstPassTrainingData` object based on the provided tactic invocation -/
-def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) (declName : String) : IO FirstPassTrainingData := do
+    Most of these choices are arbitrary. The main thing is that `simpErase` is always preferred and `notInSimpAll` is never preferred over something else -/
+def mergeSimpAllHints (h1 h2 : SimpAllHint) : SimpAllHint :=
+  match h1, h2 with
+  | simpErase, _ | _, simpErase => simpErase
+  | unmodified, _ | _, unmodified => unmodified
+  | backwardOnly, _ | _, backwardOnly => backwardOnly
+  | simpPreOnly, _ | _, simpPreOnly => simpPreOnly
+  | simpPostOnly, _ | _, simpPostOnly => simpPostOnly
+  | simpPreAndBackward, _ | _, simpPreAndBackward => simpPreAndBackward
+  | simpPostAndBackward, _ | _, simpPostAndBackward => simpPostAndBackward
+  | notInSimpAll, notInSimpAll => notInSimpAll
+
+def updateHammerRecommendation (hammerRecommendation : Std.HashMap Name SimpAllHint) (name : Name) (hint : SimpAllHint) : Std.HashMap Name SimpAllHint :=
+  match hammerRecommendation.get? name with
+  | some h => hammerRecommendation.insert name $ mergeSimpAllHints h hint
+  | none => hammerRecommendation.insert name hint
+
+def mergeHammerRecommendations (hammerRecommendation1 hammerRecommendation2 : Std.HashMap Name SimpAllHint) : Std.HashMap Name SimpAllHint :=
+  if hammerRecommendation1.size ≥ hammerRecommendation2.size then
+    hammerRecommendation2.toArray.foldl (fun acc (n, h) => updateHammerRecommendation acc n h) hammerRecommendation1
+  else
+    hammerRecommendation1.toArray.foldl (fun acc (n, h) => updateHammerRecommendation acc n h) hammerRecommendation2
+
+/-- This function uses `Lean.Elab.Tactic.elabSimpArgs` and `Lean.Elab.Tactic.mkSimpOnly` as references. Currently, the nature of the output ignores
+    simprocs, though it may make sense to update this to include output pertaining to simprocs in the future. -/
+def simpLemmasFromTacticStx (s : Syntax) : MetaM (Std.HashMap Name SimpAllHint) := do
+  match s with
+  | `(tactic| simp [$simpLemmas,*])
+  | `(tactic| simp? [$simpLemmas,*])
+  | `(tactic| simp?! [$simpLemmas,*])
+  | `(tactic| simp_all [$simpLemmas,*])
+  | `(tactic| simp_all? [$simpLemmas,*])
+  | `(tactic| simp_all! [$simpLemmas,*])
+  | `(tactic| simp_all?! [$simpLemmas,*])
+  | `(tactic| simp_arith [$simpLemmas,*])
+  | `(tactic| simp_arith! [$simpLemmas,*])
+  | `(tactic| simpa [$simpLemmas,*])
+  | `(tactic| simpa? [$simpLemmas,*])
+  | `(tactic| simpa! [$simpLemmas,*])
+  | `(tactic| simpa?! [$simpLemmas,*])
+  | `(tactic| dsimp [$simpLemmas,*])
+  | `(tactic| dsimp? [$simpLemmas,*])
+  | `(tactic| dsimp?! [$simpLemmas,*])
+  | `(tactic| simp only [$simpLemmas,*])
+  | `(tactic| simp? only [$simpLemmas,*])
+  | `(tactic| simp?! only [$simpLemmas,*])
+  | `(tactic| simp_all only [$simpLemmas,*])
+  | `(tactic| simp_all? only [$simpLemmas,*])
+  | `(tactic| simp_all! only [$simpLemmas,*])
+  | `(tactic| simp_all?! only [$simpLemmas,*])
+  | `(tactic| simp_arith only [$simpLemmas,*])
+  | `(tactic| simp_arith! only [$simpLemmas,*])
+  | `(tactic| simpa only [$simpLemmas,*])
+  | `(tactic| simpa? only [$simpLemmas,*])
+  | `(tactic| simpa! only [$simpLemmas,*])
+  | `(tactic| simpa?! only [$simpLemmas,*])
+  | `(tactic| dsimp only [$simpLemmas,*])
+  | `(tactic| dsimp? only [$simpLemmas,*])
+  | `(tactic| dsimp?! only [$simpLemmas,*]) =>
+    let simpLemmas := simpLemmas.getElems
+    let mut res : Std.HashMap Name SimpAllHint := Std.HashMap.empty
+    for simpLemma in simpLemmas do
+      let simpLemma := simpLemma.raw
+      if simpLemma.getKind == ``Lean.Parser.Tactic.simpErase then
+        let id := simpLemma[1]
+        match ← observing (realizeGlobalConstNoOverloadWithInfo id) with
+        | .ok declName =>
+          if (← Simp.isSimproc declName) then continue -- Ignore `declName` if it is a simproc
+          res := updateHammerRecommendation res declName simpErase
+        | _ => -- If `realizeGlobalConstNoOverloadWithInfo id` failed, `id` is a local fvar or builtin simproc. We ignore it in either case.
+          continue
+      else if simpLemma.getKind == ``Lean.Parser.Tactic.simpLemma then
+        let hasLeftArrow := !simpLemma[1].isNone -- `simpLemma` contains either `←` or `<-`
+        let simpAllHint ←
+          if simpLemma[0].isNone then
+            if hasLeftArrow then pure backwardOnly
+            else pure unmodified
+          else if simpLemma[0][0].getKind == ``Parser.Tactic.simpPost then -- simpPost corresponds to `↑`
+            if hasLeftArrow then pure simpPostAndBackward
+            else pure simpPostOnly
+          else if simpLemma[0][0].getKind == ``Parser.Tactic.simpPre then -- simpPre corresponds to `↓`
+            if hasLeftArrow then pure simpPreAndBackward
+            else pure simpPreOnly
+          else
+            throwError "simpAllRecommendationFromTacticStx :: Unable to parse simpLemma syntax {simpLemma}"
+        let term := simpLemma[2]
+        match ← observing (realizeGlobalConstNoOverloadWithInfo term) with
+        | .ok declName =>
+          if (← Simp.isSimproc declName) then continue -- Ignore `declName` if it is a simproc
+          res := updateHammerRecommendation res declName simpAllHint
+        | _ => -- `term` could be a local fvar, a builtin simproc, or non-identifer expression. In any of these cases, we ignore it
+          continue
+      else if simpLemma.getKind == ``Lean.Parser.Tactic.simpStar then
+        continue
+      else
+        throwUnsupportedSyntax
+    return res
+  | _ => return Std.HashMap.empty
+
+/-- Creates a `TrainingData` object based on the provided tactic invocation. The `declHammerRecommendation` field of the created is provisional
+    because there may be more than one tactic that must be taken into account to populate this field. -/
+def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) (declName : String) : IO TrainingData := do
   let declId := makeElabDeclId elabDeclInfo module hash
   let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (i.info.stx.getPos?.getD 0)
   let declUpToTactic := Substring.mk (← moduleSource module)
     (elabDeclInfo.snd.stx.getPos?.getD 0) (i.info.stx.getPos?.getD 0)
 
   let state := (Format.joinSep (← i.goalState) "\n").pretty
-  let numGoalsBefore : Int := i.info.goalsBefore.length
-  let numGoalsAfter : Int := i.info.goalsAfter.length
 
   let nextTactic ← tacticPP module i
   let decl ← ppDeclWithoutProof module elabDeclInfo.snd
 
-  let nextTacticIsSimpOrRwVariant := nextTacticIsSimpOrRwVariant nextTactic
-  let numNewGoalsOpened : Int := (nextTactic.findAllSubstr " by ").size + (nextTactic.findAllSubstr ":=by ").size + (nextTactic.findAllSubstr "\nby ").size
-
-  let goalDelta := numNewGoalsOpened + numGoalsAfter - numGoalsBefore
-
   let mainGoalBeforeTactic ← i.runMetaM (fun mvarId => pure mvarId)
-  let (lctxBeforeTactic, localInstancesBeforeTactic) ← do
-    match i.info.mctxBefore.findDecl? mainGoalBeforeTactic with
-    | none => throw $ IO.userError s!"trainingDataGivenTactic :: Unable to find tactic's main goal"
-    | some mvarDecl => pure (mvarDecl.lctx, mvarDecl.localInstances)
 
-  let (termLemmas, explicitUsedLctxHypotheses, explicitUsedConstants, explicitUsedLemmas, allLemmas) ← i.runMetaMGoalsAfter
+  let hammerRecommendation ← i.runMetaMGoalsAfter
     (fun _ => do
       -- Gather all constants that appear in the proof term generated by the current tactic
       let constantsMap := (← getEnv).constants.map₁
       let termConstantNamesNoUnfolding := (← instantiateMVars (mkMVar mainGoalBeforeTactic)).headBeta.getUsedConstantsAsSet
-      -- Replace all auxiliary lemmas in `termConstantNamesNoUnfolding` with the constants that appear in their unfolded definitions
+      -- Unfold all auxiliary lemmas in `termConstantNamesNoUnfolding`
       let mut termConstantsNameSet : NameSet := ∅
       for constName in termConstantNamesNoUnfolding do
-        termConstantsNameSet := termConstantsNameSet.append $ unfoldConstantName constName constantsMap isAuxLemma
+        termConstantsNameSet := termConstantsNameSet.append $ unfoldConstantName constName constantsMap Name.isAuxLemma
       let termConstants := termConstantsNameSet.toArray
-      -- Filter ``usedConstants` to only included constants that are lemmas (i.e. Prop-typed)
-      let termConstantsWithTypes ← termConstants.mapM (fun n => return (n, (← Lean.getConstInfo n).type))
-      let termLemmas ← termConstantsWithTypes.filterMapM (fun (n, t) => return if (← inferType t).isProp then some n else none)
-      -- Gather all names that appear explicitly in the source code of the current tactic
-      let (explicitUsedLctxNames, explicitUsedConstants) ← syntaxPremises lctxBeforeTactic i.info.stx
-      let explicitUsedLctxNames := explicitUsedLctxNames.toArray
-      let explicitUsedConstants := explicitUsedConstants.toArray
-      -- Filter `explicitUsedLctxNames` to only include names that correspond to hypotheses in the local context (i.e. filter out non-Props)
-      let explicitUsedLctxHypotheses ← explicitUsedLctxNames.filterM
-        (fun n =>
-          match lctxBeforeTactic.findFromUserName? n with
-          | some decl =>
-            withLCtx lctxBeforeTactic localInstancesBeforeTactic do
-              return (← inferType decl.type).isProp
-          | none => return false -- This should never happen since `syntaxPremises` found that `lctx.usesUserName n` returns true
-        )
-      -- Filter `explicitUsedConstants` to only include names that correspond to constants that are lemmas
-      let explicitUsedLemmas ← explicitUsedConstants.filterM (fun n => return (← inferType (← Lean.getConstInfo n).type).isProp)
-      /- It is possible for `simp only` calls to require certain lemmas in order to succeed but not use those lemmas in the final proof
-         term. To reflect the fact that these lemmas are still important, we include them along all term lemmas in in `allLemmas` -/
-      let allLemmas := explicitUsedLemmas.foldl (fun acc l => if !acc.contains l then acc.push l else acc) termLemmas
-      return (termLemmas, explicitUsedLctxHypotheses, explicitUsedConstants, explicitUsedLemmas, allLemmas))
-
-  let nextTacticHammerRecommendation :=
-    if nextTacticIsSimpOrRwVariant then
-      (explicitUsedConstants.foldl (fun acc c => if acc.contains c then acc else acc.push c) allLemmas).filter (fun n => !isBlackListed s!"{n}")
-    else
-      allLemmas.filter (fun n => !isBlackListed s!"{n}")
+      -- Filter `termConstants` to only included constants that are lemmas (i.e. Prop-typed)
+      let termPremises ← termConstants.filterM (fun n => Name.isTheoremOrAxiom n)
+      -- Build `hammerRecommendation` starting with any `simp` lemmas that appear in the tactic stx
+      let mut hammerRecommendation ← simpLemmasFromTacticStx i.info.stx
+      -- Add all of the theorems in `nextTacticAllPremises` that don't appear in `simpLemmasFromTacticStx i.info.stx`
+      for thm in termPremises do
+        hammerRecommendation := updateHammerRecommendation hammerRecommendation thm notInSimpAll
+      pure hammerRecommendation
+    )
 
   let data := {
       declId := declId,
@@ -309,15 +389,8 @@ def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) 
       declUpToTactic := declUpToTactic.toString,
       state := state,
       nextTactic := nextTactic,
-      nextTacticTermPremises := termLemmas,
-      nextTacticExplicitConstants := explicitUsedConstants,
-      nextTacticExplicitPremises := explicitUsedLemmas,
-      nextTacticExplicitLocalHypotheses := explicitUsedLctxHypotheses,
-      nextTacticAllPremises := allLemmas,
-      goalDelta := goalDelta
-      nextTacticIsSimpOrRwVariant := nextTacticIsSimpOrRwVariant,
-      numNewGoalsOpened := numNewGoalsOpened,
-      nextTacticHammerRecommendation := nextTacticHammerRecommendation
+      nextTacticHammerRecommendation := hammerRecommendation
+      declHammerRecommendation := hammerRecommendation -- This field will be updated in `trainingDataGivenModule`
     }
   return data
 
@@ -325,42 +398,20 @@ end Lean.Elab.TacticInvocation
 
 open TacticInvocation
 
-def secondPassTrainingDataToJson (d : SecondPassTrainingData) : Json :=
+def trainingDataToJson (d : TrainingData) : Json :=
   Json.mkObj [
-    -- ("declId", Json.str d.declId), -- Used internally
-    ("decl", Json.str d.decl),
-    -- ("goalDelta", Json.num d.goalDelta), -- Used internally but not output to JSON
     ("declName", Json.str d.declName),
-    ("srcUpToTactic", Json.str d.srcUpToTactic),
-    ("declUpToTactic", Json.str d.declUpToTactic),
-    ("state", Json.str d.state),
-    ("nextTactic", Json.str d.nextTactic),
-    ("nextTacticIsSimpOrRwVariant", Json.bool d.nextTacticIsSimpOrRwVariant),
-    -- ("numNewGoalsOpened", Json.num d.numNewGoalsOpened), -- Only for testing and to compute goalDelta
-    ("nextTacticTermPremises", Json.arr (d.nextTacticTermPremises.map (fun n => s!"{n}"))),
-    ("nextTacticExplicitConstants", Json.arr (d.nextTacticExplicitConstants.map (fun n => s!"{n}"))),
-    ("nextTacticExplicitPremises", Json.arr (d.nextTacticExplicitPremises.map (fun n => s!"{n}"))),
-    ("nextTacticExplicitLocalHypotheses", Json.arr (d.nextTacticExplicitLocalHypotheses.map (fun n => s!"{n}"))),
-    ("nextTacticAllPremises", Json.arr (d.nextTacticAllPremises.map (fun n => s!"{n}"))),
-    ("nextTacticHammerRecommendation", Json.arr (d.nextTacticHammerRecommendation.map (fun n => s!"{n}"))),
-    ("declTermPremises", Json.arr (d.declTermPremises.map (fun n => s!"{n}"))),
-    ("declExplicitConstants", Json.arr (d.declExplicitConstants.map (fun n => s!"{n}"))),
-    ("declExplicitPremises", Json.arr (d.declExplicitPremises.map (fun n => s!"{n}"))),
-    ("declAllPremises", Json.arr (d.declAllPremises.map (fun n => s!"{n}"))),
-    ("declHammerRecommendation", Json.arr (d.declHammerRecommendation.map (fun n => s!"{n}"))),
-    ("termPremisesToEndOfGoal", Json.arr (d.termPremisesToEndOfGoal.map (fun n => s!"{n}"))),
-    ("explicitConstantsToEndOfGoal", Json.arr (d.explicitConstantsToEndOfGoal.map (fun n => s!"{n}"))),
-    ("explicitPremisesToEndOfGoal", Json.arr (d.explicitPremisesToEndOfGoal.map (fun n => s!"{n}"))),
-    ("allPremisesToEndOfGoal", Json.arr (d.allPremisesToEndOfGoal.map (fun n => s!"{n}"))),
-    ("hammerRecommendationToEndOfGoal", Json.arr (d.hammerRecommendationToEndOfGoal.map (fun n => s!"{n}")))
-    -- ("curGoalCount", Json.num d.curGoalCount) -- Only for testing
+    ("nextTactic", match d.nextTactic with | some nextTactic => Json.str nextTactic | none => Json.null),
+    ("nextTacticHammerRecommendation", Json.arr (d.nextTacticHammerRecommendation.toArray.map (fun x => s!"{x}"))),
+    ("declHammerRecommendation", Json.arr (d.declHammerRecommendation.toArray.map (fun x => s!"{x}"))),
   ]
 
-/-- Given a theorem `v`, prints Json information relating to `v` directly to stdout. `printTrainingDataGivenTheoremVal` directly
-    prints to stdout rather than return a `SecondPassTrainingData` object because unlike training data obtained from tactic invocations,
-    training data obtained directly from term proofs can be built all in one pass. -/
+/-- Given a theorem `v`, creates a `TrainingData` object related to `v`, prints it in JSON format to stdout, and returns the final
+    `declHammerRecommendation` fiedl which may be needed to update other `TrainingData` objects in `trainingDataGivenModule`. If
+    other `TrainingData` objects related to this theorem have previous been produced, then `declHammerRecommendation` is passed
+    in as well so that the information from there can be included. -/
 def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (cmd : CompilationStep) (v : TheoremVal)
-  : MetaM Unit := do
+  (declHammerRecommendation : Option (Std.HashMap Name SimpAllHint)) : MetaM (Std.HashMap Name SimpAllHint) := do
   let thmInfo ← Info.ofConstantVal' v.toConstantVal
   let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (cmd.stx.getTailPos?.getD 0)
   let declUpToTactic := Substring.mk (← moduleSource module) (cmd.stx.getPos?.getD 0) (cmd.stx.getTailPos?.getD 0)
@@ -379,86 +430,36 @@ def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : Mod
   let (fvars, m) ← m.introNP thmInfo.args.size
   let state := (← Meta.ppGoal m).pretty
 
-  let (vProof, nextTactic) ← m.withContext do
-    try
-      let lctx ← getLCtx
-      let instantiatedVal ← m.withContext $ whnf $ ← mkAppOptM' v.value (fvars.map (fun fVarId => some (Expr.fvar fVarId)))
-      let mut nextTactic ← m.withContext $ pure ("exact " ++ (← prettyPrintTerm instantiatedVal).stripTags)
-      for fvar in fvars do
-        match lctx.find? fvar with
-        | some fvarDecl =>
-          let fvarAsPrettyPrintTerm := (← prettyPrintTerm (Expr.fvar fvar)).stripTags -- Has the form "@_fvar.X" or "_fvar.X"
-          nextTactic := nextTactic.replace fvarAsPrettyPrintTerm fvarDecl.userName.toString
-        | none => continue
-      pure (instantiatedVal, nextTactic)
-    catch e =>
-      let msg := m!"Failed to apply {fvars.map Expr.fvar} to {v.value} (error: {e.toMessageData})"
-      let msg := m!"v.name: {v.name}\nv.type: {v.type}\nv.value: {v.value}\nstate:{state}\n" ++ msg
-      throwError msg
-
-  let (termLemmas, explicitUsedLctxHypotheses, explicitUsedConstants, explicitUsedLemmas, allLemmas) ← m.withContext do
-    let lctx ← getLCtx
+  let hammerRecommendation ← m.withContext do
     -- Gather all constants that appear in the proof term generated by the current tactic
     let constantsMap := (← getEnv).constants.map₁
-    let termConstantNamesNoUnfolding := vProof.getUsedConstantsAsSet
-    -- Replace all auxiliary lemmas in `termConstantNamesNoUnfolding` with the constants that appear in their unfolded definitions
+    let termConstantNamesNoUnfolding := v.value.getUsedConstantsAsSet
+    -- Unfold all auxiliary lemmas in `termConstantNamesNoUnfolding`
     let mut termConstantsNameSet : NameSet := ∅
     for constName in termConstantNamesNoUnfolding do
-      termConstantsNameSet := termConstantsNameSet.append $ unfoldConstantName constName constantsMap isAuxLemma
+      termConstantsNameSet := termConstantsNameSet.append $ unfoldConstantName constName constantsMap Name.isAuxLemma
     let termConstants := termConstantsNameSet.toArray
-    -- Filter ``usedConstants` to only included constants that are lemmas (i.e. Prop-typed)
-    let termConstantsWithTypes ← termConstants.mapM (fun n => do pure (n, (← Lean.getConstInfo n).type))
-    let termLemmas ← termConstantsWithTypes.filterMapM (fun (n, t) => do pure (if (← inferType t).isProp then some n else none))
-    -- Gather all names that appear explicitly in the source code of the current tactic
-    let (explicitUsedLctxNames, explicitUsedConstants) ← syntaxPremises lctx cmd.stx
-    let explicitUsedLctxNames := explicitUsedLctxNames.toArray
-    let explicitUsedConstants := explicitUsedConstants.toArray
-    -- Filter `explicitUsedLctxNames` to only include names that correspond to hypotheses in the local context (i.e. filter out non-Props)
-    let explicitUsedLctxHypotheses ← explicitUsedLctxNames.filterM
-      (fun n =>
-        match lctx.findFromUserName? n with
-        | some decl => do pure (← inferType decl.type).isProp
-        | none => return false -- This should never happen since `syntaxPremises` found that `lctx.usesUserName n` returns true
-      )
-    -- Filter `explicitUsedConstants` to only include names that correspond to constants that are lemmas
-    let explicitUsedLemmas ← explicitUsedConstants.filterM (fun n => do pure (← inferType (← Lean.getConstInfo n).type).isProp)
-    /- It is possible for `simp only` calls to require certain lemmas in order to succeed but not use those lemmas in the final proof
-        term. To reflect the fact that these lemmas are still important, we include them along all term lemmas in in `allLemmas` -/
-    let allLemmas := explicitUsedLemmas.foldl (fun acc l => if !acc.contains l then acc.push l else acc) termLemmas
-    pure (termLemmas, explicitUsedLctxHypotheses, explicitUsedConstants, explicitUsedLemmas, allLemmas)
+    -- Filter `termConstants` to only included constants that are lemmas (i.e. Prop-typed)
+    let termPremises ← termConstants.filterM (fun n => Name.isTheoremOrAxiom n)
+    -- Every `SimpAllHint` should be `notInSimpAll` for term proofs
+    let hammerRecommendation := Std.HashMap.ofList $ termPremises.toList.map (fun thm => (thm, SimpAllHint.notInSimpAll))
+    match declHammerRecommendation with
+    | none => pure hammerRecommendation
+    | some declHammerRecommendation => pure $ mergeHammerRecommendations hammerRecommendation declHammerRecommendation
 
-  let hammerRecommendation := allLemmas.filter (fun n => !isBlackListed s!"{n}")
-
-  let data : SecondPassTrainingData := {
+  let data : TrainingData := {
       declId := makeElabDeclId elabDeclInfo module hash,
       declName := v.name.toString,
       decl := decl,
       srcUpToTactic := sourceUpToTactic.toString,
       declUpToTactic := declUpToTactic.toString,
       state := state,
-      nextTactic := nextTactic,
-      nextTacticTermPremises := termLemmas,
-      nextTacticExplicitConstants := explicitUsedConstants,
-      nextTacticExplicitPremises := explicitUsedLemmas,
-      nextTacticExplicitLocalHypotheses := explicitUsedLctxHypotheses,
-      nextTacticAllPremises := allLemmas,
-      goalDelta := 0, -- This field doesn't matter since the output of `trainingDataGivenTheoremVal` is sent straight to JSON ignores this field
-      nextTacticIsSimpOrRwVariant := false,
-      numNewGoalsOpened := 0,
+      nextTactic := none,
       nextTacticHammerRecommendation := hammerRecommendation,
-      declTermPremises := termLemmas,
-      declExplicitConstants := explicitUsedConstants,
-      declExplicitPremises := explicitUsedLemmas,
-      declAllPremises := allLemmas,
       declHammerRecommendation := hammerRecommendation,
-      termPremisesToEndOfGoal := termLemmas,
-      explicitConstantsToEndOfGoal := explicitUsedConstants,
-      explicitPremisesToEndOfGoal := explicitUsedLemmas,
-      allPremisesToEndOfGoal := allLemmas,
-      hammerRecommendationToEndOfGoal := hammerRecommendation,
     }
-  IO.println s!"{(secondPassTrainingDataToJson data).compress}"
-  return
+  IO.println s!"{(trainingDataToJson data).compress}"
+  return data.declHammerRecommendation
 
 def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
@@ -466,7 +467,7 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
   let compilationSteps ← compileModule module
   let trees ← getInvocationTrees $ compilationSteps.bind (fun c => c.trees)
   let hash ← generateRandomHash
-  let mut firstPassData : Array FirstPassTrainingData := #[]
+  let mut dataArr : Array TrainingData := #[]
   -- Extract data from tactics
   for t in trees do
     for t in t.tactics do
@@ -479,163 +480,73 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
         let data ←
           try t.trainingDataGivenTactic elabDeclInfo module hash tDeclName
           catch _ => continue
-        firstPassData := firstPassData.push data
+        dataArr := dataArr.push data
       | none => pure ()
   -- Perform a second pass to gather data that potentially spans multiple tactics
-  let mut activeDeclId : String := (firstPassData.getD 0 default).declId
-  let mut activeDeclTermPremises : Array Name := #[]
-  let mut activeDeclExplicitConstants : Array Name := #[]
-  let mut activeDeclExplicitPremises : Array Name := #[]
-  let mut activeDeclAllPremises : Array Name := #[]
-  let mut activeDeclHammerRecommendation : Array Name := #[]
-  let mut activeGoalTermPremises : Array Name := #[]
-  let mut activeGoalExplicitConstants : Array Name := #[]
-  let mut activeGoalExplicitPremises : Array Name := #[]
-  let mut activeGoalAllPremises : Array Name := #[]
-  let mut activeGoalHammerRecommendation : Array Name := #[]
-  let mut secondPassData : Array SecondPassTrainingData :=
-    firstPassData.map
-      (fun data =>
-        {data with
-          declTermPremises := #[]
-          declExplicitConstants := #[]
-          declExplicitPremises := #[]
-          declAllPremises := #[]
-          declHammerRecommendation := #[]
-          termPremisesToEndOfGoal := #[]
-          explicitConstantsToEndOfGoal := #[]
-          explicitPremisesToEndOfGoal := #[]
-          allPremisesToEndOfGoal := #[]
-          hammerRecommendationToEndOfGoal := #[]
-        }
-      )
-  for i in [:firstPassData.size] do
-    let curTacticData := firstPassData[i]!
+  let mut activeDeclId : String := (dataArr.getD 0 default).declId
+  let mut declHammerRecommendations : Std.HashMap String (Std.HashMap Name SimpAllHint) := Std.HashMap.empty
+  let mut activeDeclName : String := (dataArr.getD 0 default).declName
+  let mut activeDeclHammerRecommendation : Std.HashMap Name SimpAllHint := (dataArr.getD 0 default).nextTacticHammerRecommendation
+  for i in [:dataArr.size] do
+    let curTacticData := dataArr[i]!
     if curTacticData.declId != activeDeclId then -- We've changed declarations
-      -- Update all `activeDecl` information to remove duplicates
-      activeDeclTermPremises := (RBTree.fromArray activeDeclTermPremises Name.quickCmp : NameSet).toArray
-      activeDeclExplicitConstants := (RBTree.fromArray activeDeclExplicitConstants Name.quickCmp : NameSet).toArray
-      activeDeclExplicitPremises := (RBTree.fromArray activeDeclExplicitPremises Name.quickCmp : NameSet).toArray
-      activeDeclAllPremises := (RBTree.fromArray activeDeclAllPremises Name.quickCmp : NameSet).toArray
-      activeDeclHammerRecommendation := (RBTree.fromArray activeDeclHammerRecommendation Name.quickCmp : NameSet).toArray
-      -- Update each `secondPassData` entry with `activeDeclId` with all `activeDecl` information
-      for j in [:i] do
-        -- `idx` starts at the tactic just before `curTacticData` and decrements we find a declId that doesn't match the activeDeclId
+      -- For each `data` in `dataArr` such that `data.declId == activeDeclId`, update the `declHammerRecommendation` field
+      for j in [:i] do -- Decrement `idx = i - j - 1` until we find a `declId` that doesn't match `activeDeclId`
         let idx := i - j - 1
-        let idxTacticData := secondPassData[idx]!
-        if idxTacticData.declId != activeDeclId then
+        let data := dataArr[idx]!
+        if data.declId != activeDeclId then
           break -- Once we find one tactic that doesn't match the activeDeclId, no previous tactic will match the activeDeclId
-        secondPassData := secondPassData.set! idx
-          {idxTacticData with
-            declTermPremises := activeDeclTermPremises
-            declExplicitConstants := activeDeclExplicitConstants
-            declExplicitPremises := activeDeclExplicitPremises
-            declAllPremises := activeDeclAllPremises
-            declHammerRecommendation := activeDeclHammerRecommendation
-          }
-      -- Update `activeDeclId` to `curTacticData.declId` and reset all `activeDecl` information
+        dataArr := dataArr.set! idx { data with declHammerRecommendation := activeDeclHammerRecommendation }
+      -- Since we've started a new `declId`, add `activeDeclHammerRecommendation` to `declHammerRecommendations`
+      declHammerRecommendations := declHammerRecommendations.insert activeDeclName activeDeclHammerRecommendation
+      -- Reset `activeDeclName` and `activeDeclHammerRecommendation`
       activeDeclId := curTacticData.declId
-      activeDeclTermPremises := #[]
-      activeDeclExplicitConstants := #[]
-      activeDeclExplicitPremises := #[]
-      activeDeclAllPremises := #[]
-      activeDeclHammerRecommendation := #[]
-    -- Regardless of whether `activeDeclId` changed, update all `activeDecl` information to add information from `curTacticData`
-    activeDeclTermPremises := activeDeclTermPremises ++ curTacticData.nextTacticTermPremises
-    activeDeclExplicitConstants := activeDeclExplicitConstants ++ curTacticData.nextTacticExplicitConstants
-    activeDeclExplicitPremises := activeDeclExplicitPremises ++ curTacticData.nextTacticExplicitPremises
-    activeDeclAllPremises := activeDeclAllPremises ++ curTacticData.nextTacticAllPremises
-    activeDeclHammerRecommendation := activeDeclHammerRecommendation ++ curTacticData.nextTacticHammerRecommendation
-    -- Check `curTacticData.goalDelta` to determine whether any `ToEndOfGoal` or `curGoalCount` fields need to be updated
-    if curTacticData.goalDelta != 0 then -- This tactic either created or closed goals, so `curGoalCounts` will need to be updated
-      /- Iterate backwards from current tactic through all tactics in the active decl. For each state with a `curGoalCount` > 0, update
-         `curGoalCount` by `curTacticData.goalDelta.natAbs`, and if the result is zero, then populate `ToEndOfGoal` fields. -/
-      activeGoalTermPremises := #[]
-      activeGoalExplicitConstants := #[]
-      activeGoalExplicitPremises := #[]
-      activeGoalAllPremises := #[]
-      activeGoalHammerRecommendation := #[]
-      for j in [:i+1] do
-        -- `idx` starts at `curTacticData` and decrements we find a declId that doesn't match the activeDeclId
-        let idx := i - j
-        let idxTacticData := secondPassData[idx]!
-        -- Update `activeGoal` fields
-        activeGoalTermPremises := activeGoalTermPremises ++ idxTacticData.nextTacticTermPremises
-        activeGoalExplicitConstants := activeGoalExplicitConstants ++ idxTacticData.nextTacticExplicitConstants
-        activeGoalExplicitPremises := activeGoalExplicitPremises ++ idxTacticData.nextTacticExplicitPremises
-        activeGoalAllPremises := activeGoalAllPremises ++ idxTacticData.nextTacticAllPremises
-        activeGoalHammerRecommendation := activeGoalHammerRecommendation ++ idxTacticData.nextTacticHammerRecommendation
-        if idxTacticData.declId != activeDeclId then
-          break -- Once we find one tactic that doesn't match the activeDeclId, no previous tactic will match the activeDeclIds
-        else if idxTacticData.curGoalCount == 0 then
-          continue -- The goal that `idxTacticData` operates on has already been closed
-        else
-          let newIdxTacticDataCurGoalCount :=
-            if curTacticData.goalDelta < 0 then idxTacticData.curGoalCount - curTacticData.goalDelta.natAbs
-            else idxTacticData.curGoalCount + curTacticData.goalDelta.natAbs
-          if newIdxTacticDataCurGoalCount == 0 then
-            -- Update all `activeGoal` information to remove duplicates
-            activeGoalTermPremises := (RBTree.fromArray activeGoalTermPremises Name.quickCmp : NameSet).toArray
-            activeGoalExplicitConstants := (RBTree.fromArray activeGoalExplicitConstants Name.quickCmp : NameSet).toArray
-            activeGoalExplicitPremises := (RBTree.fromArray activeGoalExplicitPremises Name.quickCmp : NameSet).toArray
-            activeGoalAllPremises := (RBTree.fromArray activeGoalAllPremises Name.quickCmp : NameSet).toArray
-            activeGoalHammerRecommendation := (RBTree.fromArray activeGoalHammerRecommendation Name.quickCmp : NameSet).toArray
-            -- Update `secondPassData` with `activeGoal` information
-            secondPassData := secondPassData.set! idx
-              {idxTacticData with
-                curGoalCount := 0
-                termPremisesToEndOfGoal := activeGoalTermPremises
-                explicitConstantsToEndOfGoal := activeGoalExplicitConstants
-                explicitPremisesToEndOfGoal := activeGoalExplicitPremises
-                allPremisesToEndOfGoal := activeGoalAllPremises
-                hammerRecommendationToEndOfGoal := activeGoalHammerRecommendation
-              }
-          else
-            secondPassData := secondPassData.set! idx {idxTacticData with curGoalCount := newIdxTacticDataCurGoalCount}
-  -- Update decl information for final declaration
-  -- Update all `activeDecl` information to remove duplicates
-  activeDeclTermPremises := (RBTree.fromArray activeDeclTermPremises Name.quickCmp : NameSet).toArray
-  activeDeclExplicitConstants := (RBTree.fromArray activeDeclExplicitConstants Name.quickCmp : NameSet).toArray
-  activeDeclExplicitPremises := (RBTree.fromArray activeDeclExplicitPremises Name.quickCmp : NameSet).toArray
-  activeDeclAllPremises := (RBTree.fromArray activeDeclAllPremises Name.quickCmp : NameSet).toArray
-  activeDeclHammerRecommendation := (RBTree.fromArray activeDeclHammerRecommendation Name.quickCmp : NameSet).toArray
-  -- Update each `secondPassData` entry with `activeDeclId` with all `activeDecl` information
-  for j in [:firstPassData.size] do
-    -- `idx` starts at the last tactic and decrements we find a declId that doesn't match the activeDeclId
-    let idx := firstPassData.size - j - 1
-    let idxTacticData := secondPassData[idx]!
-    if idxTacticData.declId != activeDeclId then
+      activeDeclName := curTacticData.declName
+      activeDeclHammerRecommendation := curTacticData.nextTacticHammerRecommendation
+    else -- `curTacticData.declId == activeDeclId`
+      activeDeclHammerRecommendation := mergeHammerRecommendations activeDeclHammerRecommendation curTacticData.nextTacticHammerRecommendation
+  -- Update `declHammerRecommendation` field for the final declaration
+  for j in [:dataArr.size] do -- Decrement `idx = firstPassData.size - j - 1` until we find a `declId` that doesn't match `activeDeclId`
+    let idx := dataArr.size - j - 1
+    let data := dataArr[idx]!
+    if data.declId != activeDeclId then
       break -- Once we find one tactic that doesn't match the activeDeclId, no previous tactic will match the activeDeclId
-    secondPassData := secondPassData.set! idx
-      {idxTacticData with
-        declTermPremises := activeDeclTermPremises
-        declExplicitConstants := activeDeclExplicitConstants
-        declExplicitPremises := activeDeclExplicitPremises
-        declAllPremises := activeDeclAllPremises
-        declHammerRecommendation := activeDeclHammerRecommendation
-      }
-  -- Convert `secondPassData` to Json
-  let jsonRes : Array Json := secondPassData.map secondPassTrainingDataToJson
-  for jsonObj in jsonRes do
-    IO.println jsonObj.compress
-  -- Extract and print data from declarations that are proven without entering tactic mode (`theorem foo := t` is treated as `theorem foo := by exact t`)
-  let mut targets : Array (CompilationStep × ConstantInfo) := #[]
+    dataArr := dataArr.set! idx { data with declHammerRecommendation := activeDeclHammerRecommendation }
+    declHammerRecommendations := declHammerRecommendations.insert activeDeclName activeDeclHammerRecommendation
+  /- **TODO** Uncommenting the below block of code appears to sometimes result in the program ending prematurely. Not sure why
+  -- Extract data from from proof terms that don't appear inside any tactics (`theorem foo := t` is treated as `theorem foo := by exact t`)
   for c in compilationSteps do
-    targets := targets ++ (c.diff.map (fun i => (c, i)))
-  for (cmd, ci) in targets do
-    match ci with
-    | .thmInfo v =>
-      if firstPassData.any (fun x => x.declName == s!"{v.name}") then
-        continue -- This pass is only for collecting data on declarations proven without entering tactic mode
-      else if isAuxLemma v.name then
-        continue
-      else
-        match getElabDeclOfCompilationStep infos cmd with
-        | some elabDeclInfo =>
-          CoreM.withImportModules #[`Mathlib.Lean.PrettyPrinter.Delaborator, `Lean.PrettyPrinter, module]
-            (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v).run'
-        | none => continue
-    | _ => continue
+    for (cmd, ci) in c.diff.map (fun i => (c, i)) do
+      match ci with
+      | .thmInfo v =>
+        if !Name.isAuxLemma v.name then
+          match getElabDeclOfCompilationStep infos cmd with
+          | some elabDeclInfo =>
+            match declHammerRecommendations.get? v.name.toString with
+            | some vDeclHammerRecommendation =>
+              let vDeclHammerRecommendation ← CoreM.withImportModules #[`Mathlib.Lean.PrettyPrinter.Delaborator, `Lean.PrettyPrinter, module]
+                (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v (some vDeclHammerRecommendation)).run'
+              /- In addition to printing `data` (which `printTrainingDataGivenTheoremVal` already does), we need to update fields in `dataArr`
+                to include any theorems that might not have appeared in any tactic (this is necessary to ensure we extract all the relevant
+                data from proofs which are partially completed in term mode before entering tactic mode) -/
+              let mut encounteredDecl := false
+              for i in [:dataArr.size] do
+                let curTacticData := dataArr[i]!
+                if curTacticData.declName == v.name.toString then
+                  let mergedRecommendation := mergeHammerRecommendations curTacticData.declHammerRecommendation vDeclHammerRecommendation
+                  dataArr := dataArr.set! i {curTacticData with declHammerRecommendation := mergedRecommendation}
+                  encounteredDecl := true
+                else if encounteredDecl then -- All entries of the same decl are contiguous in `secondPassData` so if we reach this we've fixed all necessary entries
+                  break
+            | none => -- No need to update `dataArr` since the current theorem does not appear in `dataArr`
+              let _ ← CoreM.withImportModules #[`Mathlib.Lean.PrettyPrinter.Delaborator, `Lean.PrettyPrinter, module]
+                (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v none).run'
+          | none => continue
+      | _ => continue
+  -/
+   -- Convert `dataArr` to Json
+  for data in dataArr do
+    IO.println (trainingDataToJson data).compress
   return 0
 
 def trainingData (args : Cli.Parsed) : IO UInt32 :=
