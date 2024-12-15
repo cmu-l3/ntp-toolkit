@@ -513,8 +513,7 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
       break -- Once we find one tactic that doesn't match the activeDeclId, no previous tactic will match the activeDeclId
     dataArr := dataArr.set! idx { data with declHammerRecommendation := activeDeclHammerRecommendation }
     declHammerRecommendations := declHammerRecommendations.insert activeDeclName activeDeclHammerRecommendation
-  /- **TODO** Uncommenting the below block of code appears to sometimes result in the program ending prematurely. Not sure why
-  -- Extract data from from proof terms that don't appear inside any tactics (`theorem foo := t` is treated as `theorem foo := by exact t`)
+  -- Extract and print data from from overall declarations (including information in proof terms that do not appear in any tactic)
   for c in compilationSteps do
     for (cmd, ci) in c.diff.map (fun i => (c, i)) do
       match ci with
@@ -526,27 +525,21 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
             | some vDeclHammerRecommendation =>
               let vDeclHammerRecommendation ← CoreM.withImportModules #[`Mathlib.Lean.PrettyPrinter.Delaborator, `Lean.PrettyPrinter, module]
                 (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v (some vDeclHammerRecommendation)).run'
-              /- In addition to printing `data` (which `printTrainingDataGivenTheoremVal` already does), we need to update fields in `dataArr`
-                to include any theorems that might not have appeared in any tactic (this is necessary to ensure we extract all the relevant
-                data from proofs which are partially completed in term mode before entering tactic mode) -/
+              /- In addition to printing the JSON entry corresponding to `v` as a whole (which `printTrainingDataGivenTheoremVal` already does),
+                 we can now print the JSON entry for each of `v`'s tactic states with a fully updated decl hammer recommendation -/
               let mut encounteredDecl := false
-              for i in [:dataArr.size] do
-                let curTacticData := dataArr[i]!
-                if curTacticData.declName == v.name.toString then
-                  let mergedRecommendation := mergeHammerRecommendations curTacticData.declHammerRecommendation vDeclHammerRecommendation
-                  dataArr := dataArr.set! i {curTacticData with declHammerRecommendation := mergedRecommendation}
+              for data in dataArr do
+                if data.declName == v.name.toString then
+                  let mergedRecommendation := mergeHammerRecommendations data.declHammerRecommendation vDeclHammerRecommendation
+                  IO.println (trainingDataToJson {data with declHammerRecommendation := mergedRecommendation}).compress
                   encounteredDecl := true
-                else if encounteredDecl then -- All entries of the same decl are contiguous in `secondPassData` so if we reach this we've fixed all necessary entries
+                else if encounteredDecl then -- All entries of the same decl are contiguous in `dataArr` so if we reach this we've fixed all necessary entries
                   break
             | none => -- No need to update `dataArr` since the current theorem does not appear in `dataArr`
               let _ ← CoreM.withImportModules #[`Mathlib.Lean.PrettyPrinter.Delaborator, `Lean.PrettyPrinter, module]
                 (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v none).run'
           | none => continue
       | _ => continue
-  -/
-   -- Convert `dataArr` to Json
-  for data in dataArr do
-    IO.println (trainingDataToJson data).compress
   return 0
 
 def trainingData (args : Cli.Parsed) : IO UInt32 :=

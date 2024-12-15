@@ -60,7 +60,7 @@ namespace TermProofs
 
 theorem termProof1 : 0 = 0 := rfl
 
-theorem termProof2 (x : α) : x = x := rfl
+theorem termProof2 (x : Nat) : x + 0 = x := Nat.add_zero x
 
 theorem termProof3 (p q : Prop) (h : p → q) (hp : p) : q := h hp
 
