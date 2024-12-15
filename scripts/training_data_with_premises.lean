@@ -401,6 +401,10 @@ open TacticInvocation
 def trainingDataToJson (d : TrainingData) : Json :=
   Json.mkObj [
     ("declName", Json.str d.declName),
+    ("decl", Json.str d.decl),
+    ("srcUpToTactic", Json.str d.srcUpToTactic),
+    ("declUpToTactic", Json.str d.declUpToTactic),
+    ("state", Json.str d.state),
     ("nextTactic", match d.nextTactic with | some nextTactic => Json.str nextTactic | none => Json.null),
     ("nextTacticHammerRecommendation", Json.arr (d.nextTacticHammerRecommendation.toArray.map (fun x => s!"{x}"))),
     ("declHammerRecommendation", Json.arr (d.declHammerRecommendation.toArray.map (fun x => s!"{x}"))),
