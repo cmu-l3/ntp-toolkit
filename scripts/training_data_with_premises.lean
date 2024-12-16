@@ -244,7 +244,8 @@ def mergeHammerRecommendations (hammerRecommendation1 hammerRecommendation2 : St
     hammerRecommendation1.toArray.foldl (fun acc (n, h) => updateHammerRecommendation acc n h) hammerRecommendation2
 
 /-- This function uses `Lean.Elab.Tactic.elabSimpArgs` and `Lean.Elab.Tactic.mkSimpOnly` as references. Currently, the nature of the output ignores
-    simprocs, though it may make sense to update this to include output pertaining to simprocs in the future. -/
+    simprocs, though it may make sense to update this to include output pertaining to simprocs in the future. `simpLemmasFromTacticStx` ignores all
+    lemmas that appear in the hammer blacklist. -/
 def simpLemmasFromTacticStx (s : Syntax) : MetaM (Std.HashMap Name SimpAllHint) := do
   match s with
   | `(tactic| simp [$simpLemmas,*])
@@ -288,6 +289,7 @@ def simpLemmasFromTacticStx (s : Syntax) : MetaM (Std.HashMap Name SimpAllHint) 
         match ← observing (realizeGlobalConstNoOverloadWithInfo id) with
         | .ok declName =>
           if (← Simp.isSimproc declName) then continue -- Ignore `declName` if it is a simproc
+          else if isBlackListed s!"{declName}" then continue -- Ignore `declName` if it appears in `hammerRecommendationBlackList`
           res := updateHammerRecommendation res declName simpErase
         | _ => -- If `realizeGlobalConstNoOverloadWithInfo id` failed, `id` is a local fvar or builtin simproc. We ignore it in either case.
           continue
@@ -309,6 +311,7 @@ def simpLemmasFromTacticStx (s : Syntax) : MetaM (Std.HashMap Name SimpAllHint) 
         match ← observing (realizeGlobalConstNoOverloadWithInfo term) with
         | .ok declName =>
           if (← Simp.isSimproc declName) then continue -- Ignore `declName` if it is a simproc
+          else if isBlackListed s!"{declName}" then continue -- Ignore `declName` if it appears in `hammerRecommendationBlackList`
           res := updateHammerRecommendation res declName simpAllHint
         | _ => -- `term` could be a local fvar, a builtin simproc, or non-identifer expression. In any of these cases, we ignore it
           continue
@@ -344,9 +347,9 @@ def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) 
       for constName in termConstantNamesNoUnfolding do
         termConstantsNameSet := termConstantsNameSet.append $ unfoldConstantName constName constantsMap Name.isAuxLemma
       let termConstants := termConstantsNameSet.toArray
-      -- Filter `termConstants` to only included constants that are lemmas (i.e. Prop-typed)
-      let termPremises ← termConstants.filterM (fun n => Name.isTheoremOrAxiom n)
-      -- Build `hammerRecommendation` starting with any `simp` lemmas that appear in the tactic stx
+      -- Filter `termConstants` to only included constants that are lemmas (i.e. Prop-typed) and not blacklisted
+      let termPremises ← termConstants.filterM (fun n => do pure ((← Name.isTheoremOrAxiom n) && !isBlackListed s!"{n}"))
+      -- Build `hammerRecommendation` starting with any `simp` lemmas that appear in the tactic stx (not including blacklisted lemmas)
       let mut hammerRecommendation ← simpLemmasFromTacticStx i.info.stx
       -- Add all of the theorems in `nextTacticAllPremises` that don't appear in `simpLemmasFromTacticStx i.info.stx`
       for thm in termPremises do
@@ -416,8 +419,8 @@ def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : Mod
     for constName in termConstantNamesNoUnfolding do
       termConstantsNameSet := termConstantsNameSet.append $ unfoldConstantName constName constantsMap Name.isAuxLemma
     let termConstants := termConstantsNameSet.toArray
-    -- Filter `termConstants` to only included constants that are lemmas (i.e. Prop-typed)
-    let termPremises ← termConstants.filterM (fun n => Name.isTheoremOrAxiom n)
+    -- Filter `termConstants` to only included constants that are lemmas (i.e. Prop-typed) and not blacklisted
+    let termPremises ← termConstants.filterM (fun n => do pure ((← Name.isTheoremOrAxiom n) && !isBlackListed s!"{n}"))
     -- Every `SimpAllHint` should be `notInSimpAll` for term proofs
     let hammerRecommendation := Std.HashMap.ofList $ termPremises.toList.map (fun thm => (thm, SimpAllHint.notInSimpAll))
     match declHammerRecommendation with
