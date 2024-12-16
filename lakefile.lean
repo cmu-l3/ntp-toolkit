@@ -9,7 +9,7 @@ require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git" @ "d7317655e2826dc1f1de9a0c138db2775c4bb841"
 
 require QuerySMT from git
-  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "2ddce76272df57b64b0e15b22bd38d63f352d324"
+  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "f128e9b4871f5d8da60145fee320f8a7f4abaf73"
 
 require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.13.0"
 

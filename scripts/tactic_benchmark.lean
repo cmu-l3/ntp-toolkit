@@ -1,4 +1,5 @@
 import TrainingData.Frontend
+import TrainingData.Utils.SimpAllHint
 import Mathlib.Control.Basic
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Common
@@ -10,7 +11,7 @@ import QuerySMT
 import Hammer
 import Cli
 
-open Lean Core Elab IO Meta Term Tactic -- All the monads!
+open Lean Core Elab IO Meta Term Tactic SimpAllHint -- All the monads!
 
 set_option autoImplicit true
 
@@ -29,10 +30,31 @@ def useDuper : TacticM Unit := do evalTactic (← `(tactic| duper [*]))
 def useQuerySMT : TacticM Unit := do evalTactic (← `(tactic| querySMT))
 def useHammer (hammerRecommendation : Array String) (externalProverTimeout : Nat) : TacticM Unit := do
   withOptions (fun o => o.set ``auto.tptp.timeout externalProverTimeout) do
-    let hammerRecommendation : Array Name := hammerRecommendation.map String.toName
-    let hammerRecommendation : Array Ident := hammerRecommendation.map mkIdent
-    let hammerRecommendation : Array Term := hammerRecommendation.map (fun i => ⟨i.raw⟩)
-    evalTactic (← `(tactic| hammer [*, $(hammerRecommendation),*]))
+    let hammerRecommendation : Array (Term × SimpAllHint) ←
+      hammerRecommendation.mapM (fun x => do
+        let [name, simpAllHint] := x.splitOn ","
+          | throwError "useHammer :: Unable to parse hammerRecommendation {x}"
+        let name := name.drop 1 -- Remove leading left parenthesis
+        let name := ⟨(mkIdent name.toName).raw⟩
+        let simpAllHint := simpAllHint.removeLeadingSpaces
+        let simpAllHint := simpAllHint.dropRight 1 -- Removing ending right parenthesis
+        let simpAllHint ← parseSimpAllHint simpAllHint
+        pure (name, simpAllHint)
+      )
+    let mut simpLemmas : Array (TSyntax [`Lean.Parser.Tactic.simpErase, `Lean.Parser.Tactic.simpLemma]) := #[]
+    let mut coreRecommendation : Array Term := #[]
+    for (name, hint) in hammerRecommendation do
+      coreRecommendation := coreRecommendation.push name
+      match hint with
+      | notInSimpAll => pure ()
+      | unmodified => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpLemma| $name:term)
+      | simpErase => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpErase| -$name:term)
+      | simpPreOnly => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpLemma| ↓$name:term)
+      | simpPostOnly => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpLemma| ↑$name:term)
+      | backwardOnly => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpLemma| ←$name:term)
+      | simpPreAndBackward => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpLemma| ↓←$name:term)
+      | simpPostAndBackward => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpLemma| ↑←$name:term)
+    evalTactic (← `(tactic| hammer [$simpLemmas,*] [*, $(coreRecommendation),*]))
 
 /--
 Compile the designated module, and run a monadic function with each new `ConstantInfo`,
