@@ -3,6 +3,7 @@ import TrainingData.InfoTree.ToJson
 import TrainingData.InfoTree.TacticInvocation.Basic
 import TrainingData.Utils.Range
 import TrainingData.Utils.HammerBlacklist
+import TrainingData.Utils.SimpAllHint
 import TrainingData.Utils.TheoremPrettyPrinting
 import Mathlib.Data.String.Defs
 import Mathlib.Lean.CoreM
@@ -13,7 +14,7 @@ import Mathlib.Tactic.Change
 import Mathlib.Tactic.Simps.Basic
 import Cli
 
-open Lean Elab IO Meta Cli System TheoremPrettyPrinting DocGen4.Process
+open Lean Elab IO Meta Cli System TheoremPrettyPrinting DocGen4.Process SimpAllHint
 
 def DeclIdMap := Std.HashMap String (List Json)
 
@@ -202,34 +203,6 @@ def nextTacticIsSimpOrRwVariant (t : String) : Bool :=
   simpVariants.any (fun p => (p ++ "[").isPrefixOf t) ||
   rewriteVariants.any (fun p => (p ++ " ").isPrefixOf t) ||
   rewriteVariants.any (fun p => (p ++ "[").isPrefixOf t)
-
-/-- `SimpAllHint` is used to tag names in `hammer` recommendations to indicate whether the name in correction should be passed to `hammer`'s
-    `simp_all` preprocessing call, and if so, whether it should be modified with `←`, `-`, `↑`, or `↓`. Note that the `↑` and `↓` modifiers can
-    be present alone or in conjunction with the `←` modifer, so there are different hints corresponding to each different possible combination. -/
-inductive SimpAllHint where
-| notInSimpAll -- Don't pass the current hint to the `simp_all` preprocessing step
-| unmodified -- Pass the current hint to `simp_all` without modification
-| simpErase -- Pass the current hint to `simp_all` with the `-` modifier
-| simpPreOnly -- Pass the current hint to `simp_all` with just the `↓` modifier
-| simpPostOnly -- Pass the current hint to `simp_all` with just the `↑` modifier
-| backwardOnly -- Pass the current hint to `simp_all` with just the `←` modifier
-| simpPreAndBackward -- Pass the current hint to `simp_all` with both the `↓` and `←` modifiers
-| simpPostAndBackward -- Pass the current hint to `simp_all` with both the `↑` and `←` modifier
-deriving Inhabited, BEq
-
-open SimpAllHint
-
-def simpAllHintToString : SimpAllHint → String
-  | notInSimpAll => "notInSimpAll"
-  | unmodified => "unmodified"
-  | simpErase => "simpErase"
-  | simpPreOnly => "simpPreOnly"
-  | simpPostOnly => "simpPostOnly"
-  | backwardOnly => "backwardOnly"
-  | simpPreAndBackward => "simpPreAndBackward"
-  | simpPostAndBackward => "simpPostAndBackward"
-
-instance : ToString SimpAllHint := ⟨simpAllHintToString⟩
 
 structure TrainingData where
   declId : String
