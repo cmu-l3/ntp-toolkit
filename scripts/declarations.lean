@@ -2,7 +2,7 @@ import Mathlib.Lean.CoreM
 import Mathlib.Control.Basic
 import Mathlib.Lean.Expr.Basic
 import Batteries
-import DocGen4.Process
+import TrainingData.Utils.TheoremPrettyPrinting
 
 /-!
 Generate name, type, docstring, and pretty-printed information for each declaration in a module.
@@ -14,76 +14,9 @@ The extracted declarations are usually used as potential premises to select from
 
 open Lean Meta DocGen4.Process
 
-def argToString (arg : Arg) : String :=
-  let (l, r) := match arg.binderInfo with
-  | BinderInfo.default => ("(", ")")
-  | BinderInfo.implicit => ("{", "}")
-  | BinderInfo.strictImplicit => ("⦃", "⦄")
-  | BinderInfo.instImplicit => ("[", "]")
-  let n := match arg.name with
-    | some name => s!"{name.toString} : "
-    | none => ""
-  s!"{l}{n}{arg.type.stripTags}{r}"
-
-/--
-Wrapper around `Lean.findDeclarationRanges?` that tries harder to find a range
--/
-def findDeclarationRanges! [Monad m] [MonadEnv m] [MonadLiftT BaseIO m]
-    (name : Name) : m DeclarationRanges := do
-  match ← findDeclarationRanges? name with
-  | some range => pure range
-  | none =>
-    match name with
-    | .str p _ | .num p _ =>
-      -- If declaration range of e.g. `Nat.noConfusionType` could not be found, try prefix `Nat` instead.
-      findDeclarationRanges! p
-    | .anonymous =>
-      -- If a declaration range could not be found with recursion above, use the default range (all 0)
-      pure default
-
 namespace DocGen4.Process
 
-open DocGen4 DocGen4.Process DocGen4.Process.DocInfo
-
-/--
-Modified version of `prettyPrintTerm` (changed width to 1000000000)
--/
-def prettyPrintTerm' (expr : Expr) : MetaM Widget.CodeWithInfos := do
-  let ⟨fmt, infos⟩ ← PrettyPrinter.ppExprWithInfos expr
-  let tt := Widget.TaggedText.prettyTagged fmt (w := 1000000000)
-  let ctx := {
-    env := ← getEnv
-    mctx := ← getMCtx
-    options := ← getOptions
-    currNamespace := ← getCurrNamespace
-    openDecls := ← getOpenDecls
-    fileMap := default,
-    ngen := ← getNGen
-  }
-  return Widget.tagCodeInfos ctx infos tt
-
-/-- Modified version of `NameInfo.ofTypedName` (changed pretty printing) -/
-def NameInfo.ofTypedName' (n : Name) (t : Expr) : MetaM NameInfo := do
-  let env ← getEnv
-  return { name := n, type := ← prettyPrintTerm' t, doc := ← findDocString? env n}
-
-/--
-Modified version of `Info.ofConstantVal`:
-* Changed rendering width to 1000000000
-* Suppressed error when declaration range is none
-* Changed findDeclarationRanges? to findDeclarationRanges!
--/
-def Info.ofConstantVal' (v : ConstantVal) : MetaM Info := do
-  argTypeTelescope v.type fun args type => do
-    let args ← args.mapM (fun (n, e, b) => do return Arg.mk n (← prettyPrintTerm' e) b)
-    let nameInfo ← NameInfo.ofTypedName' v.name type
-    let range ← findDeclarationRanges! v.name
-    return {
-      toNameInfo := nameInfo,
-      args,
-      declarationRange := range.range,
-      attrs := ← getAllAttributes v.name
-    }
+open DocGen4 DocGen4.Process DocGen4.Process.DocInfo TheoremPrettyPrinting
 
 /--
 Returns kind (string) and Info given constant.
@@ -120,7 +53,7 @@ end DocGen4.Process
 def constantInfoToJson (cinfo : ConstantInfo) : MetaM Json := do
   let (kind, info) ← infoOfConstant cinfo
   let name := cinfo.name.toString
-  let args := info.args.map argToString
+  let args := info.args.map (fun arg => arg.binder.stripTags)
   let type := info.type.stripTags
   let doc? := info.doc
 

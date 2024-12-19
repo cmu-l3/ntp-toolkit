@@ -5,43 +5,67 @@ open Lean IO Meta System DocGen4 Process
 
 namespace TheoremPrettyPrinting
 
-def argToString (arg : DocGen4.Process.Arg) : String :=
-  let (l, r) := match arg.binderInfo with
-  | BinderInfo.default => ("(", ")")
-  | BinderInfo.implicit => ("{", "}")
-  | BinderInfo.strictImplicit => ("⦃", "⦄")
-  | BinderInfo.instImplicit => ("[", "]")
-  let n := match arg.name with
-    | some name => s!"{name.toString} : "
-    | none => ""
-  s!"{l}{n}{arg.type.stripTags}{r}"
+/--
+Pretty prints a `Lean.Parser.Term.bracketedBinder`.
+-/
+private def prettyPrintBinder (stx : Syntax) (infos : SubExpr.PosMap Elab.Info) : MetaM Widget.CodeWithInfos := do
+  let fmt ← PrettyPrinter.format Parser.Term.bracketedBinder.formatter stx
+  let tt := Widget.TaggedText.prettyTagged fmt
+  let ctx := {
+    env := ← getEnv
+    mctx := ← getMCtx
+    options := ← getOptions
+    currNamespace := ← getCurrNamespace
+    openDecls := ← getOpenDecls
+    fileMap := default,
+    ngen := ← getNGen
+  }
+  return Widget.tagCodeInfos ctx infos tt
 
-/-- Wrapper around `Lean.findDeclarationRanges?` that tries harder to find a range -/
-def findDeclarationRanges! [Monad m] [MonadEnv m] [MonadLiftT BaseIO m]
-    (name : Name) : m DeclarationRanges := do
-  match ← findDeclarationRanges? name with
-  | some range => pure range
-  | none =>
-    match name with
-    | .str p _ | .num p _ =>
-      -- If declaration range of e.g. `Nat.noConfusionType` could not be found, try prefix `Nat` instead.
-      findDeclarationRanges! p
-    | .anonymous =>
-      -- If a declaration range could not be found with recursion above, use the default range (all 0)
-      pure default
+private def prettyPrintTermStx (stx : Term) (infos : SubExpr.PosMap Elab.Info) : MetaM Widget.CodeWithInfos := do
+  let fmt ← PrettyPrinter.formatTerm stx
+  let tt := Widget.TaggedText.prettyTagged fmt
+  let ctx := {
+    env := ← getEnv
+    mctx := ← getMCtx
+    options := ← getOptions
+    currNamespace := ← getCurrNamespace
+    openDecls := ← getOpenDecls
+    fileMap := default,
+    ngen := ← getNGen
+  }
+  return Widget.tagCodeInfos ctx infos tt
 
-/-- Modified version of `Info.ofConstantVal`:
-    * Suppressed error when declaration range is none
-    * Changed `findDeclarationRanges?` to `ConstantPrettyPrinting.findDeclarationRanges!` -/
+/-- This is identical to DocGen4's `Info.ofConstantVal` except it does not panic if it fails to find the declationRange (
+    it simply uses `declarationRange := default`) -/
 def Info.ofConstantVal' (v : ConstantVal) : MetaM Info := do
-  argTypeTelescope v.type fun args type => do
-    let args ← args.mapM (fun (n, e, b) => do return Arg.mk n (← prettyPrintTerm e) b)
-    let nameInfo ← NameInfo.ofTypedName v.name type
-    let range ← findDeclarationRanges! v.name
+  let e := Expr.const v.name (v.levelParams.map mkLevelParam)
+  -- Use the main signature delaborator. We need to run sanitization, parenthesization, and formatting ourselves
+  -- to be able to extract the pieces of the signature right before they are formatted
+  -- and then format them individually.
+  let (sigStx, infos) ← PrettyPrinter.delabCore e (delab := PrettyPrinter.Delaborator.delabConstWithSignature)
+  let sigStx := (sanitizeSyntax sigStx).run' { options := (← getOptions) }
+  let sigStx ← PrettyPrinter.parenthesize PrettyPrinter.Delaborator.declSigWithId.parenthesizer sigStx
+  let `(PrettyPrinter.Delaborator.declSigWithId| $_:term $binders* : $type) := sigStx
+    | throwError "signature pretty printer failure for {v.name}"
+  let args ← binders.mapM fun binder => do
+    let fmt ← prettyPrintBinder binder infos
+    return Arg.mk fmt (!binder.isOfKind ``Parser.Term.explicitBinder)
+  let type ← prettyPrintTermStx type infos
+  match ← findDeclarationRanges? v.name with
+  -- TODO: Maybe selection range is more relevant? Figure this out in the future
+  | some range =>
     return {
-      toNameInfo := nameInfo,
+      toNameInfo := { name := v.name, type, doc := ← findDocString? (← getEnv) v.name},
       args,
       declarationRange := range.range,
+      attrs := ← getAllAttributes v.name
+    }
+  | none =>
+    return {
+      toNameInfo := { name := v.name, type, doc := ← findDocString? (← getEnv) v.name},
+      args,
+      declarationRange := default,
       attrs := ← getAllAttributes v.name
     }
 
