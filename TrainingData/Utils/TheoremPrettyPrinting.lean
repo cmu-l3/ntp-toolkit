@@ -10,7 +10,7 @@ Pretty prints a `Lean.Parser.Term.bracketedBinder`.
 -/
 private def prettyPrintBinder (stx : Syntax) (infos : SubExpr.PosMap Elab.Info) : MetaM Widget.CodeWithInfos := do
   let fmt ← PrettyPrinter.format Parser.Term.bracketedBinder.formatter stx
-  let tt := Widget.TaggedText.prettyTagged fmt
+  let tt := Widget.TaggedText.prettyTagged fmt (w := 1000000000)
   let ctx := {
     env := ← getEnv
     mctx := ← getMCtx
@@ -24,7 +24,7 @@ private def prettyPrintBinder (stx : Syntax) (infos : SubExpr.PosMap Elab.Info) 
 
 private def prettyPrintTermStx (stx : Term) (infos : SubExpr.PosMap Elab.Info) : MetaM Widget.CodeWithInfos := do
   let fmt ← PrettyPrinter.formatTerm stx
-  let tt := Widget.TaggedText.prettyTagged fmt
+  let tt := Widget.TaggedText.prettyTagged fmt (w := 1000000000)
   let ctx := {
     env := ← getEnv
     mctx := ← getMCtx
@@ -35,6 +35,18 @@ private def prettyPrintTermStx (stx : Term) (infos : SubExpr.PosMap Elab.Info) :
     ngen := ← getNGen
   }
   return Widget.tagCodeInfos ctx infos tt
+
+private def findDeclarationRanges! [Monad m] [MonadEnv m] [MonadLiftT BaseIO m] (name : Name) : m DeclarationRanges := do
+  match ← findDeclarationRanges? name with
+  | some range => pure range
+  | none =>
+    match name with
+    | .str p _ | .num p _ =>
+      -- If declaration range of e.g. `Nat.noConfusionType` could not be found, try prefix `Nat` instead.
+      findDeclarationRanges! p
+    | .anonymous =>
+      -- If a declaration range could not be found with recursion above, use the default range (all 0)
+      pure default
 
 /-- This is identical to DocGen4's `Info.ofConstantVal` except it does not panic if it fails to find the declationRange (
     it simply uses `declarationRange := default`) -/
@@ -52,21 +64,12 @@ def Info.ofConstantVal' (v : ConstantVal) : MetaM Info := do
     let fmt ← prettyPrintBinder binder infos
     return Arg.mk fmt (!binder.isOfKind ``Parser.Term.explicitBinder)
   let type ← prettyPrintTermStx type infos
-  match ← findDeclarationRanges? v.name with
-  -- TODO: Maybe selection range is more relevant? Figure this out in the future
-  | some range =>
-    return {
-      toNameInfo := { name := v.name, type, doc := ← findDocString? (← getEnv) v.name},
-      args,
-      declarationRange := range.range,
-      attrs := ← getAllAttributes v.name
-    }
-  | none =>
-    return {
-      toNameInfo := { name := v.name, type, doc := ← findDocString? (← getEnv) v.name},
-      args,
-      declarationRange := default,
-      attrs := ← getAllAttributes v.name
-    }
+  let range ← findDeclarationRanges! v.name
+  return {
+    toNameInfo := { name := v.name, type, doc := ← findDocString? (← getEnv) v.name},
+    args,
+    declarationRange := range.range,
+    attrs := ← getAllAttributes v.name
+  }
 
 end TheoremPrettyPrinting

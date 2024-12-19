@@ -207,7 +207,6 @@ def nextTacticIsSimpOrRwVariant (t : String) : Bool :=
 structure TrainingData where
   declId : String
   declName : String
-  decl : String
   srcUpToTactic : String
   declUpToTactic : String
   state : String
@@ -360,7 +359,6 @@ def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) 
   let data := {
       declId := declId,
       declName := declName,
-      decl := decl,
       srcUpToTactic := sourceUpToTactic.toString,
       declUpToTactic := declUpToTactic.toString,
       state := state,
@@ -377,7 +375,6 @@ open TacticInvocation
 def trainingDataToJson (d : TrainingData) : Json :=
   Json.mkObj [
     ("declName", Json.str d.declName),
-    ("decl", Json.str d.decl),
     ("srcUpToTactic", Json.str d.srcUpToTactic),
     ("declUpToTactic", Json.str d.declUpToTactic),
     ("state", Json.str d.state),
@@ -396,18 +393,10 @@ def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : Mod
   let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (cmd.stx.getTailPos?.getD 0)
   let declUpToTactic := Substring.mk (← moduleSource module) (cmd.stx.getPos?.getD 0) (cmd.stx.getTailPos?.getD 0)
 
-  let mut decl := ""
-  if let some doc := thmInfo.doc then
-    decl := decl ++ "/-- " ++ doc.stripSuffix " " ++ " -/\n"
-  decl := decl ++ "theorem " ++ v.name.toString ++ " "
-  for arg in thmInfo.args do
-    decl := decl ++ arg.binder.stripTags ++ " "
-  decl := decl ++ ": " ++ thmInfo.type.stripTags
-
   let vType := v.type
   let Expr.mvar m ← mkFreshExprMVar vType
     | throwError "trainingDataGivenTheoremVal :: Failed to build an mvar of type {vType}"
-  let (fvars, m) ← m.introNP thmInfo.args.size
+  let (_, m) ← m.introNP thmInfo.args.size
   let state := (← Meta.ppGoal m).pretty
 
   let hammerRecommendation ← m.withContext do
@@ -430,7 +419,6 @@ def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : Mod
   let data : TrainingData := {
       declId := makeElabDeclId elabDeclInfo module hash,
       declName := v.name.toString,
-      decl := decl,
       srcUpToTactic := sourceUpToTactic.toString,
       declUpToTactic := declUpToTactic.toString,
       state := state,
