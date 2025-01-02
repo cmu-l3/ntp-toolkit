@@ -17,9 +17,9 @@ require %s from git
   "%s.git" @ "%s"
 
 require QuerySMT from git
-  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "2ddce76272df57b64b0e15b22bd38d63f352d324"
+  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "12febbf63699fd1b26d7d47d7d3eadce6727f1ef"
 
-require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.13.0"
+require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.14.0"
 
 @[default_target]
 lean_lib TrainingData where

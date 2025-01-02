@@ -28,7 +28,7 @@ def useSimpAllWithRecommendation (simpAllRecommendation : Array String) : Tactic
 def useOmega : TacticM Unit := do evalTactic (← `(tactic| intros; omega))
 def useDuper : TacticM Unit := do evalTactic (← `(tactic| duper [*]))
 def useQuerySMT : TacticM Unit := do evalTactic (← `(tactic| querySMT))
-def useHammer (hammerRecommendation : Array String) (externalProverTimeout : Nat) : TacticM Unit := do
+def useHammer (hammerRecommendation : Array String) (externalProverTimeout : Nat) (withSimpPreprocessing := true) : TacticM Unit := do
   withOptions (fun o => o.set ``auto.tptp.timeout externalProverTimeout) do
     let hammerRecommendation : Array (Term × SimpAllHint) ←
       hammerRecommendation.mapM (fun x => do
@@ -54,7 +54,10 @@ def useHammer (hammerRecommendation : Array String) (externalProverTimeout : Nat
       | backwardOnly => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpLemma| ←$name:term)
       | simpPreAndBackward => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpLemma| ↓←$name:term)
       | simpPostAndBackward => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpLemma| ↑←$name:term)
-    evalTactic (← `(tactic| hammer [$simpLemmas,*] [*, $(coreRecommendation),*]))
+    if withSimpPreprocessing then
+      evalTactic (← `(tactic| hammer [$simpLemmas,*] [*, $(coreRecommendation),*]))
+    else
+      evalTactic (← `(tactic| hammer [$simpLemmas,*] [*, $(coreRecommendation),*] {simpTarget := no_target}))
 
 /--
 Compile the designated module, and run a monadic function with each new `ConstantInfo`,
@@ -304,27 +307,31 @@ def runHammerAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withImp
     let hammerRecommendation ← IO.ofExcept $ hammerRecommendation.getArr?
     let hammerRecommendation ← IO.ofExcept $ hammerRecommendation.mapM Json.getStr?
     let ((res, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
-      try
-        TermElabM.run' (do
-          dbg_trace "About to use hammer for {ci.name} (recommendation: {hammerRecommendation})"
+      tryCatchRuntimeEx
+        (TermElabM.run' (do
+          dbg_trace "About to use hammer for {ci.name} in module {mod} (recommendation: {hammerRecommendation})"
           let gs ← Tactic.run g.mvarId! $ useHammer hammerRecommendation externalProverTimeout
           match gs with
           | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate the hammer on Prop declarations
           | _ :: _ => pure .subgoals)
-          (ctx := {declName? := `fakeDecl, errToSorry := false})
-      catch e =>
-        if ← Hammer.errorIsSimpPreprocessingError e then pure .simpPreprocessingFailure
-        else if ← Hammer.errorIsTranslationError e then pure .tptpTranslationFailure
-        else if ← Hammer.errorIsExternalSolverError e then pure .externalProverFailure
-        else if ← Hammer.errorIsDuperSolverError e then pure .duperFailure
-        else if ← Hammer.errorIsProofFitError e then pure .proofFitFailure
-        else if "tactic 'simp' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
-        else if "tactic 'simp_all' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
-        else pure .miscFailure
+          (ctx := {declName? := `fakeDecl, errToSorry := false}))
+        (fun e => do
+          if ← Hammer.errorIsSimpPreprocessingError e then pure .simpPreprocessingFailure
+          else if ← Hammer.errorIsTranslationError e then pure .tptpTranslationFailure
+          else if ← Hammer.errorIsExternalSolverError e then pure .externalProverFailure
+          else if ← Hammer.errorIsDuperSolverError e then pure .duperFailure
+          else if ← Hammer.errorIsProofFitError e then pure .proofFitFailure
+          else if "tactic 'simp' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
+          else if "tactic 'simp_all' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
+          else
+            dbg_trace "runHammerAtDecls :: miscFailure for {ci.name} in module {mod}: {← e.toMessageData.toString}"
+            pure .miscFailure
+        )
     return some ⟨res, seconds, heartbeats⟩
 
 /-- Like `runHammerAtDecls` but only tests a single declaration (indicated by `declName`). -/
-def runHammerAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String) (externalProverTimeout : Nat) :
+def runHammerAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String) (externalProverTimeout : Nat)
+  (withSimpPreprocessing := true) :
   IO (Option (ConstantInfo × HammerResult)) := do
   runAtDecl mod declName (some withImportsPath) fun ci => do
     if ! (← decls ci) then return none
@@ -347,23 +354,26 @@ def runHammerAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → Met
     let hammerRecommendation ← IO.ofExcept $ hammerRecommendation.getArr?
     let hammerRecommendation ← IO.ofExcept $ hammerRecommendation.mapM Json.getStr?
     let ((res, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
-      try
-        TermElabM.run' (do
+      tryCatchRuntimeEx
+        (TermElabM.run' (do
           dbg_trace "About to use hammer for {ci.name} in module {mod} (recommendation: {hammerRecommendation})"
-          let gs ← Tactic.run g.mvarId! $ useHammer hammerRecommendation externalProverTimeout
+          let gs ← Tactic.run g.mvarId! $ useHammer hammerRecommendation externalProverTimeout withSimpPreprocessing
           match gs with
           | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate the hammer on Prop declarations
           | _ :: _ => pure .subgoals)
-          (ctx := {declName? := `fakeDecl, errToSorry := false})
-      catch e =>
-        if ← Hammer.errorIsSimpPreprocessingError e then pure .simpPreprocessingFailure
-        else if ← Hammer.errorIsTranslationError e then pure .tptpTranslationFailure
-        else if ← Hammer.errorIsExternalSolverError e then pure .externalProverFailure
-        else if ← Hammer.errorIsDuperSolverError e then pure .duperFailure
-        else if ← Hammer.errorIsProofFitError e then pure .proofFitFailure
-        else if "tactic 'simp' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
-        else if "tactic 'simp_all' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
-        else pure .miscFailure
+          (ctx := {declName? := `fakeDecl, errToSorry := false}))
+        (fun e => do
+          if ← Hammer.errorIsSimpPreprocessingError e then pure .simpPreprocessingFailure
+          else if ← Hammer.errorIsTranslationError e then pure .tptpTranslationFailure
+          else if ← Hammer.errorIsExternalSolverError e then pure .externalProverFailure
+          else if ← Hammer.errorIsDuperSolverError e then pure .duperFailure
+          else if ← Hammer.errorIsProofFitError e then pure .proofFitFailure
+          else if "tactic 'simp' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
+          else if "tactic 'simp_all' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
+          else
+            dbg_trace "runHammerAtDecls :: miscFailure for {ci.name} in module {mod}: {← e.toMessageData.toString}"
+            pure .miscFailure
+        )
     return some ⟨res, seconds, heartbeats⟩
 
 /-- Like `runHammerAtDecl` but only tests `simp_all` rather than `hammer`. Still uses the `hammerRecommendation` field in
@@ -509,9 +519,10 @@ def hammerBenchmarkFromModule (module : ModuleName) (withImportsDir : String) (j
       s!" ({seconds}s) ({heartbeats} heartbeats)"
   return 0
 
-def hammerBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat) : IO UInt32 := do
+def hammerBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat)
+  (withSimpPreprocessing := true) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
-  let result ← runHammerAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout
+  let result ← runHammerAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout withSimpPreprocessing
   match result with
   | some (ci, ⟨type, seconds, heartbeats⟩) =>
     IO.println $ (hammerResultTypeToEmojiString type) ++ " " ++ ci.name.toString ++ s!" ({seconds}s) ({heartbeats} heartbeats)"

@@ -14,7 +14,7 @@ import Mathlib.Tactic.Change
 import Mathlib.Tactic.Simps.Basic
 import Cli
 
-open Lean Elab IO Meta Cli System TheoremPrettyPrinting DocGen4.Process SimpAllHint
+open Lean Elab IO Meta Cli System DocGen4.Process SimpAllHint TheoremPrettyPrinting
 
 def DeclIdMap := Std.HashMap String (List Json)
 
@@ -80,9 +80,9 @@ def makeElabDeclId (info: ElabDeclInfo) (module: Name) (hash: String) : String :
   declId
 
 def getInvocationTrees (trees : List InfoTree) : IO (List InfoTree) := do
-  let trees := trees.bind InfoTree.retainTacticInfo
-  let trees := trees.bind InfoTree.retainOriginal
-  let trees := trees.bind InfoTree.retainSubstantive
+  let trees := trees.flatMap InfoTree.retainTacticInfo
+  let trees := trees.flatMap InfoTree.retainOriginal
+  let trees := trees.flatMap InfoTree.retainSubstantive
   return trees
 
 namespace Lean.Elab.TacticInvocation
@@ -207,7 +207,6 @@ def nextTacticIsSimpOrRwVariant (t : String) : Bool :=
 structure TrainingData where
   declId : String
   declName : String
-  decl : String
   srcUpToTactic : String
   declUpToTactic : String
   state : String
@@ -360,7 +359,6 @@ def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) 
   let data := {
       declId := declId,
       declName := declName,
-      decl := decl,
       srcUpToTactic := sourceUpToTactic.toString,
       declUpToTactic := declUpToTactic.toString,
       state := state,
@@ -377,13 +375,12 @@ open TacticInvocation
 def trainingDataToJson (d : TrainingData) : Json :=
   Json.mkObj [
     ("declName", Json.str d.declName),
-    ("decl", Json.str d.decl),
     ("srcUpToTactic", Json.str d.srcUpToTactic),
     ("declUpToTactic", Json.str d.declUpToTactic),
     ("state", Json.str d.state),
     ("nextTactic", match d.nextTactic with | some nextTactic => Json.str nextTactic | none => Json.null),
     ("nextTacticHammerRecommendation", Json.arr (d.nextTacticHammerRecommendation.toArray.map (fun x => s!"{x}"))),
-    ("declHammerRecommendation", Json.arr (d.declHammerRecommendation.toArray.map (fun x => s!"{x}"))),
+    ("declHammerRecommendation", Json.arr (d.declHammerRecommendation.toArray.map (fun x => s!"{x}")))
   ]
 
 /-- Given a theorem `v`, creates a `TrainingData` object related to `v`, prints it in JSON format to stdout, and returns the final
@@ -396,18 +393,10 @@ def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : Mod
   let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (cmd.stx.getTailPos?.getD 0)
   let declUpToTactic := Substring.mk (← moduleSource module) (cmd.stx.getPos?.getD 0) (cmd.stx.getTailPos?.getD 0)
 
-  let mut decl := ""
-  if let some doc := thmInfo.doc then
-    decl := decl ++ "/-- " ++ doc.stripSuffix " " ++ " -/\n"
-  decl := decl ++ "theorem " ++ v.name.toString ++ " "
-  for arg in thmInfo.args do
-    decl := decl ++ (argToString arg) ++ " "
-  decl := decl ++ ": " ++ thmInfo.type.stripTags
-
   let vType := v.type
   let Expr.mvar m ← mkFreshExprMVar vType
     | throwError "trainingDataGivenTheoremVal :: Failed to build an mvar of type {vType}"
-  let (fvars, m) ← m.introNP thmInfo.args.size
+  let (_, m) ← m.introNP thmInfo.args.size
   let state := (← Meta.ppGoal m).pretty
 
   let hammerRecommendation ← m.withContext do
@@ -430,7 +419,6 @@ def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : Mod
   let data : TrainingData := {
       declId := makeElabDeclId elabDeclInfo module hash,
       declName := v.name.toString,
-      decl := decl,
       srcUpToTactic := sourceUpToTactic.toString,
       declUpToTactic := declUpToTactic.toString,
       state := state,
@@ -445,7 +433,7 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
   let infos ← getElabDeclInfo (← moduleInfoTrees module)
   let compilationSteps ← compileModule module
-  let trees ← getInvocationTrees $ compilationSteps.bind (fun c => c.trees)
+  let trees ← getInvocationTrees $ compilationSteps.flatMap (fun c => c.trees)
   let hash ← generateRandomHash
   let mut dataArr : Array TrainingData := #[]
   -- Extract data from tactics

@@ -24,6 +24,8 @@ def jsonDir := "Examples/Mathlib/TrainingDataWithPremises"
 -- #eval Command.liftTermElabM $ hammerBenchmarkFromModule `Mathlib.Data.Set.Basic withImportsDir jsonDir 10
 -- #eval Command.liftTermElabM $ tacticBenchmarkFromModule `Mathlib.Data.Set.Basic useDuper
 
+-- #eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Data.Int.Defs `Int.natCast_dvd withImportsDir jsonDir 10
+
 -- #eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Data.Set.Basic `Set.subset_insert_diff_singleton withImportsDir jsonDir 10
 
 /- Note: `subset_insert_diff_singleton` is an example where the evaluation faithfully represents what the hammer
@@ -49,129 +51,61 @@ def jsonDir := "Examples/Mathlib/TrainingDataWithPremises"
 -- #eval querySMTBenchmarkFromModule `temp
 
 ------------------------------------------------------------------------------------------------------------------------
--- For testing in general
-/-
-def testRunTacticAtSpecificDecl (tac : TacticM Unit) (t : Expr) : MetaM Bool := do
-  let g ← mkFreshExprMVar t
-  let ((gs, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
-    try
-      TermElabM.run' do
-        return some $ ← Tactic.run g.mvarId! tac
-    catch e =>
-      dbg_trace "Error in trying to solve specific decl (type: {t}) {← e.toMessageData.format}"
-      return none
-  return gs.isSome
+-- Comparing against lean-auto evaluation
 
-theorem test (p q : Prop) : True := by
-  have ⟨h1, h2⟩ : ∃ x : p, q := sorry
-  sorry
+/- **NOTE**
+When I test `auto`, I set the following options first:
+set_option auto.native true
+set_option auto.smt false
+set_option auto.tptp false
+-/
 
-theorem test2 (p q : Prop) : True := by
-  have h : ∃ x : p, q := sorry
-  rcases h with ⟨h, h2⟩
-  sorry
+/- Succeeds in lean-auto's evaluation, both of the following tests succeed
+#eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Order.Heyting.Basic `hnot_le_iff_codisjoint_left withImportsDir jsonDir 10
+#eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Order.Heyting.Basic `hnot_le_iff_codisjoint_left withImportsDir jsonDir 10 false
+-/
 
-------------------------------------------------------------------------------------------------------------------------
--- For testing `useQuerySMT` (and specifically debugging the error caused by the anonymous constructors used to build selectors)
-def myExpr1 : Expr :=
-  Expr.forallE `α (Expr.sort 1)
-    (Expr.forallE `x (Expr.bvar 0)
-      (Expr.app (Expr.app (Expr.app (Expr.const `Eq [1]) (Expr.bvar 1)) (Expr.bvar 0)) (Expr.bvar 0))
-      .default)
-    .default
+/- Succeeds in lean-auto's evaluation, both of the following tests succeed
+#eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv `deriv_sinh withImportsDir jsonDir 10
+#eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv `deriv_sinh withImportsDir jsonDir 10 false
+-/
 
--- list_eq_self1 and list_eq_self2
-def myExpr2 : Expr :=
-  Expr.forallE `α (Expr.sort 1)
-    (Expr.forallE `l
-      (Expr.app (Expr.const ``List [0]) (Expr.bvar 0))
-      (Expr.app
-        (Expr.app
-          (Expr.app
-            (Expr.const ``Eq [1])
-            (Expr.app (Expr.const ``List [0]) (Expr.bvar 1))
-          )
-          (Expr.bvar 0)
-        )
-        (Expr.bvar 0)
-      )
-      .default)
-    .implicit
+/- `Asymptotics.IsBigO.comp_tendsto` succeeds in lean-auto's evaluation, but I am not able to test on myself because the data extraction script encounters
+an error processing Mathlib.Analysis.Asymptotics.Asymptotics.lean
 
-syntax (name := myTestTactic) "myTestTactic" : tactic
+**TODO** Fix the error that comes with processing Mathlib.Analysis.Asymptotics.Asymptotics.lean
 
-open Auto QuerySMT Duper
+#eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Analysis.Asymptotics.Asymptotics `Asymptotics.IsBigO.comp_tendsto withImportsDir jsonDir 10
+#eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Analysis.Asymptotics.Asymptotics `Asymptotics.IsBigO.comp_tendsto withImportsDir jsonDir 10 false
+-/
 
-@[tactic myTestTactic]
-def evalMyTestTactic : Tactic
-| `(myTestTactic | myTestTactic) => withMainContext do
-  let lctxBeforeIntros ← getLCtx
-  let originalMainGoal ← getMainGoal
-  let goalType ← originalMainGoal.getType
-  let goalType ← instantiateMVars goalType
-  -- If `goalType` has the form `∀ x1 : t1, … ∀ xn : tn, b`, first apply `intros` to put `x1 … xn` in the local context
-  let numBinders := getIntrosSize goalType
-  let mut introNCoreNames : Array Name := #[]
-  let mut numGoalHyps := 0
-  let goalHypPrefix := "h"
-  /- Assuming `goal` has the form `∀ x1 : t1, ∀ x2 : t2, … ∀ xn : tn, b`, `goalPropHyps` is
-     an array of size `n` where the mth element in `goalPropHyps` indicates whether the mth forall
-     binder has a `Prop` type. This is used to help create `introNCoreNames` which should use existing
-     binder names for nonProp arguments and newly created names (based on `goalHypPrefix`) for Prop arguments -/
-  let goalPropHyps ← forallTelescope goalType fun xs _ => do xs.mapM (fun x => do pure (← inferType (← inferType x)).isProp)
-  for b in goalPropHyps do
-    if b then
-      introNCoreNames := introNCoreNames.push (.str .anonymous (goalHypPrefix ++ numGoalHyps.repr))
-      numGoalHyps := numGoalHyps + 1
-    else -- If fvarId corresponds to a non-sort type, then introduce it using the userName
-      introNCoreNames := introNCoreNames.push `_ -- `introNCore` will overwrite this with the existing binder name
-  let (goalBinders, newGoal) ← introNCore originalMainGoal numBinders introNCoreNames.toList true true
-  let [nngoal] ← newGoal.apply (.const ``Classical.byContradiction [])
-    | throwError "querySMT :: Unexpected result after applying Classical.byContradiction"
-  let negGoalLemmaName := "negGoal"
-  let (_, absurd) ← MVarId.intro nngoal (.str .anonymous negGoalLemmaName)
-  replaceMainGoal [absurd]
-  withMainContext do
-    let lctxAfterIntros ← getLCtx
-    -- **TODO**: Figure out how to properly propagate `goalDecls` in getDuperCoreSMTLemmas
-    let goalDecls := getGoalDecls lctxBeforeIntros lctxAfterIntros
-    let goalsBeforeSkolemization ← getGoals
-    evalTactic (← `(tactic| skolemizeAll))
-    let goalsAfterSkolemization ← getGoals
-    withMainContext do -- Use updated main context so that `collectAllLemmas` collects from the appropriate context
-      let lctxAfterSkolemization ← getLCtx
-      let (lemmas, inhFacts) ← collectAllLemmas (← `(hints| [*])) #[] #[]
-      let SMTHints ← withAutoOptions $ runAutoGetHints lemmas inhFacts
-      let (unsatCoreDerivLeafStrings, selectorInfos, allSMTLemmas) := SMTHints
-      let (preprocessFacts, theoryLemmas, instantiations, computationLemmas, polynomialLemmas, rewriteFacts) := allSMTLemmas
-      let smtLemmas := preprocessFacts ++ theoryLemmas ++ computationLemmas ++ polynomialLemmas ++ -- instantiations are intentionally ignored
-        (rewriteFacts.foldl (fun acc rwFacts => acc ++ rwFacts) [])
-      for (selName, selCtor, argIdx, selType) in selectorInfos do
-        let selFactName := selName ++ "Fact"
-        let selector ← buildSelector selCtor argIdx
-        let selectorStx ← withOptions ppOptionsSetting $ PrettyPrinter.delab selector
-        let selectorFact ← buildSelectorFact selName selCtor selType argIdx
-        let selectorFactStx ← withOptions ppOptionsSetting $ PrettyPrinter.delab selectorFact
-        let existsIntroStx ← withOptions ppOptionsSetting $ PrettyPrinter.delab (mkConst ``Exists.intro)
-        -- **TODO** Bug is arising here specifically due to
-        -- `⟨$(mkIdent (.str .anonymous selName)), $(mkIdent (.str .anonymous selFactName))⟩` part of have statement
-        dbg_trace "selectorFact: {selectorFact}"
-        dbg_trace "selectorFactStx: {selectorFactStx}"
-        evalTactic $ -- Eval to add selector and its corresponding fact to lctx
-          ← `(tactic|
-              have ⟨$(mkIdent (.str .anonymous selName)), $(mkIdent (.str .anonymous selFactName))⟩ : $selectorFactStx:term := by
-                apply $existsIntroStx:term $selectorStx:term
-                intros
-                rfl
-            )
-      pure ()
-| _ => throwUnsupportedSyntax
+/- Succeeds in lean-auto's evaluation, both of the following tests succeed
+#eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Topology.Algebra.InfiniteSum.Group `HasProd.div withImportsDir jsonDir 10
+#eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Topology.Algebra.InfiniteSum.Group `HasProd.div withImportsDir jsonDir 10 false
+-/
 
-def useMyTestTactic : TacticM Unit := do evalTactic (← `(tactic| myTestTactic))
+/- Succeeds in lean-auto's evaluation, both of the following tests succeed
+#eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Algebra.BigOperators.RingEquiv `RingEquiv.map_prod withImportsDir jsonDir 10
+#eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Algebra.BigOperators.RingEquiv `RingEquiv.map_prod withImportsDir jsonDir 10 false
+-/
 
-#eval testRunTacticAtSpecificDecl useMyTestTactic myExpr2
+/- Succeeds in lean-auto's evaluation, both of the following tests succeed
+#eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Topology.MetricSpace.IsometricSMul `dist_smul withImportsDir jsonDir 10
+#eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Topology.MetricSpace.IsometricSMul `dist_smul withImportsDir jsonDir 10 false
+-/
 
-theorem list_eq_self1 (l : List α) : l = l := by
-  myTestTactic
-  sorry
+/- This test succceeds in lean-auto's evaluation (and running `auto` by hand succeeds)
+
+This test can be handled by `hammer`'s `simp_all` preprocessing, so it succeeds when `simp_all` preprocessing is enabled.
+When `hammer`'s `simp_all` preprocessing is disabled, returns the following:
+  About to use hammer for Mathlib.Vector.mem_cons_of_mem in module Mathlib.Data.Vector.Mem
+    (recommendation: #[(Mathlib.Vector.mem_cons_iff, notInSimpAll)])
+    ✅️✅️✅️💥️❌️❌️ Mathlib.Vector.mem_cons_of_mem (2.697926s) (13650348 heartbeats)
+
+This corresponds to successfully translating to TPTP but having the external prover fail. This outcome does not technically contradict
+lean-auto's result, but it merits investigation as I don't see why the external prover should fail when Duper can succeed (and Duper does
+succeed when we test by hand, even with portfolioInstance set to 1) **TODO** Investigate what's going on here
+
+#eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Data.Vector.Mem `Mathlib.Vector.mem_cons_of_mem withImportsDir jsonDir 10
+#eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Data.Vector.Mem `Mathlib.Vector.mem_cons_of_mem withImportsDir jsonDir 10 false
 -/
