@@ -79,22 +79,6 @@ an error processing Mathlib.Analysis.Asymptotics.Asymptotics.lean
 #eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Analysis.Asymptotics.Asymptotics `Asymptotics.IsBigO.comp_tendsto withImportsDir jsonDir 10 false
 -/
 
-/- This test succeeds in lean-auto's evaluation, but appears to fail when I test by hand
-**TODO** Investigate this discrepancy
-
-This test can be handled by `hammer`'s `simp_all` preprocessing, so it succeeds when `simp_all` preprocessing is enabled.
-When `hammer`'s `simp_all` preprocessing is disabled, returns the following:
-  About to use hammer for ENat.mem_nhds_natCast_iff in module Mathlib.Topology.Instances.ENat
-    (recommendation: #[(ENat.mem_nhds_iff, notInSimpAll), (ENat.coe_ne_top, notInSimpAll)])
-    ✅️✅️💥️❌️❌️❌️ ENat.mem_nhds_natCast_iff (0.105351s) (537116 heartbeats)
-
-Note that this output of Auto's translation failing coincides with what I see when I test both `hammer` and `auto` by hand on the problem
-(though it remains possible that there is some option being set in Yicheng's evaluation that I'm missing)
-
-#eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Topology.Instances.ENat `ENat.mem_nhds_natCast_iff withImportsDir jsonDir 10
-#eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Topology.Instances.ENat `ENat.mem_nhds_natCast_iff withImportsDir jsonDir 10 false
--/
-
 /- Succeeds in lean-auto's evaluation, both of the following tests succeed
 #eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Topology.Algebra.InfiniteSum.Group `HasProd.div withImportsDir jsonDir 10
 #eval Command.liftTermElabM $ hammerBenchmarkAtDecl `Mathlib.Topology.Algebra.InfiniteSum.Group `HasProd.div withImportsDir jsonDir 10 false
