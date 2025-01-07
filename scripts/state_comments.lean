@@ -5,6 +5,8 @@ import TrainingData.Utils.Range
 import Mathlib.Data.String.Defs
 import Mathlib.Lean.CoreM
 import Mathlib.Tactic.Change
+import Batteries.Lean.HashSet
+import Batteries.Data.List.Basic
 import Cli
 
 open Lean Elab IO Meta
@@ -58,7 +60,7 @@ def stateComments (args : Cli.Parsed) : IO UInt32 := do
     let L₃ := (L₂.map fun ⟨r, sb, sa⟩ => (r, formatState sb, formatState sa))
     let mut src := (← moduleSource module).splitOn "\n"
 
-    let mut inserted : HashSet Nat := HashSet.ofList [10000000]
+    let mut inserted : Std.HashSet Nat := Std.HashSet.ofList [10000000]
     for item in L₃.reverse do
       let ⟨⟨⟨l, c⟩, _⟩, sb, sa⟩ := item
       let c := if args.hasFlag "indent" then c else 0

@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/nomeata/loogle",
+    "commit": "f46663afcd4067a606094dda363f67922e6990a4",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
+    "name": "\u00abloogle\u00bb",
+    "imports": [
+        "Seccomp"
+    ],
+    "metadata": {
+        "name": "loogle",
+        "owner": "nomeata",
+        "fullName": "nomeata/loogle",
+        "description": "Mathlib search tool",
+        "keywords": [],
+        "homepage": "https://loogle.lean-lang.org/",
+        "license": "Apache-2.0",
+        "createdAt": "2023-08-19T09:38:12Z",
+        "updatedAt": "2024-10-16T09:17:21Z",
+        "stars": 62,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKI7kTA",
+                "fullName": "nomeata/loogle",
+                "repoUrl": "https://github.com/nomeata/loogle",
+                "gitUrl": "https://github.com/nomeata/loogle",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

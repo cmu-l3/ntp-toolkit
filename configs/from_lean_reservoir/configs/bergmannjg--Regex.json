@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/bergmannjg/regex",
+    "commit": "9337247aa6b66103ee95cdf9db643566c075de7e",
+    "lean": "leanprover/lean4:v4.11.0-rc2",
+    "name": "\u00abRegex\u00bb",
+    "imports": [
+        "\u00abRegex\u00bb"
+    ],
+    "metadata": {
+        "name": "Regex",
+        "owner": "bergmannjg",
+        "fullName": "bergmannjg/Regex",
+        "description": "A PCRE2 compatible regular expression engine written in Lean 4.",
+        "keywords": [],
+        "homepage": "https://bergmannjg.github.io/regex/Regex.html",
+        "license": "MIT",
+        "createdAt": "2024-01-12T10:08:30Z",
+        "updatedAt": "2024-08-18T15:40:50Z",
+        "stars": 3,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLD-ZeA",
+                "fullName": "bergmannjg/regex",
+                "repoUrl": "https://github.com/bergmannjg/regex",
+                "gitUrl": "https://github.com/bergmannjg/regex",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/Seasawher/mk-exercise",
+    "commit": "4f5a57cc09c86b605511be02ca719f1499bc550e",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abmk-exercise\u00bb",
+    "imports": [
+        "\u00abMkExercise\u00bb"
+    ],
+    "metadata": {
+        "name": "mk-exercise",
+        "owner": "Seasawher",
+        "fullName": "Seasawher/mk-exercise",
+        "description": "Simple and intuitive tool to manage exercises in textbooks written in Lean.",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2024-01-15T13:09:09Z",
+        "updatedAt": "2024-10-24T12:31:39Z",
+        "stars": 5,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLFGMqg",
+                "fullName": "Seasawher/mk-exercise",
+                "repoUrl": "https://github.com/Seasawher/mk-exercise",
+                "gitUrl": "https://github.com/Seasawher/mk-exercise",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/MichaelStollBayreuth/EulerProducts",
+    "commit": "5e5b5081467a18f2b1f7444c79e1839ecc0c329a",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "\u00abEulerProducts\u00bb",
+    "imports": [
+        "\u00abEulerProducts\u00bb"
+    ],
+    "metadata": {
+        "name": "EulerProducts",
+        "owner": "MichaelStollBayreuth",
+        "fullName": "MichaelStollBayreuth/EulerProducts",
+        "description": "An attempt at formalizing facts on Euler products in Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "GPL-2.0",
+        "createdAt": "2023-11-06T15:15:33Z",
+        "updatedAt": "2024-10-21T20:14:16Z",
+        "stars": 9,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKqBLvQ",
+                "fullName": "MichaelStollBayreuth/EulerProducts",
+                "repoUrl": "https://github.com/MichaelStollBayreuth/EulerProducts",
+                "gitUrl": "https://github.com/MichaelStollBayreuth/EulerProducts",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

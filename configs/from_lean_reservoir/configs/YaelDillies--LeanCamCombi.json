@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/YaelDillies/LeanCamCombi",
+    "commit": "6fe1d16e9176584ebc45810385d7b1f29512caac",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "LeanCamCombi",
+    "imports": [
+        "LeanCamCombi"
+    ],
+    "metadata": {
+        "name": "LeanCamCombi",
+        "owner": "YaelDillies",
+        "fullName": "YaelDillies/LeanCamCombi",
+        "description": "Formalisation of the Cambridge Part II and Part III courses Graph Theory, Combinatorics, Extremal and Probabilistic Combinatorics in Lean",
+        "keywords": [],
+        "homepage": "https://yaeldillies.github.io/LeanCamCombi/",
+        "license": "Apache-2.0",
+        "createdAt": "2022-11-18T14:58:29Z",
+        "updatedAt": "2024-10-23T22:11:12Z",
+        "stars": 39,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOIdedaQ",
+                "fullName": "YaelDillies/LeanCamCombi",
+                "repoUrl": "https://github.com/YaelDillies/LeanCamCombi",
+                "gitUrl": "https://github.com/YaelDillies/LeanCamCombi",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

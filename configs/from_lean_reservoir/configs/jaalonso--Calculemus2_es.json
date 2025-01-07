@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/jaalonso/Calculemus2_es",
+    "commit": "c1d887ff6eccfc3073f3a01fecfc20f56e8131d7",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "Calculemus2_es",
+    "imports": [
+        "Calculemus2_es"
+    ],
+    "metadata": {
+        "name": "Calculemus2_es",
+        "owner": "jaalonso",
+        "fullName": "jaalonso/Calculemus2_es",
+        "description": "Ejercicios de demostraci\u00f3n con Lean4 e Isabelle/HOL.",
+        "keywords": [],
+        "homepage": "https://jaalonso.github.io/calculemus/",
+        "license": "GPL-3.0",
+        "createdAt": "2024-08-26T09:44:14Z",
+        "updatedAt": "2024-10-23T11:03:40Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMoY-9A",
+                "fullName": "jaalonso/Calculemus2_es",
+                "repoUrl": "https://github.com/jaalonso/Calculemus2_es",
+                "gitUrl": "https://github.com/jaalonso/Calculemus2_es",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

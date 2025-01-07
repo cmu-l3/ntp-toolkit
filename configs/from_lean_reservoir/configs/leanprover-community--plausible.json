@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/leanprover-community/plausible",
+    "commit": "b5a2fa0d8321137b3f25ddac99527b3bef2e5f3a",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "plausible",
+    "imports": [
+        "Test"
+    ],
+    "metadata": {
+        "name": "plausible",
+        "owner": "leanprover-community",
+        "fullName": "leanprover-community/plausible",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-10-23T23:42:28Z",
+        "updatedAt": "2024-10-25T08:34:58Z",
+        "stars": 7,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDONE9GFg",
+                "fullName": "leanprover-community/plausible",
+                "repoUrl": "https://github.com/leanprover-community/plausible",
+                "gitUrl": "https://github.com/leanprover-community/plausible",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Lean.Elab.Frontend
--- import Batteries.Parser.Term
+import Lean.Util.Paths
 import Batteries.Data.MLList.Basic
 
 /-!
@@ -186,30 +186,68 @@ def processInput (input : String) (env? : Option Environment := none)
 
 open System
 
--- TODO allow finding Lean 4 sources from the toolchain.
+/-- Parallel to compile_time_search_path% -/
+elab "compile_time_src_search_path%" : term =>
+  return toExpr (← initSrcSearchPath)
+
 def findLean (mod : Name) : IO FilePath := do
-  try
-    -- Prior to Lean v4.3
-    let oldLeanFilePath := FilePath.mk ((← findOLean mod).toString.replace "build/lib/" "") |>.withExtension "lean"
-    _ ← IO.FS.readFile oldLeanFilePath
-    return oldLeanFilePath
-  catch _ =>
-    return FilePath.mk ((← findOLean mod).toString.replace ".lake/build/lib/" "") |>.withExtension "lean"
+  let srcSearchPath : SearchPath := compile_time_src_search_path%
+  if let some fname ← srcSearchPath.findModuleWithExt "lean" mod then
+    return fname
+  else
+    let fname := FilePath.mk ((← findOLean mod).toString.replace ".lake/build/lib/" "") |>.withExtension "lean"
+    if !(← fname.pathExists) then
+      throw <| IO.userError s!"Path to {mod} not found"
+    return fname
+
+/-- Like `findLean` but produces the version of the file in `Examples/WithImports`. This only supports Lean versions at least
+    as recent as Lean v4.3. -/
+def findLeanWithImports (mod : Name) (repoName : String) (withImportsDir : String) : IO FilePath := do
+  let withImportsPathPrefix := withImportsDir ++ "/"
+  let path := (← findOLean mod).toString
+  let path := path.replace "./" ""
+  let path := path.replace "/" "."
+  let path := path.replace s!".lake.packages.{repoName}..lake.build.lib." withImportsPathPrefix
+  return FilePath.mk path |>.withExtension "lean"
+
+/-- Given `mod`, the name of the repository `mod` is from, and the `Examples` directory containing relevant JSON files,
+    returns the JSON file corresponding to `mod` within `jsonDir`. -/
+def findJSONFile (mod : Name) (repoName : String) (jsonDir : String) : IO FilePath := do
+  let jsonDirPrefix := jsonDir ++ "/"
+  let path := (← findOLean mod).toString
+  let path := path.replace "./" ""
+  let path := path.replace "/" "."
+  let path := path.replace s!".lake.packages.{repoName}..lake.build.lib." jsonDirPrefix
+  return FilePath.mk path |>.withExtension "jsonl"
 
 /-- Implementation of `moduleSource`, which is the cached version of this function. -/
 def moduleSource' (mod : Name) : IO String := do
   IO.FS.readFile (← findLean mod)
 
-initialize sourceCache : IO.Ref <| HashMap Name String ←
+/-- Like `moduleSource'` but uses the version of the module that appears in the `Examples/WithImports` directory -/
+def moduleSourceWithImports' (mod : Name) (repoName : String) (withImportsDir : String) : IO String := do
+  IO.FS.readFile (← findLeanWithImports mod repoName withImportsDir)
+
+initialize sourceCache : IO.Ref <| Std.HashMap Name String ←
   IO.mkRef .empty
 
 /-- Read the source code of the named module. The results are cached. -/
 def moduleSource (mod : Name) : IO String := do
   let m ← sourceCache.get
-  match m.find? mod with
+  match m.get? mod with
   | some r => return r
   | none => do
     let v ← moduleSource' mod
+    sourceCache.set (m.insert mod v)
+    return v
+
+/-- Like `moduleSource` but uses the version of the module that appears in the `Examples/WithImports` directory -/
+def moduleSourceWithImports (mod : Name) (repoName : String) (withImportsDir : String) : IO String := do
+  let m ← sourceCache.get
+  match m.get? mod with
+  | some r => return r
+  | none => do
+    let v ← moduleSourceWithImports' mod repoName withImportsDir
     sourceCache.set (m.insert mod v)
     return v
 
@@ -217,7 +255,12 @@ def moduleSource (mod : Name) : IO String := do
 def compileModule' (mod : Name) : MLList IO CompilationStep := do
   Lean.Elab.IO.processInput' (← moduleSource mod) none {} (← findLean mod).toString
 
-initialize compilationCache : IO.Ref <| HashMap Name (List CompilationStep) ←
+/-- Like `compileModule'` but compiles the version of the module that appears in the `Examples/WithImports` directory -/
+def compileModuleWithImports' (mod : Name) (repoName : String) (withImportsDir : String) : MLList IO CompilationStep := do
+  let modSource ← moduleSourceWithImports mod repoName withImportsDir
+  Lean.Elab.IO.processInput' modSource none {} (← findLeanWithImports mod repoName withImportsDir).toString
+
+initialize compilationCache : IO.Ref <| Std.HashMap Name (List CompilationStep) ←
   IO.mkRef .empty
 
 /--
@@ -230,7 +273,7 @@ you should check all compiled files for error messages if attempting this.
 -/
 def compileModule (mod : Name) : IO (List CompilationStep) := do
   let m ← compilationCache.get
-  match m.find? mod with
+  match m.get? mod with
   | some r => return r
   | none => do
     let v ← compileModule' mod |>.force

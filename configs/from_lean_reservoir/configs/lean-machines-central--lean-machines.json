@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/lean-machines-central/lean-machines",
+    "commit": "b3a40d9a585d787c90d965ed3b34767c4a8d3770",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "\u00ablean-machines\u00bb",
+    "imports": [
+        "\u00abLeanMachines\u00bb"
+    ],
+    "metadata": {
+        "name": "lean-machines",
+        "owner": "lean-machines-central",
+        "fullName": "lean-machines-central/lean-machines",
+        "description": "a Lean4 framework for the modeling and refinement of stateful systems",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-08-07T12:55:05Z",
+        "updatedAt": "2024-10-16T20:55:01Z",
+        "stars": 4,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMgeTYQ",
+                "fullName": "lean-machines-central/lean-machines",
+                "repoUrl": "https://github.com/lean-machines-central/lean-machines",
+                "gitUrl": "https://github.com/lean-machines-central/lean-machines",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

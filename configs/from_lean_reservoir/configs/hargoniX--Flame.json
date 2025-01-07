@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/hargoniX/Flame",
+    "commit": "402f040bbba46cec20d0f25261e3e38cd5ec44ea",
+    "lean": "leanprover/lean4:nightly-2023-02-12",
+    "name": "\u00abflame\u00bb",
+    "imports": [
+        "\u00abFlame\u00bb"
+    ],
+    "metadata": {
+        "name": "Flame",
+        "owner": "hargoniX",
+        "fullName": "hargoniX/Flame",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-03-25T20:54:30Z",
+        "updatedAt": "2023-11-06T17:37:50Z",
+        "stars": 9,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJOSMbw",
+                "fullName": "hargoniX/Flame",
+                "repoUrl": "https://github.com/hargoniX/Flame",
+                "gitUrl": "https://github.com/hargoniX/Flame",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

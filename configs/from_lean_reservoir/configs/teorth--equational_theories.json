@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/teorth/equational_theories",
+    "commit": "91a9314328f51e1c3f82936a4ad2a197cdcbc9e3",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "equational_theories",
+    "imports": [
+        "equational_theories"
+    ],
+    "metadata": {
+        "name": "equational_theories",
+        "owner": "teorth",
+        "fullName": "teorth/equational_theories",
+        "description": "A project to map out the relations between different equational theories of Magmas.",
+        "keywords": [],
+        "homepage": "https://teorth.github.io/equational_theories/",
+        "license": "Apache-2.0",
+        "createdAt": "2024-09-26T15:39:21Z",
+        "updatedAt": "2024-10-25T10:02:09Z",
+        "stars": 191,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOM3mrjA",
+                "fullName": "teorth/equational_theories",
+                "repoUrl": "https://github.com/teorth/equational_theories",
+                "gitUrl": "https://github.com/teorth/equational_theories",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

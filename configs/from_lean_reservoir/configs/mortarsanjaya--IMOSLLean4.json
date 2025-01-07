@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/mortarsanjaya/IMOSLLean4",
+    "commit": "b45cf18ab3733aaa388b73a3870277d605262033",
+    "lean": "leanprover/lean4:v4.12.0-rc1",
+    "name": "\u00abIMOSLLean4\u00bb",
+    "imports": [
+        "\u00abIMOSLLean4\u00bb"
+    ],
+    "metadata": {
+        "name": "IMOSLLean4",
+        "owner": "mortarsanjaya",
+        "fullName": "mortarsanjaya/IMOSLLean4",
+        "description": "Formalization of IMO shortlist problems in Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-11-09T20:58:17Z",
+        "updatedAt": "2024-10-21T17:33:15Z",
+        "stars": 13,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKrkVAQ",
+                "fullName": "mortarsanjaya/IMOSLLean4",
+                "repoUrl": "https://github.com/mortarsanjaya/IMOSLLean4",
+                "gitUrl": "https://github.com/mortarsanjaya/IMOSLLean4",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

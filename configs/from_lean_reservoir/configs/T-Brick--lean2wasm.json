@@ -1,0 +1,35 @@
+{
+    "repo": "https://github.com/T-Brick/lean2wasm",
+    "commit": "28620e1f33e0772e90b036db12ed099a734b4b19",
+    "lean": "leanprover/lean4:v4.6.1",
+    "name": "lean2wasm",
+    "imports": [
+        "Lean2Wasm"
+    ],
+    "metadata": {
+        "name": "lean2wasm",
+        "owner": "T-Brick",
+        "fullName": "T-Brick/lean2wasm",
+        "description": "Tool for compiling Lean to WASM",
+        "keywords": [
+            "wasm"
+        ],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-12-12T22:03:48Z",
+        "updatedAt": "2024-10-08T09:19:17Z",
+        "stars": 13,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOK5BdnA",
+                "fullName": "T-Brick/lean2wasm",
+                "repoUrl": "https://github.com/T-Brick/lean2wasm",
+                "gitUrl": "https://github.com/T-Brick/lean2wasm",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

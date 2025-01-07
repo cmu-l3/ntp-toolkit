@@ -1,0 +1,42 @@
+{
+    "repo": "https://github.com/risc0/risc0-lean4",
+    "commit": "31c956fc9246bbfc84359021d66ed94972afd86b",
+    "lean": "leanprover/lean4:nightly-2022-12-23",
+    "name": "\u00abrisc0-lean4\u00bb",
+    "imports": [
+        "Elf"
+    ],
+    "metadata": {
+        "name": "risc0-lean4",
+        "owner": "risc0",
+        "fullName": "risc0/risc0-lean4",
+        "description": "A model of the RISC Zero zkVM and ecosystem in the Lean 4 Theorem Prover",
+        "keywords": [
+            "risc0",
+            "zero-knowledge",
+            "zk-stark",
+            "zkvm",
+            "risc-v",
+            "riscv",
+            "riscv32",
+            "riscv32im"
+        ],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2022-11-26T18:38:07Z",
+        "updatedAt": "2024-10-14T09:43:53Z",
+        "stars": 56,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOIghkRw",
+                "fullName": "risc0/risc0-lean4",
+                "repoUrl": "https://github.com/risc0/risc0-lean4",
+                "gitUrl": "https://github.com/risc0/risc0-lean4",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/pimpale/llm.lean",
+    "commit": "ddcd6371c45c432f8fdd50150baeda39e8bebd72",
+    "lean": "leanprover/lean4:v4.10.0-rc2",
+    "name": "llm.lean",
+    "imports": [
+        "LinearAlgebra"
+    ],
+    "metadata": {
+        "name": "llm.lean",
+        "owner": "pimpale",
+        "fullName": "pimpale/llm.lean",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-06-30T19:26:07Z",
+        "updatedAt": "2024-09-18T20:27:07Z",
+        "stars": 6,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMQLtyQ",
+                "fullName": "pimpale/llm.lean",
+                "repoUrl": "https://github.com/pimpale/llm.lean",
+                "gitUrl": "https://github.com/pimpale/llm.lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

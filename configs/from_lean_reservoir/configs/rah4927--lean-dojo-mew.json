@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/rah4927/lean-dojo-mew",
+    "commit": "d00c776260c77de7e70125ef0cd119de6c0ff1de",
+    "lean": "leanprover/lean4:nightly-2023-08-19",
+    "name": "\u00abminiF2F\u00bb",
+    "imports": [
+        "\u00abMiniF2F\u00bb"
+    ],
+    "metadata": {
+        "name": "lean-dojo-mew",
+        "owner": "rah4927",
+        "fullName": "rah4927/lean-dojo-mew",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-08-18T04:10:06Z",
+        "updatedAt": "2024-07-04T12:41:10Z",
+        "stars": 7,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKIeogQ",
+                "fullName": "rah4927/lean-dojo-mew",
+                "repoUrl": "https://github.com/rah4927/lean-dojo-mew",
+                "gitUrl": "https://github.com/rah4927/lean-dojo-mew",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

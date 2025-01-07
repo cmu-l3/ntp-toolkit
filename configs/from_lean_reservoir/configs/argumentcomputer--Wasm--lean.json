@@ -1,0 +1,36 @@
+{
+    "repo": "https://github.com/argumentcomputer/Wasm.lean",
+    "commit": "454172e1219ce648732211a7804829809dffd64d",
+    "lean": "leanprover/lean4:nightly-2023-01-10",
+    "name": "Wasm",
+    "imports": [
+        "Wasm"
+    ],
+    "metadata": {
+        "name": "Wasm.lean",
+        "owner": "argumentcomputer",
+        "fullName": "argumentcomputer/Wasm.lean",
+        "description": "A WebAssembly implementation in Lean4",
+        "keywords": [
+            "wasm",
+            "webassembly"
+        ],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2022-03-31T10:49:40Z",
+        "updatedAt": "2024-09-18T04:52:31Z",
+        "stars": 32,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOHGM0Ag",
+                "fullName": "argumentcomputer/Wasm.lean",
+                "repoUrl": "https://github.com/argumentcomputer/Wasm.lean",
+                "gitUrl": "https://github.com/argumentcomputer/Wasm.lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

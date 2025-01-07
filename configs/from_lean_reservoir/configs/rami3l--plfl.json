@@ -1,0 +1,37 @@
+{
+    "repo": "https://github.com/rami3l/plfl",
+    "commit": "1a25fc310d8fb0c6e21ab9e385cc7dac0c31f77a",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "plfl",
+    "imports": [
+        "Plfl"
+    ],
+    "metadata": {
+        "name": "plfl",
+        "owner": "rami3l",
+        "fullName": "rami3l/plfl",
+        "description": "Learn Lean 4 with PLFA proofs.",
+        "keywords": [
+            "plfa",
+            "programming-language-foundations",
+            "software-foundations"
+        ],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-04-19T01:34:33Z",
+        "updatedAt": "2024-10-13T14:56:43Z",
+        "stars": 48,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJYl1Eg",
+                "fullName": "rami3l/plfl",
+                "repoUrl": "https://github.com/rami3l/plfl",
+                "gitUrl": "https://github.com/rami3l/plfl",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

@@ -4,7 +4,6 @@ import TrainingData.InfoTree.TacticInvocation.Basic
 import TrainingData.Utils.Range
 import Mathlib.Data.String.Defs
 import Mathlib.Lean.CoreM
-import Batteries.Lean.Util.Path
 import Batteries.Data.String.Basic
 import Mathlib.Tactic.Change
 import Cli
@@ -13,15 +12,15 @@ open Lean Elab IO Meta
 open Cli System
 
 
-def DeclIdMap := HashMap String (List Json)
+def DeclIdMap := Std.HashMap String (List Json)
 
 def addToMap (map : DeclIdMap) (declId : String) (jsonObj : Json) : DeclIdMap :=
-  match map.find? declId with
+  match map.get? declId with
   | some jsonList => map.insert declId (jsonObj :: jsonList)
   | none => map.insert declId [jsonObj]
 
 def groupByDecl (idJsons : List (String × Json)) : IO DeclIdMap := do
-  let mut map : DeclIdMap := HashMap.empty
+  let mut map : DeclIdMap := Std.HashMap.empty
   for ⟨declId, json⟩ in idJsons do
     map := addToMap map declId json
   return map
@@ -94,9 +93,18 @@ def ppCommandInfo (module: ModuleName) (info : CommandInfo) : IO String :=
    (info.stx.getTailPos?.getD 0)).toString
 
 def ppDeclWithoutProof (module: ModuleName) (info: CommandInfo) : IO String := do
-    let ppDecl ← ppCommandInfo module info
-    let decl := (ppDecl.splitOn ":=").headD ""
-    return decl
+    -- (magic value) if this command is a declaration like theorem/def T := proof/definition
+    -- then the := syntax occurs at `stx[1][3][0]`
+    if info.stx[1][3][0].getAtomVal == ":=" then
+      let declStart := info.stx.getPos?.getD 0
+      let proofStart := info.stx[1][3].getPos?.getD 0
+      let proofEnd := info.stx.getTailPos?.getD 0
+      let moduleSource ← moduleSource module
+      let decl := (Substring.mk moduleSource declStart proofStart).toString
+      let proof := (Substring.mk moduleSource proofStart proofEnd).toString
+      return decl
+    else
+      return ""
 
 def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) : IO (String × Json) := do
   let declId := makeElabDeclId elabDeclInfo module hash

@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/teorth/expdb",
+    "commit": "358f6b2f7612d04e9ee9cb33717f196fa94e407b",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "expdb",
+    "imports": [
+        "expdb"
+    ],
+    "metadata": {
+        "name": "expdb",
+        "owner": "teorth",
+        "fullName": "teorth/expdb",
+        "description": "Exponent pair database",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-08-05T16:09:56Z",
+        "updatedAt": "2024-10-25T09:23:32Z",
+        "stars": 17,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMflpYg",
+                "fullName": "teorth/expdb",
+                "repoUrl": "https://github.com/teorth/expdb",
+                "gitUrl": "https://github.com/teorth/expdb",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

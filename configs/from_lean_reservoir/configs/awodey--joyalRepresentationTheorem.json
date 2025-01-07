@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/awodey/joyal",
+    "commit": "204ed6b16da16c9d58dddb9ff187cd410df8a8c8",
+    "lean": "leanprover/lean4:v4.8.0-rc2",
+    "name": "\u00abjoyalRepresentationTheorem\u00bb",
+    "imports": [
+        "\u00abJoyalRepresentationTheorem\u00bb"
+    ],
+    "metadata": {
+        "name": "joyalRepresentationTheorem",
+        "owner": "awodey",
+        "fullName": "awodey/joyalRepresentationTheorem",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2024-05-15T14:00:50Z",
+        "updatedAt": "2024-08-19T05:39:26Z",
+        "stars": 12,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOL78hOA",
+                "fullName": "awodey/joyal",
+                "repoUrl": "https://github.com/awodey/joyal",
+                "gitUrl": "https://github.com/awodey/joyal",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

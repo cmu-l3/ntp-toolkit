@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/riccardobrasca/flt3",
+    "commit": "e7f8239dc11ee1734bdc597131d76fb780bcf3ba",
+    "lean": "leanprover/lean4:v4.9.0-rc3",
+    "name": "\u00abFLT3\u00bb",
+    "imports": [
+        "\u00abFLT3\u00bb"
+    ],
+    "metadata": {
+        "name": "FLT3",
+        "owner": "riccardobrasca",
+        "fullName": "riccardobrasca/FLT3",
+        "description": "Proof in Lean of Fermat Last Theorem for exponent 3",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-03-22T09:16:44Z",
+        "updatedAt": "2024-08-27T15:55:26Z",
+        "stars": 37,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLj9Njg",
+                "fullName": "riccardobrasca/flt3",
+                "repoUrl": "https://github.com/riccardobrasca/flt3",
+                "gitUrl": "https://github.com/riccardobrasca/flt3",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

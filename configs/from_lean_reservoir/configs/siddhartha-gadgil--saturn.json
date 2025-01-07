@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/siddhartha-gadgil/Saturn",
+    "commit": "3811a9dd46cdfd5fa0c0c1896720c28d2ec4a42a",
+    "lean": "leanprover/lean4:v4.8.0",
+    "name": "saturn",
+    "imports": [
+        "Saturn"
+    ],
+    "metadata": {
+        "name": "saturn",
+        "owner": "siddhartha-gadgil",
+        "fullName": "siddhartha-gadgil/saturn",
+        "description": "Experiments with SAT solvers with proofs in Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2021-06-03T01:41:57Z",
+        "updatedAt": "2024-10-14T14:28:19Z",
+        "stars": 53,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOFkDdyQ",
+                "fullName": "siddhartha-gadgil/Saturn",
+                "repoUrl": "https://github.com/siddhartha-gadgil/Saturn",
+                "gitUrl": "https://github.com/siddhartha-gadgil/Saturn",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

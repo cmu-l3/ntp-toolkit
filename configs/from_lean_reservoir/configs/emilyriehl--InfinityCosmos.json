@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/emilyriehl/infinity-cosmos",
+    "commit": "fbc043dc908a6e1215d5765f4b85c63ba36562d3",
+    "lean": "leanprover/lean4:v4.13.0-rc3",
+    "name": "\u00abInfinityCosmos\u00bb",
+    "imports": [
+        "\u00abInfinityCosmos\u00bb"
+    ],
+    "metadata": {
+        "name": "InfinityCosmos",
+        "owner": "emilyriehl",
+        "fullName": "emilyriehl/InfinityCosmos",
+        "description": "A blueprint for a formalization of infinity-cosmos theory in Lean.",
+        "keywords": [],
+        "homepage": "https://emilyriehl.github.io/infinity-cosmos/",
+        "license": "Apache-2.0",
+        "createdAt": "2024-08-01T12:18:46Z",
+        "updatedAt": "2024-10-25T09:23:39Z",
+        "stars": 31,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMd9Sng",
+                "fullName": "emilyriehl/infinity-cosmos",
+                "repoUrl": "https://github.com/emilyriehl/infinity-cosmos",
+                "gitUrl": "https://github.com/emilyriehl/infinity-cosmos",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

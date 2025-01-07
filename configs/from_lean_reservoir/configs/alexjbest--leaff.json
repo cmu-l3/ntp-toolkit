@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/alexjbest/leaff",
+    "commit": "234aa2d96c8385c670883ad2fb60ec15847446b7",
+    "lean": "leanprover/lean4:v4.11.0-rc3",
+    "name": "\u00ableaff\u00bb",
+    "imports": [
+        "\u00abLeaff\u00bb"
+    ],
+    "metadata": {
+        "name": "leaff",
+        "owner": "alexjbest",
+        "fullName": "alexjbest/leaff",
+        "description": "Leaff is a diff tool for Lean environments",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-11-16T18:34:27Z",
+        "updatedAt": "2024-09-20T12:18:23Z",
+        "stars": 15,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKuXsyw",
+                "fullName": "alexjbest/leaff",
+                "repoUrl": "https://github.com/alexjbest/leaff",
+                "gitUrl": "https://github.com/alexjbest/leaff",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

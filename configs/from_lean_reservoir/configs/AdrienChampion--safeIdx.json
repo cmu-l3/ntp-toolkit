@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/AdrienChampion/safeIdx",
+    "commit": "6b46962dd293738aa8886a09ab273a4b8c8b161f",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "\u00absafeIdx\u00bb",
+    "imports": [
+        "\u00abSafeIdx\u00bb"
+    ],
+    "metadata": {
+        "name": "safeIdx",
+        "owner": "AdrienChampion",
+        "fullName": "AdrienChampion/safeIdx",
+        "description": "Type-safe indexing library.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-06-04T09:11:25Z",
+        "updatedAt": "2024-10-22T08:26:49Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJrLEqA",
+                "fullName": "AdrienChampion/safeIdx",
+                "repoUrl": "https://github.com/AdrienChampion/safeIdx",
+                "gitUrl": "https://github.com/AdrienChampion/safeIdx",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

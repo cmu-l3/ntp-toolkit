@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/fgdorais/lean4-unicode-basic",
+    "commit": "1eeedb54ccadb40e7397c5c575de387861306665",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "UnicodeBasic",
+    "imports": [
+        "UnicodeBasic"
+    ],
+    "metadata": {
+        "name": "UnicodeBasic",
+        "owner": "fgdorais",
+        "fullName": "fgdorais/UnicodeBasic",
+        "description": "Basic Unicode support for Lean 4",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-03-11T15:23:41Z",
+        "updatedAt": "2024-10-22T10:04:28Z",
+        "stars": 8,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOJIRMmQ",
+                "fullName": "fgdorais/lean4-unicode-basic",
+                "repoUrl": "https://github.com/fgdorais/lean4-unicode-basic",
+                "gitUrl": "https://github.com/fgdorais/lean4-unicode-basic",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

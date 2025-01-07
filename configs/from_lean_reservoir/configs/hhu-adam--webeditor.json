@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/hhu-adam/lean4web-tools",
+    "commit": "7c6673988461fc5422c2f2ccb11b8addddd83ccd",
+    "lean": "leanprover/lean4:nightly",
+    "name": "webeditor",
+    "imports": [
+        "Webeditor"
+    ],
+    "metadata": {
+        "name": "webeditor",
+        "owner": "hhu-adam",
+        "fullName": "hhu-adam/webeditor",
+        "description": "Helper tool for projects run in lean4web",
+        "keywords": [],
+        "homepage": "https://reservoir.lean-lang.org/@hhu-adam/lean4web-tools",
+        "license": "MIT",
+        "createdAt": "2023-12-17T11:13:33Z",
+        "updatedAt": "2024-07-26T10:23:57Z",
+        "stars": 3,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOK6s0GQ",
+                "fullName": "hhu-adam/lean4web-tools",
+                "repoUrl": "https://github.com/hhu-adam/lean4web-tools",
+                "gitUrl": "https://github.com/hhu-adam/lean4web-tools",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/HannahSantos/FMCn_Lean",
+    "commit": "8e24b93ac70ed000197cd5bd51ffd7a734a8e150",
+    "lean": "leanprover/lean4:v4.13.0-rc4",
+    "name": "\u00abFMCn_Lean\u00bb",
+    "imports": [
+        "\u00abFMCnLean\u00bb"
+    ],
+    "metadata": {
+        "name": "FMCn_Lean",
+        "owner": "HannahSantos",
+        "fullName": "HannahSantos/FMCn_Lean",
+        "description": "Reposit\u00f3rio destinado \u00e0s pr\u00e1ticas de Lean4 da Monitoria de FMCn.",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2024-10-23T21:54:06Z",
+        "updatedAt": "2024-10-25T13:31:58Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDONE6dnw",
+                "fullName": "HannahSantos/FMCn_Lean",
+                "repoUrl": "https://github.com/HannahSantos/FMCn_Lean",
+                "gitUrl": "https://github.com/HannahSantos/FMCn_Lean",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

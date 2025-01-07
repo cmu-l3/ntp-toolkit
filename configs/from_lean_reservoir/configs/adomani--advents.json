@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/adomani/advents",
+    "commit": "2d70f57a2ed6fda111ff460ba39bf6af2f93db45",
+    "lean": "leanprover/lean4:v4.5.0-rc1",
+    "name": "\u00abadvents\u00bb",
+    "imports": [
+        "\u00abAdvents\u00bb"
+    ],
+    "metadata": {
+        "name": "advents",
+        "owner": "adomani",
+        "fullName": "adomani/advents",
+        "description": "Advent of Code",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-12-01T06:23:19Z",
+        "updatedAt": "2024-05-14T23:30:15Z",
+        "stars": 3,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOK0SgKg",
+                "fullName": "adomani/advents",
+                "repoUrl": "https://github.com/adomani/advents",
+                "gitUrl": "https://github.com/adomani/advents",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

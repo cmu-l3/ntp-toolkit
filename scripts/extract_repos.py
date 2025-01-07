@@ -16,8 +16,15 @@ package «lean-training-data» {
 require %s from git
   "%s.git" @ "%s"
 
+require QuerySMT from git
+  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "12febbf63699fd1b26d7d47d7d3eadce6727f1ef"
+
+require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.14.0"
+
 @[default_target]
 lean_lib TrainingData where
+
+lean_lib temp where
 
 lean_lib Examples where
 
@@ -33,9 +40,32 @@ lean_exe state_comments where
 lean_exe premises where
   root := `scripts.premises
 
+@[default_target]
 lean_exe training_data_with_premises where
   root := `scripts.training_data_with_premises
 
+@[default_target]
+lean_exe tactic_benchmark where
+  root := `scripts.tactic_benchmark
+
+@[default_target]
+lean_exe add_imports where
+  root := `scripts.add_imports
+
+lean_exe all_modules where
+  root := `scripts.all_modules
+
+@[default_target]
+lean_exe declarations where
+  root := `scripts.declarations
+
+@[default_target]
+lean_exe imports where
+  root := `scripts.imports
+
+@[default_target]
+lean_exe update_hammer_blacklist where
+  root := `scripts.update_hammer_blacklist
 """ % (name, repo, commit)
     with open(os.path.join(cwd, 'lakefile.lean'), 'w') as f:
         f.write(contents)
@@ -65,14 +95,14 @@ def _setup(cwd):
     subprocess.run(['lake', 'exe', 'cache', 'get'], check=True)
     subprocess.run(['lake', 'build'], check=True)
 
-def _import_file(name, import_file, old_version):
-    name = name.replace('«', '').replace('»', '') 
-    if old_version:
-        return os.path.join('lake-packages', name, import_file)
-    else:
-        return os.path.join('.lake', 'packages', name, import_file)
+# def _import_file(name, import_file, old_version):
+#     name = name.replace('«', '').replace('»', '')
+#     if old_version:
+#         return os.path.join('lake-packages', name, import_file)
+#     else:
+#         return os.path.join('.lake', 'packages', name, import_file)
 
-def _run(cwd, name, import_file, old_version, max_workers, flags):
+def _run(cwd, name, import_module, max_workers, flags):
     if max_workers is not None:
         flags.append('--max-workers')
         flags.append(str(max_workers))
@@ -81,7 +111,7 @@ def _run(cwd, name, import_file, old_version, max_workers, flags):
         '%s/scripts/run_pipeline.py' % cwd,
         '--output-base-dir', 'Examples/%s' % name.capitalize(),
         '--cwd', cwd,
-        '--import-file', _import_file(name, import_file, old_version),
+        '--import-module', *import_module,
         *flags
     ], check=True)
 
@@ -90,13 +120,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--cwd', default='/Users/wellecks/projects/ntp-training-data/')
     parser.add_argument(
-        '--config', 
-        default='configs/config.json', 
+        '--config',
+        default='configs/config.json',
         help='config file'
     )
     parser.add_argument(
-        '--max-workers', 
-        default=None, 
+        '--max-workers',
+        default=None,
         type=int,
         help="maximum number of processes; defaults to number of processors"
     )
@@ -128,6 +158,18 @@ if __name__ == '__main__':
         '--training_data_with_premises',
         action='store_true'
     )
+    parser.add_argument(
+        '--add_imports',
+        action='store_true'
+    )
+    parser.add_argument(    
+        '--declarations',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--imports',
+        action='store_true'
+    )
     args = parser.parse_args()
 
     with open(args.config) as f:
@@ -146,6 +188,12 @@ if __name__ == '__main__':
         flags.append('--full_proof_training_data_states')
     if args.training_data_with_premises:
         flags.append('--training_data_with_premises')
+    if args.add_imports:
+        flags.append('--add_imports')
+    if args.declarations:
+        flags.append('--declarations')
+    if args.imports:
+        flags.append('--imports')
 
     for source in sources:
         print("=== %s ===" % (source['name']))
@@ -171,8 +219,9 @@ if __name__ == '__main__':
         _run(
             cwd=args.cwd,
             name=source['name'],
-            import_file=source['import_file'],
-            old_version=False if 'old_version' not in source else source['old_version'],
+            import_module=source['imports'],
+            # import_file=source['import_file'],
+            # old_version=False if 'old_version' not in source else source['old_version'],
             max_workers=args.max_workers,
             flags=flags
         )

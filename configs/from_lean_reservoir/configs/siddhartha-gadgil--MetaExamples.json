@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/siddhartha-gadgil/MetaExamples",
+    "commit": "1020b88369a776e620fe77af199808c5275f7865",
+    "lean": "leanprover/lean4:v4.12.0-rc1",
+    "name": "\"MetaExamples\"",
+    "imports": [
+        "\u00abMetaExamples\u00bb"
+    ],
+    "metadata": {
+        "name": "MetaExamples",
+        "owner": "siddhartha-gadgil",
+        "fullName": "siddhartha-gadgil/MetaExamples",
+        "description": "Examples using MetaProgramming for writing tactics etc.",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2024-09-05T06:08:34Z",
+        "updatedAt": "2024-10-19T04:44:09Z",
+        "stars": 14,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMtH-yw",
+                "fullName": "siddhartha-gadgil/MetaExamples",
+                "repoUrl": "https://github.com/siddhartha-gadgil/MetaExamples",
+                "gitUrl": "https://github.com/siddhartha-gadgil/MetaExamples",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/knowsys/CertifyingDatalog",
+    "commit": "ec5180c0544318ac217aa64e789db44e9d20a7ca",
+    "lean": "leanprover/lean4:v4.11.0",
+    "name": "\u00abcertifyingDatalog\u00bb",
+    "imports": [
+        "\u00abCertifyingDatalog\u00bb"
+    ],
+    "metadata": {
+        "name": "certifyingDatalog",
+        "owner": "knowsys",
+        "fullName": "knowsys/certifyingDatalog",
+        "description": "A certified checker for Datalog entailments, written in Lean",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-10-02T21:53:39Z",
+        "updatedAt": "2024-09-16T07:29:15Z",
+        "stars": 7,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKbJuvA",
+                "fullName": "knowsys/CertifyingDatalog",
+                "repoUrl": "https://github.com/knowsys/CertifyingDatalog",
+                "gitUrl": "https://github.com/knowsys/CertifyingDatalog",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/CAIMEOX/json-schema-lean",
+    "commit": "4586d995b0a2a6ebc34fc69ab4f0bb21c9513d17",
+    "lean": "leanprover/lean4:stable",
+    "name": "\u00abjson-schema\u00bb",
+    "imports": [
+        "\u00abJsonSchema\u00bb"
+    ],
+    "metadata": {
+        "name": "json-schema",
+        "owner": "CAIMEOX",
+        "fullName": "CAIMEOX/json-schema",
+        "description": "Json Schema lean implementation",
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2024-02-29T09:02:57Z",
+        "updatedAt": "2024-04-22T05:23:00Z",
+        "stars": 6,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOLZpRQQ",
+                "fullName": "CAIMEOX/json-schema-lean",
+                "repoUrl": "https://github.com/CAIMEOX/json-schema-lean",
+                "gitUrl": "https://github.com/CAIMEOX/json-schema-lean",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

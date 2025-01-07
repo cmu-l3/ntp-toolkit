@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/haruhisa-enomoto/mathlib4-all-tactics",
+    "commit": "1343083658c1488b9afc7a1dbe1b3d69681b85f7",
+    "lean": "leanprover/lean4:v4.0.0-rc4",
+    "name": "\u00abmathlib4-all-tactics\u00bb",
+    "imports": [
+        "\u00abMathlib4AllTactics\u00bb"
+    ],
+    "metadata": {
+        "name": "mathlib4-all-tactics",
+        "owner": "haruhisa-enomoto",
+        "fullName": "haruhisa-enomoto/mathlib4-all-tactics",
+        "description": "Markdown file of the list and explanations of all mathlib4 tactics",
+        "keywords": [],
+        "homepage": null,
+        "license": "Apache-2.0",
+        "createdAt": "2023-09-06T08:59:41Z",
+        "updatedAt": "2024-10-23T18:27:34Z",
+        "stars": 28,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKQCtKg",
+                "fullName": "haruhisa-enomoto/mathlib4-all-tactics",
+                "repoUrl": "https://github.com/haruhisa-enomoto/mathlib4-all-tactics",
+                "gitUrl": "https://github.com/haruhisa-enomoto/mathlib4-all-tactics",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

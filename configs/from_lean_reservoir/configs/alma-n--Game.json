@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/alma-n/ConstructiveLogicCourseGame",
+    "commit": "f8685faae62dbe508fa76af0accb2652bca9a88d",
+    "lean": "leanprover/lean4:v4.7.0",
+    "name": "Game",
+    "imports": [
+        "Game"
+    ],
+    "metadata": {
+        "name": "Game",
+        "owner": "alma-n",
+        "fullName": "alma-n/Game",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2024-06-30T12:47:22Z",
+        "updatedAt": "2024-10-06T06:37:24Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOMQEkxQ",
+                "fullName": "alma-n/ConstructiveLogicCourseGame",
+                "repoUrl": "https://github.com/alma-n/ConstructiveLogicCourseGame",
+                "gitUrl": "https://github.com/alma-n/ConstructiveLogicCourseGame",
+                "defaultBranch": "master"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}

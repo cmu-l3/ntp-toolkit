@@ -1,0 +1,33 @@
+{
+    "repo": "https://github.com/Dominique-Lawson/Directed-Topology-Lean-4",
+    "commit": "009529606c66d37ef93b4b81b8587f71ce4d2c56",
+    "lean": "leanprover/lean4:v4.6.0-rc1",
+    "name": "\u00ablean_4\u00bb",
+    "imports": [
+        "\u00abLean4\u00bb"
+    ],
+    "metadata": {
+        "name": "lean_4",
+        "owner": "Dominique-Lawson",
+        "fullName": "Dominique-Lawson/lean_4",
+        "description": null,
+        "keywords": [],
+        "homepage": null,
+        "license": "MIT",
+        "createdAt": "2023-10-17T15:43:01Z",
+        "updatedAt": "2024-06-23T14:36:32Z",
+        "stars": 2,
+        "sources": [
+            {
+                "type": "git",
+                "host": "github",
+                "id": "R_kgDOKhiqlw",
+                "fullName": "Dominique-Lawson/Directed-Topology-Lean-4",
+                "repoUrl": "https://github.com/Dominique-Lawson/Directed-Topology-Lean-4",
+                "gitUrl": "https://github.com/Dominique-Lawson/Directed-Topology-Lean-4",
+                "defaultBranch": "main"
+            }
+        ],
+        "schemaVersion": "1.2.0"
+    }
+}
