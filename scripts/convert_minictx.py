@@ -95,11 +95,14 @@ for filename in glob.glob(os.path.join(args.input_dir, 'FullProof/*.jsonl')):
             # file_dir = os.path.dirname(file_path)  # a subdirectory in the repo
             repo_path_match = re.search(r"^(\./)*\.lake/packages/[^/]+/", file_path)
             if not repo_path_match:
-                raise ValueError(f"Unrecognized repository path in {file_path}")
-            repo_path = repo_path_match.group(0)
-            file_commit, file_date = get_file_commit(file_path, repo_path)
-            theorem_commit, theorem_date = get_theorem_commit(name, repo_path)
-            file_path_pretty = re.sub(r"(\./)*\.lake/packages/", "", file_path)
+                print(f"Unrecognized repository path in {file_path}")
+                file_commit = file_date = theorem_commit = theorem_date = None
+                file_path_pretty = file_path
+            else:
+                repo_path = repo_path_match.group(0)
+                file_commit, file_date = get_file_commit(file_path, repo_path)
+                theorem_commit, theorem_date = get_theorem_commit(name, repo_path)
+                file_path_pretty = re.sub(r"(\./)*\.lake/packages/", "", file_path)
 
             theorems.append({
                 'srcContext': context,
