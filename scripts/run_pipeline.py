@@ -29,8 +29,6 @@ TASKS = [
     Task('state_comments', 'StateComments', '.lean', 'state_comments'),
     Task('full_proof_training_data', 'FullProof', '.jsonl', 'full_proof_training_data'),
     Task('full_proof_training_data_states', 'FullProofWithStates', '.jsonl', 'full_proof_training_data', input_file_from_task='state_comments'),
-    Task('training_data', 'TacticPrediction', '.jsonl', 'training_data'),
-    Task('training_data', 'TacticPrediction', '.jsonl', 'training_data'),
     Task('premises', 'Premises', '.jsonl', 'premises'),
     Task('training_data_with_premises', 'TrainingDataWithPremises', '.jsonl', 'training_data_with_premises'),
     Task('imports', 'Imports', '.jsonl', 'imports'),

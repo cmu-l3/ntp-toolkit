@@ -111,16 +111,20 @@ def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : Str
     (elabDeclInfo.snd.stx.getPos?.getD 0) (i.info.stx.getPos?.getD 0)
 
   let state := (Format.joinSep (← i.goalState) "\n").pretty
+  let stateAfter := (Format.joinSep (← i.goalStateAfter) "\n").pretty
   let nextTactic ← tacticPP module i
   let decl ← ppDeclWithoutProof module elabDeclInfo.snd
+  let declName := (i.ctx.parentDecl?.map toString).getD ""
 
   let json : Json :=
     Json.mkObj [
       ("declId", Json.str declId),
       ("decl", Json.str decl),
+      ("declName", Json.str declName),
       ("srcUpToTactic", Json.str sourceUpToTactic.toString),
       ("declUpToTactic", Json.str declUpToTactic.toString),
       ("state", Json.str state),
+      ("stateAfter", Json.str stateAfter),
       ("nextTactic", Json.str nextTactic)
     ]
   return (declId, json)
