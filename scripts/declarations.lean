@@ -44,10 +44,27 @@ def infoOfConstant (cinfo : ConstantInfo) : MetaM (String × Info) := do
     | .ctorInfo _ => "def"
     | .recInfo _ => "def"
     | .quotInfo _ => "def"
-  -- TODO: record if it is e.g. ctor, opaque, induct etc (not accepted by duper)
   return (kind, ← Info.ofConstantVal' cinfo.toConstantVal)
 
 end DocGen4.Process
+
+def Lean.Name.isTheorem (name : Name) : CoreM Bool := do
+  let .some ci := (← getEnv).find? name
+    | throwError "Name.isTheorem :: Cannot find name {name}"
+  let .thmInfo _ := ci
+    | return false
+  return true
+
+/--
+  A constant is a human theorem iff it is a theorem and has a
+  declaration range. Roughly speaking, a constant have a declaration
+  range iff it is defined (presumably by a human) in a `.lean` file
+-/
+def Lean.Name.isHumanTheorem (name : Name) : CoreM Bool := do
+  let hasDeclRange := (← Lean.findDeclarationRanges? name).isSome
+  let isTheorem ← Name.isTheorem name
+  let notProjFn := !(← Lean.isProjectionFn name)
+  return hasDeclRange && isTheorem && notProjFn
 
 /-- Pretty-prints a constant to JSON -/
 def constantInfoToJson (cinfo : ConstantInfo) : MetaM Json := do
@@ -78,11 +95,14 @@ def constantInfoToJson (cinfo : ConstantInfo) : MetaM Json := do
     ("decl", Json.str decl),
     ("line", Json.num info.declarationRange.pos.line),
     ("column", Json.num info.declarationRange.pos.column),
+    ("isProp", Json.bool (← isProp cinfo.type)),
+    -- Only certain declarations can be in the eval/test set
+    ("isHumanTheorem", Json.bool (← Name.isHumanTheorem cinfo.name)),
   ]
 
-/-- If a constant should not be included. -/
+/-- If a constant should not be included (more permissive than Name.isBlackListed). -/
 def isBlackListedName (name : Name) : Bool :=
-  name.isInternalDetail
+  name == ``sorryAx || name.isInternalDetail
 
 /--
 Traverse all declarations from modules, collecting prettified declarations
