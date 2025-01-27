@@ -2,13 +2,16 @@ import Scripts.Tactic_benchmark
 
 open Lean Core Elab IO Meta Term Tactic -- All the monads!
 
+-- Set this option to modify the premise selection server URL when using `hammer` locally
+set_option hammer.premiseSelection.apiUrl "http://52.206.70.13/retrieve"
+
 def withImportsDir := "Examples/Mathlib/WithImports"
 def jsonDir := "Examples/Mathlib/TrainingDataWithPremises"
 
 -- #eval Command.liftTermElabM $ hammerCoreBenchmarkAtDecl `Mathlib.Order.Heyting.Basic `hnot_le_iff_codisjoint_left withImportsDir jsonDir 10
--- #eval Command.liftTermElabM $ tacticBenchmarkAtDecl `Mathlib.Order.Heyting.Basic `hnot_le_iff_codisjoint_left withImportsDir (useHammer 10) TacType.Hammer
+-- #eval Command.liftTermElabM $ tacticBenchmarkAtDecl `Mathlib.Order.Heyting.Basic `hnot_le_iff_codisjoint_left withImportsDir (useHammer 10 "http://52.206.70.13/retrieve") TacType.Hammer
 -- **NOTE** `useAesopHammer` should be given `TacType.General` because `aesop` does not output the special error messages that enable more fine-grained error interpretation
--- #eval Command.liftTermElabM $ tacticBenchmarkAtDecl `Mathlib.Order.Heyting.Basic `hnot_le_iff_codisjoint_left withImportsDir (useAesopHammer 10) TacType.General
+-- #eval Command.liftTermElabM $ tacticBenchmarkAtDecl `Mathlib.Order.Heyting.Basic `hnot_le_iff_codisjoint_left withImportsDir (useAesopHammer 10 "http://52.206.70.13/retrieve") TacType.General
 -- #eval Command.liftTermElabM $ aesopHammerCoreBenchmarkAtDecl `Mathlib.Order.Heyting.Basic `hnot_le_iff_codisjoint_left withImportsDir jsonDir 10
 
 ------------------------------------------------------------------------------------------------------------------------

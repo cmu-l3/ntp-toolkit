@@ -60,15 +60,15 @@ def useHammerCore (hammerRecommendation : Array String) (externalProverTimeout :
     else
       evalTactic (← `(tactic| hammerCore [$simpLemmas,*] [*, $(coreRecommendation),*] {simpTarget := no_target}))
 
-def useHammer (externalProverTimeout : Nat) (withSimpPreprocessing := true) : TacticM Unit := do
-  withOptions (fun o => o.set ``auto.tptp.timeout externalProverTimeout) do
+def useHammer (externalProverTimeout : Nat) (apiUrl : String) (withSimpPreprocessing := true) : TacticM Unit := do
+  withOptions (fun o => (o.set ``auto.tptp.timeout externalProverTimeout).set `hammer.premiseSelection.apiUrl apiUrl) do
     if withSimpPreprocessing then
       evalTactic (← `(tactic| hammer))
     else
       evalTactic (← `(tactic| hammer {simpTarget := no_target}))
 
-def useAesopHammer (externalProverTimeout : Nat) (withSimpPreprocessing := true) : TacticM Unit := do
-  withOptions (fun o => o.set ``auto.tptp.timeout externalProverTimeout) do
+def useAesopHammer (externalProverTimeout : Nat) (apiUrl : String) (withSimpPreprocessing := true) : TacticM Unit := do
+  withOptions (fun o => (o.set ``auto.tptp.timeout externalProverTimeout).set `hammer.premiseSelection.apiUrl apiUrl) do
     if withSimpPreprocessing then
       evalTactic (← `(tactic| aesop (add unsafe (by hammer))))
     else
@@ -391,8 +391,8 @@ def runTacticAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → Met
             | _ :: _ => pure $ HammerResult .subgoals
           | .QuerySMT =>
             match gs with
-            | [] => pure $ HammerResult .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate `querySMT` on Prop declarations
-            | _ :: _ => pure $ HammerResult .subgoals
+            | [] => pure $ QuerySMTResult .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate `querySMT` on Prop declarations
+            | _ :: _ => pure $ QuerySMTResult .subgoals
           )
           (ctx := {declName? := `fakeDecl, errToSorry := false}))
         (fun e => do
@@ -725,6 +725,10 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
     match args.positionalArg? "externalProverTimeout" with
     | some externalProverTimeout => externalProverTimeout.as! Nat
     | none => 10
+  let apiUrl :=
+    match args.positionalArg? "apiUrl" with
+    | some apiUrl => apiUrl.as! String
+    | none => "http://52.206.70.13/retrieve"
 
   try
     match benchmarkType with
@@ -735,7 +739,8 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
       | "rfl" => tacticBenchmarkAtDecl module declName (some premisesPath) useRfl TacType.General
       | "simp_all" => tacticBenchmarkAtDecl module declName (some premisesPath) useSimpAll TacType.General
       | "omega" => tacticBenchmarkAtDecl module declName (some premisesPath) useOmega TacType.General
-      | "hammer" => tacticBenchmarkAtDecl module declName (some premisesPath) (useHammer externalProverTimeout) TacType.Hammer
+      | "hammer" => tacticBenchmarkAtDecl module declName (some premisesPath) (useHammer externalProverTimeout apiUrl) TacType.Hammer
+      | "aesop_hammer" => tacticBenchmarkAtDecl module declName (some premisesPath) (useAesopHammer externalProverTimeout apiUrl) TacType.General
 
       | "simp_all_with_premises" => simpAllBenchmarkAtDecl module declName "Examples/Mathlib/WithImports" premisesPath
       | "hammerCore" => hammerCoreBenchmarkAtDecl module declName "Examples/Mathlib/WithImports" premisesPath 10
@@ -757,6 +762,7 @@ def tactic_benchmark : Cmd := `[Cli|
     premisesPath : String; "Path to the premises, such as Examples/Mathlib/TrainingDataWithPremises."
     benchmarkType : String; "Which type of tactic to run (e.g. hammer, hammerCore, aesop, exact)."
     externalProverTimeout : Nat; "Timeout for the external prover (default 10)."
+    apiUrl : String; "API URL for the premise selection server (default http://52.206.70.13/retrieve)."
 ]
 
 /-- `lake exe tactic_benchmark` -/
