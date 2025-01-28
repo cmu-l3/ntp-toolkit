@@ -729,22 +729,29 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
     match args.positionalArg? "apiUrl" with
     | some apiUrl => apiUrl.as! String
     | none => "http://52.206.70.13/retrieve"
+  let withImportsPath := "Examples/Mathlib/WithImports"
 
   try
     match benchmarkType with
-      | "duper" => tacticBenchmarkAtDecl module declName (some premisesPath) useDuper TacType.General
-      | "querySMT" => tacticBenchmarkAtDecl module declName (some premisesPath) useQuerySMT TacType.QuerySMT
-      | "aesop" => tacticBenchmarkAtDecl module declName (some premisesPath) useAesop TacType.General
-      | "exact" => tacticBenchmarkAtDecl module declName (some premisesPath) useExact? TacType.General
-      | "rfl" => tacticBenchmarkAtDecl module declName (some premisesPath) useRfl TacType.General
-      | "simp_all" => tacticBenchmarkAtDecl module declName (some premisesPath) useSimpAll TacType.General
-      | "omega" => tacticBenchmarkAtDecl module declName (some premisesPath) useOmega TacType.General
-      | "hammer" => tacticBenchmarkAtDecl module declName (some premisesPath) (useHammer externalProverTimeout apiUrl) TacType.Hammer
-      | "aesop_hammer" => tacticBenchmarkAtDecl module declName (some premisesPath) (useAesopHammer externalProverTimeout apiUrl) TacType.General
+      | "duper" => tacticBenchmarkAtDecl module declName (some withImportsPath) useDuper TacType.General
+      | "querySMT" => tacticBenchmarkAtDecl module declName (some withImportsPath) useQuerySMT TacType.QuerySMT
+      | "aesop" => tacticBenchmarkAtDecl module declName (some withImportsPath) useAesop TacType.General
+      | "exact" => tacticBenchmarkAtDecl module declName (some withImportsPath) useExact? TacType.General
+      | "rfl" => tacticBenchmarkAtDecl module declName (some withImportsPath) useRfl TacType.General
+      | "simp_all" => tacticBenchmarkAtDecl module declName (some withImportsPath) useSimpAll TacType.General
+      | "omega" => tacticBenchmarkAtDecl module declName (some withImportsPath) useOmega TacType.General
+      | "hammer" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useHammer externalProverTimeout apiUrl) TacType.Hammer
+      | "hammer_nosimp" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useHammer externalProverTimeout apiUrl false) TacType.Hammer
 
-      | "simp_all_with_premises" => simpAllBenchmarkAtDecl module declName "Examples/Mathlib/WithImports" premisesPath
-      | "hammerCore" => hammerCoreBenchmarkAtDecl module declName "Examples/Mathlib/WithImports" premisesPath 10
-      | "hammerCore_without_simp_preprocessing" => hammerCoreBenchmarkAtDecl module declName "Examples/Mathlib/WithImports" premisesPath 10 false
+      | "aesop_hammer" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammer externalProverTimeout apiUrl) TacType.General
+      | "aesop_hammer_nosimp" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammer externalProverTimeout apiUrl false) TacType.General
+
+      | "aesop_hammerCore" => aesopHammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout true
+      | "aesop_hammerCore_nosimp" => aesopHammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout false
+
+      | "simp_all_with_premises" => simpAllBenchmarkAtDecl module declName withImportsPath premisesPath
+      | "hammerCore" => hammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout
+      | "hammerCore_nosimp" => hammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout false
 
       | _ => IO.throwServerError s!"Unknown benchmark type {benchmarkType}"
   catch e =>
@@ -756,13 +763,15 @@ def tactic_benchmark : Cmd := `[Cli|
   tactic_benchmark VIA tacticBenchmarkMain; ["0.0.1"]
   "Run a customisable tactic at all declarations in a file."
 
+  FLAGS:
+    externalProverTimeout : Nat; "Timeout for the external prover (default 10)."
+    apiUrl : String; "API URL for the premise selection server (default http://52.206.70.13/retrieve)."
+
   ARGS:
     module : ModuleName; "Lean module to run the tactic on."
     declName : String; "Name of the declaration to run the tactic on."
     premisesPath : String; "Path to the premises, such as Examples/Mathlib/TrainingDataWithPremises."
     benchmarkType : String; "Which type of tactic to run (e.g. hammer, hammerCore, aesop, exact)."
-    externalProverTimeout : Nat; "Timeout for the external prover (default 10)."
-    apiUrl : String; "API URL for the premise selection server (default http://52.206.70.13/retrieve)."
 ]
 
 /-- `lake exe tactic_benchmark` -/
