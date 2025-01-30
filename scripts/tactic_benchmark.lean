@@ -1,5 +1,6 @@
 import TrainingData.Frontend
 import TrainingData.Utils.SimpAllHint
+import TrainingData.Utils.TheoremPrettyPrinting
 import Mathlib.Control.Basic
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Common
@@ -11,7 +12,7 @@ import QuerySMT
 import Hammer
 import Cli
 
-open Lean Core Elab IO Meta Term Tactic SimpAllHint -- All the monads!
+open Lean Core Elab IO Meta Term Tactic SimpAllHint TheoremPrettyPrinting -- All the monads!
 
 set_option autoImplicit true
 
@@ -112,8 +113,11 @@ with the `Environment` as it was *before* the command which created that declara
 (Internal declarations according to `Name.isBlackListed` are skipped.)
 
 If `withImportsDir` is provided, then `runAtDecls` uses the version of the file contained in the `WithImports` directory
+
+`tac` takes in a `ConstantInfo` as well as an optional `Nat` indicating how many arguments the theorem takes. This is a hack to get around the fact
+that `Info.ofConstantVal'` doesn't have access to the constant itself in the environment `cmd.before`. **TODO** Find a more general solution.
 -/
-def runAtDecls (mod : Name) (withImportsDir : Option String := none) (tac : ConstantInfo → MetaM (Option α)) : MLList IO (ConstantInfo × α) := do
+def runAtDecls (mod : Name) (withImportsDir : Option String := none) (tac : ConstantInfo → Option Nat → MetaM (Option α)) : MLList IO (ConstantInfo × α) := do
   let fileName ←
     match withImportsDir with
     | none => pure (← findLean mod).toString
@@ -131,20 +135,34 @@ def runAtDecls (mod : Name) (withImportsDir : Option String := none) (tac : Cons
 
     let options := ({} : KVMap).insert `maxHeartbeats (.ofNat 200000)
     let ctx := { fileName, options, fileMap := default }
-    let state := { env := cmd.before }
+    let stateBefore := { env := cmd.before }
+    let stateAfter := { env := cmd.after }
+    -- Calculate `numArgs`, the number of arguments the theorem `ci` takes
+    /- **TODO** This `numArgs` approximation is consistent with the approximation that's performed in training_data_with_premises.lean,
+       but it is not entirely accurate to the real number of arguments in the theorem declaration. The issue is that `numArgs` counts
+       the number of distinct binders in the theorem declaration, not the actual number of arguments that the theorem takes (so `{a b : Nat}`
+       is counted as 1 binder, but the theorem really takes 2 arguments). -/
+    let numArgs ←
+      Prod.fst <$> (CoreM.toIO · ctx stateAfter) do -- Use `stateAfter` because `Info.ofConstantVal'` needs to access the constant in the environment
+        MetaM.run' (ctx := {}) (s := {}) do
+          match ci with
+          | .thmInfo v =>
+            let thmInfo ← Info.ofConstantVal' v.toConstantVal
+            return some thmInfo.args.size
+          | _ => return none
     -- From `IO` to `CoreM`:
-    Prod.fst <$> (CoreM.toIO · ctx state) do
+    Prod.fst <$> (CoreM.toIO · ctx stateBefore) do -- Use `stateBefore` to accurately simulate the environment before the declaration was created
       if ← ci.name.isBlackListed then
         pure none
       else
         -- From `CoreM` to `MetaM`:
         MetaM.run' (ctx := {}) (s := {}) do
-          match ← tac ci with
+          match ← tac ci numArgs with
           | some r => pure (ci, r)
           | none => pure none
 
 /-- Like `runAtDecls` but only returns the output for a single declaration. If the declaration cannot be found or if the tactic fails, `none` is returned. -/
-def runAtDecl (mod : Name) (declName : Name) (withImportsDir : Option String := none) (tac : ConstantInfo → MetaM (Option α)) : IO (Option (ConstantInfo × α)) := do
+def runAtDecl (mod : Name) (declName : Name) (withImportsDir : Option String := none) (tac : ConstantInfo → Option Nat → MetaM (Option α)) : IO (Option (ConstantInfo × α)) := do
   let fileName ←
     match withImportsDir with
     | none => pure (← findLean mod).toString
@@ -158,16 +176,30 @@ def runAtDecl (mod : Name) (declName : Name) (withImportsDir : Option String := 
     if ci.name == declName then
       let options := ({} : KVMap).insert `maxHeartbeats (.ofNat 200000)
       let ctx := { fileName, options, fileMap := default }
-      let state := { env := cmd.before }
+      let stateBefore := { env := cmd.before }
+      let stateAfter := { env := cmd.after }
+      -- Calculate `numArgs`, the number of arguments the theorem `ci` takes
+      /- **TODO** This `numArgs` approximation is consistent with the approximation that's performed in training_data_with_premises.lean,
+         but it is not entirely accurate to the real number of arguments in the theorem declaration. The issue is that `numArgs` counts
+         the number of distinct binders in the theorem declaration, not the actual number of arguments that the theorem takes (so `{a b : Nat}`
+         is counted as 1 binder, but the theorem really takes 2 arguments). -/
+      let numArgs ←
+        Prod.fst <$> (CoreM.toIO · ctx stateAfter) do -- Use `stateAfter` because `Info.ofConstantVal'` needs to access the constant in the environment
+          MetaM.run' (ctx := {}) (s := {}) do
+            match ci with
+            | .thmInfo v =>
+              let thmInfo ← Info.ofConstantVal' v.toConstantVal
+              return some thmInfo.args.size
+            | _ => return none
       -- From `IO` to `CoreM`:
-      let res ← Prod.fst <$> (CoreM.toIO · ctx state) do
+      let res ← Prod.fst <$> (CoreM.toIO · ctx stateBefore) do -- Use `stateBefore` to accurately simulate the environment before the declaration was created
         if ← ci.name.isBlackListed then
           IO.eprintln s!"runAtDecl :: {ci.name} is blacklisted and is therefore not an eligible declaration for runAtDecl"
           return none
         else
           -- From `CoreM` to `MetaM`:
           MetaM.run' (ctx := {}) (s := {}) do
-            match ← tac ci with
+            match ← tac ci numArgs with
             | some r => pure $ some (ci, r)
             | none => pure none
       return res
@@ -292,13 +324,19 @@ If `withImportsPath?` is provided, then `runTacticAtDecls` uses the version of t
 -/
 def runTacticAtDecls (mod : Name) (decls : ConstantInfo → CoreM Bool) (withImportsPath? : Option String) (tac : TacticM Unit)
   (tacType : TacType) : MLList IO (ConstantInfo × Result) := do
-  runAtDecls mod withImportsPath? fun ci => do
+  runAtDecls mod withImportsPath? fun ci numArgs? => do
     if ! (← decls ci) then return none
-    let g ← mkFreshExprMVar ci.type
+    let g ←
+      match numArgs? with
+      | some numArgs =>
+        let g ← mkFreshExprMVar ci.type
+        let (_, g) ← g.mvarId!.introNP numArgs -- Introduce universal binders corresponding to arguments of the theorem
+        pure g
+      | none => return none -- Only run the tactic on theorems
     let ((res, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
       tryCatchRuntimeEx
         (TermElabM.run' (do
-          let gs ← Tactic.run g.mvarId! tac
+          let gs ← Tactic.run g tac
           match tacType with
           | .General =>
             match gs with
@@ -310,7 +348,7 @@ def runTacticAtDecls (mod : Name) (decls : ConstantInfo → CoreM Bool) (withImp
                 if ← isProp ci.type then
                   pure $ GeneralResult .success
                 else
-                match ← try? (isDefEq g v) with
+                match ← try? (isDefEq (Expr.mvar g) v) with
                 | none
                   -- In this case we should perhaps return an "uncertain" value.
                   -- The problem is that `v` may contain constants generated by the simplifier
@@ -359,13 +397,19 @@ def runTacticAtDecls (mod : Name) (decls : ConstantInfo → CoreM Bool) (withImp
 /-- Like `runTacticAtDecls` but only tests a single declaration (indicated by `declName`). -/
 def runTacticAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath? : Option String) (tac : TacticM Unit)
   (tacType : TacType) : IO (Option (ConstantInfo × Result)) := do
-  runAtDecl mod declName withImportsPath? fun ci => do
+  runAtDecl mod declName withImportsPath? fun ci numArgs? => do
     if ! (← decls ci) then return none
-    let g ← mkFreshExprMVar ci.type
+    let g ←
+      match numArgs? with
+      | some numArgs =>
+        let g ← mkFreshExprMVar ci.type
+        let (_, g) ← g.mvarId!.introNP numArgs -- Introduce universal binders corresponding to arguments of the theorem
+        pure g
+      | none => return none -- Only run the tactic on theorems
     let ((res, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
       tryCatchRuntimeEx
         (TermElabM.run' (do
-          let gs ← Tactic.run g.mvarId! tac
+          let gs ← Tactic.run g tac
           match tacType with
           | .General =>
             match gs with
@@ -377,7 +421,7 @@ def runTacticAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → Met
                 if ← isProp ci.type then
                   pure $ GeneralResult .success
                 else
-                match ← try? (isDefEq g v) with
+                match ← try? (isDefEq (Expr.mvar g) v) with
                 | none
                   -- In this case we should perhaps return an "uncertain" value.
                   -- The problem is that `v` may contain constants generated by the simplifier
@@ -425,9 +469,15 @@ def runTacticAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → Met
 
 def runHammerCoreAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String) (externalProverTimeout : Nat) :
   MLList IO (ConstantInfo × HammerResult) := do
-  runAtDecls mod (some withImportsPath) fun ci => do
+  runAtDecls mod (some withImportsPath) fun ci numArgs? => do
     if ! (← decls ci) then return none
-    let g ← mkFreshExprMVar ci.type
+    let g ←
+      match numArgs? with
+      | some numArgs =>
+        let g ← mkFreshExprMVar ci.type
+        let (_, g) ← g.mvarId!.introNP numArgs -- Introduce universal binders corresponding to arguments of the theorem
+        pure g
+      | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
     let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
@@ -449,7 +499,7 @@ def runHammerCoreAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (wit
       tryCatchRuntimeEx
         (TermElabM.run' (do
           dbg_trace "About to use hammer for {ci.name} in module {mod} (recommendation: {hammerRecommendation})"
-          let gs ← Tactic.run g.mvarId! $ useHammerCore hammerRecommendation externalProverTimeout
+          let gs ← Tactic.run g $ useHammerCore hammerRecommendation externalProverTimeout
           match gs with
           | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate the hammer on Prop declarations
           | _ :: _ => pure .subgoals)
@@ -463,7 +513,7 @@ def runHammerCoreAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (wit
           else if "tactic 'simp' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
           else if "tactic 'simp_all' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
           else
-            dbg_trace "runHammerCoreAtDecls :: miscFailure for {ci.name} in module {mod}: {← e.toMessageData.toString}"
+            dbg_trace "{decl_name%} :: miscFailure for {ci.name} in module {mod}: {← e.toMessageData.toString}"
             pure .miscFailure
         )
     return some ⟨res, seconds, heartbeats⟩
@@ -471,9 +521,15 @@ def runHammerCoreAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (wit
 /-- Like `runHammerCoreAtDecls` but only tests a single declaration (indicated by `declName`). -/
 def runHammerCoreAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String)
   (externalProverTimeout : Nat) (withSimpPreprocessing := true) : IO (Option (ConstantInfo × HammerResult)) := do
-  runAtDecl mod declName (some withImportsPath) fun ci => do
+  runAtDecl mod declName (some withImportsPath) fun ci numArgs? => do
     if ! (← decls ci) then return none
-    let g ← mkFreshExprMVar ci.type
+    let g ←
+      match numArgs? with
+      | some numArgs =>
+        let g ← mkFreshExprMVar ci.type
+        let (_, g) ← g.mvarId!.introNP numArgs -- Introduce universal binders corresponding to arguments of the theorem
+        pure g
+      | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
     let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
@@ -495,7 +551,7 @@ def runHammerCoreAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo →
       tryCatchRuntimeEx
         (TermElabM.run' (do
           dbg_trace "About to use hammer for {ci.name} in module {mod} (recommendation: {hammerRecommendation})"
-          let gs ← Tactic.run g.mvarId! $ useHammerCore hammerRecommendation externalProverTimeout withSimpPreprocessing
+          let gs ← Tactic.run g $ useHammerCore hammerRecommendation externalProverTimeout withSimpPreprocessing
           match gs with
           | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate the hammer on Prop declarations
           | _ :: _ => pure .subgoals)
@@ -509,7 +565,7 @@ def runHammerCoreAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo →
           else if "tactic 'simp' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
           else if "tactic 'simp_all' failed".isPrefixOf (← e.toMessageData.toString) then pure .simpPreprocessingFailure
           else
-            dbg_trace "runHammerCoreAtDecls :: miscFailure for {ci.name} in module {mod}: {← e.toMessageData.toString}"
+            dbg_trace "{decl_name%} :: miscFailure for {ci.name} in module {mod}: {← e.toMessageData.toString}"
             pure .miscFailure
         )
     return some ⟨res, seconds, heartbeats⟩
@@ -518,9 +574,15 @@ def runHammerCoreAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo →
     the JSON file -/
 def runSimpAllAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String) :
   IO (Option (ConstantInfo × GeneralResult)) := do
-  runAtDecl mod declName (some withImportsPath) fun ci => do
+  runAtDecl mod declName (some withImportsPath) fun ci numArgs? => do
     if ! (← decls ci) then return none
-    let g ← mkFreshExprMVar ci.type
+    let g ←
+      match numArgs? with
+      | some numArgs =>
+        let g ← mkFreshExprMVar ci.type
+        let (_, g) ← g.mvarId!.introNP numArgs -- Introduce universal binders corresponding to arguments of the theorem
+        pure g
+      | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
     let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
@@ -543,7 +605,7 @@ def runSimpAllAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → Me
       try
         TermElabM.run' (do
           dbg_trace "About to use simp_all for {ci.name} in module {mod} (recommendation: {recommendation})"
-          let gs ← Tactic.run g.mvarId! $ useSimpAllWithRecommendation recommendation
+          let gs ← Tactic.run g $ useSimpAllWithRecommendation recommendation
           match gs with
           | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate on Prop declarations
           | _ :: _ => pure .subgoals)
@@ -557,9 +619,15 @@ def runSimpAllAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → Me
     Still uses the `hammerRecommendation` field in the JSON file -/
 def runAesopHammerCoreAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String)
   (externalProverTimeout : Nat) (withSimpPreprocessing : Bool) : IO (Option (ConstantInfo × GeneralResult)) := do
-  runAtDecl mod declName (some withImportsPath) fun ci => do
+  runAtDecl mod declName (some withImportsPath) fun ci numArgs? => do
     if ! (← decls ci) then return none
-    let g ← mkFreshExprMVar ci.type
+    let g ←
+      match numArgs? with
+      | some numArgs =>
+        let g ← mkFreshExprMVar ci.type
+        let (_, g) ← g.mvarId!.introNP numArgs -- Introduce universal binders corresponding to arguments of the theorem
+        pure g
+      | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
     let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
@@ -582,7 +650,7 @@ def runAesopHammerCoreAtDecl (mod : Name) (declName : Name) (decls : ConstantInf
       try
         TermElabM.run' (do
           dbg_trace "About to use aesop with hammerCore for {ci.name} in module {mod} (recommendation: {recommendation})"
-          let gs ← Tactic.run g.mvarId! $ useAesopHammerCore recommendation externalProverTimeout withSimpPreprocessing
+          let gs ← Tactic.run g $ useAesopHammerCore recommendation externalProverTimeout withSimpPreprocessing
           match gs with
           | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate on Prop declarations
           | _ :: _ => pure .subgoals)
