@@ -61,19 +61,21 @@ def useHammerCore (hammerRecommendation : Array String) (externalProverTimeout :
     else
       evalTactic (← `(tactic| hammerCore [$simpLemmas,*] [*, $(coreRecommendation),*] {simpTarget := no_target}))
 
-def useHammer (externalProverTimeout : Nat) (apiUrl : String) (withSimpPreprocessing := true) : TacticM Unit := do
+def useHammer (externalProverTimeout : Nat) (apiUrl : String) (premiseRetrievalK : Nat) (withSimpPreprocessing := true) : TacticM Unit := do
   withOptions (fun o => (o.set ``auto.tptp.timeout externalProverTimeout).set `hammer.premiseSelection.apiUrl apiUrl) do
+    let k := Syntax.mkNatLit premiseRetrievalK
     if withSimpPreprocessing then
-      evalTactic (← `(tactic| hammer))
+      evalTactic (← `(tactic| hammer {premiseRetrievalK := $k}))
     else
-      evalTactic (← `(tactic| hammer {simpTarget := no_target}))
+      evalTactic (← `(tactic| hammer {premiseRetrievalK := $k, simpTarget := no_target}))
 
-def useAesopHammer (externalProverTimeout : Nat) (apiUrl : String) (withSimpPreprocessing := true) : TacticM Unit := do
+def useAesopHammer (externalProverTimeout : Nat) (apiUrl : String) (premiseRetrievalK : Nat) (withSimpPreprocessing := true) : TacticM Unit := do
   withOptions (fun o => (o.set ``auto.tptp.timeout externalProverTimeout).set `hammer.premiseSelection.apiUrl apiUrl) do
+    let k := Syntax.mkNatLit premiseRetrievalK
     if withSimpPreprocessing then
-      evalTactic (← `(tactic| aesop (add unsafe (by hammer))))
+      evalTactic (← `(tactic| aesop (add unsafe (by hammer {premiseRetrievalK := $k}))))
     else
-      evalTactic (← `(tactic| aesop (add unsafe (by hammer {simpTarget := no_target}))))
+      evalTactic (← `(tactic| aesop (add unsafe (by hammer {premiseRetrievalK := $k, simpTarget := no_target}))))
 
 def useAesopHammerCore (hammerRecommendation : Array String) (externalProverTimeout : Nat) (withSimpPreprocessing := false) : TacticM Unit := do
   withOptions (fun o => o.set ``auto.tptp.timeout externalProverTimeout) do
@@ -862,14 +864,9 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
   let declName := args.positionalArg! "declName" |>.as! String |>.toName
   let premisesPath := args.positionalArg! "premisesPath" |>.as! String
   let benchmarkType := args.positionalArg! "benchmarkType" |>.as! String
-  let externalProverTimeout :=
-    match args.positionalArg? "externalProverTimeout" with
-    | some externalProverTimeout => externalProverTimeout.as! Nat
-    | none => 10
-  let apiUrl :=
-    match args.positionalArg? "apiUrl" with
-    | some apiUrl => apiUrl.as! String
-    | none => "http://52.206.70.13/retrieve"
+  let externalProverTimeout := args.flag! "externalProverTimeout" |>.as! Nat
+  let apiUrl := args.flag! "apiUrl" |>.as! String
+  let k := args.flag! "k" |>.as! Nat
   let withImportsPath := "Examples/Mathlib/WithImports"
 
   try
@@ -881,11 +878,11 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
       | "rfl" => tacticBenchmarkAtDecl module declName (some withImportsPath) useRfl TacType.General
       | "simp_all" => tacticBenchmarkAtDecl module declName (some withImportsPath) useSimpAll TacType.General
       | "omega" => tacticBenchmarkAtDecl module declName (some withImportsPath) useOmega TacType.General
-      | "hammer" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useHammer externalProverTimeout apiUrl) TacType.Hammer
-      | "hammer_nosimp" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useHammer externalProverTimeout apiUrl false) TacType.Hammer
+      | "hammer" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useHammer externalProverTimeout apiUrl k) TacType.Hammer
+      | "hammer_nosimp" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useHammer externalProverTimeout apiUrl k false) TacType.Hammer
 
-      | "aesop_hammer" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammer externalProverTimeout apiUrl) TacType.General
-      | "aesop_hammer_nosimp" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammer externalProverTimeout apiUrl false) TacType.General
+      | "aesop_hammer" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammer externalProverTimeout apiUrl k) TacType.General
+      | "aesop_hammer_nosimp" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammer externalProverTimeout apiUrl k false) TacType.General
 
       | "aesop_hammerCore" => aesopHammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout true
       | "aesop_hammerCore_nosimp" => aesopHammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout false
@@ -907,14 +904,22 @@ def tactic_benchmark : Cmd := `[Cli|
   "Run a customisable tactic at all declarations in a file."
 
   FLAGS:
-    externalProverTimeout : Nat; "Timeout for the external prover (default 10)."
-    apiUrl : String; "API URL for the premise selection server (default http://52.206.70.13/retrieve)."
+    externalProverTimeout : Nat; "Timeout for the external prover."
+    apiUrl : String; "API URL for the premise selection server."
+    k : Nat; "Number of premises for the premise retriever in `hammer` to retrieve."
 
   ARGS:
     module : ModuleName; "Lean module to run the tactic on."
     declName : String; "Name of the declaration to run the tactic on."
     premisesPath : String; "Path to the premises, such as Examples/Mathlib/TrainingDataWithPremises."
     benchmarkType : String; "Which type of tactic to run (e.g. hammer, hammerCore, aesop, exact)."
+
+  EXTENSIONS:
+    defaultValues! #[
+      ("externalProverTimeout", "10"),
+      ("apiUrl", "http://52.206.70.13/retrieve"),
+      ("k", "16")
+    ]
 ]
 
 /-- `lake exe tactic_benchmark` -/
