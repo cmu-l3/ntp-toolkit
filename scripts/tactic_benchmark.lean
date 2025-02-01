@@ -80,7 +80,7 @@ def useAesopHammerCore (hammerRecommendation : Array String) (externalProverTime
     let hammerRecommendation : Array (Term × SimpAllHint) ←
       hammerRecommendation.mapM (fun x => do
         let [name, simpAllHint] := x.splitOn ","
-          | throwError "useHammer :: Unable to parse hammerRecommendation {x}"
+          | throwError "{decl_name%} :: Unable to parse hammerRecommendation {x}"
         let name := name.drop 1 -- Remove leading left parenthesis
         let name := ⟨(mkIdent name.toName).raw⟩
         let simpAllHint := simpAllHint.removeLeadingSpaces
@@ -105,6 +105,20 @@ def useAesopHammerCore (hammerRecommendation : Array String) (externalProverTime
       evalTactic (← `(tactic| aesop (add unsafe (by hammerCore [$simpLemmas,*] [*, $(coreRecommendation),*]))))
     else
       evalTactic (← `(tactic| aesop (add unsafe (by hammerCore [$simpLemmas,*] [*, $(coreRecommendation),*] {simpTarget := no_target}))))
+
+def useAesopWithPremises (hammerRecommendation : Array String) : TacticM Unit := do
+  let hammerRecommendation : Array Ident ←
+    hammerRecommendation.mapM (fun x => do
+      let [name, _] := x.splitOn ","
+        | throwError "{decl_name%} :: Unable to parse hammerRecommendation {x}"
+      let name := name.drop 1 -- Remove leading left parenthesis
+      pure (mkIdent name.toName)
+    )
+  let mut addIdentStxs : TSyntaxArray `Aesop.tactic_clause := #[]
+  for t in hammerRecommendation do
+    let tFeature ← `(Aesop.feature| $t:ident)
+    addIdentStxs := addIdentStxs.push (← `(Aesop.tactic_clause| (add unsafe $tFeature:Aesop.feature)))
+  evalTactic (← `(tactic| aesop $addIdentStxs*))
 
 /--
 Compile the designated module, and run a monadic function with each new `ConstantInfo`,
@@ -660,6 +674,52 @@ def runAesopHammerCoreAtDecl (mod : Name) (declName : Name) (decls : ConstantInf
         pure .failure
     return some ⟨res, seconds, heartbeats⟩
 
+def runAesopWithPremisesAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String)
+  : IO (Option (ConstantInfo × GeneralResult)) := do
+  runAtDecl mod declName (some withImportsPath) fun ci numArgs? => do
+    if ! (← decls ci) then return none
+    let g ←
+      match numArgs? with
+      | some numArgs =>
+        let g ← mkFreshExprMVar ci.type
+        let (_, g) ← g.mvarId!.introNP numArgs -- Introduce universal binders corresponding to arguments of the theorem
+        pure g
+      | none => return none -- Only run the tactic on theorems
+    -- Find JSON file corresponding to current `mod`
+    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let jsonObjects ← IO.FS.lines fileName
+    let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
+    -- Find `declHammerRecommendation` corresponding to current `ci`
+    let mut ciEntry := Json.null
+    for jsonEntry in json do
+      let jsonDeclName ← IO.ofExcept $ jsonEntry.getObjVal? "declName"
+      let curDeclName ← IO.ofExcept $ jsonDeclName.getStr?
+      if curDeclName == s!"{ci.name}" then
+        ciEntry := jsonEntry
+        dbg_trace "Found jsonEntry for {declName}"
+        break
+    if ciEntry.isNull then
+      return some ⟨.noJSON, 0.0, 0⟩
+    let recommendation ← IO.ofExcept $ ciEntry.getObjVal? "declHammerRecommendation"
+    let recommendation ← IO.ofExcept $ recommendation.getArr?
+    let recommendation ← IO.ofExcept $ recommendation.mapM Json.getStr?
+    let ((res, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
+      try
+        TermElabM.run' (do
+          dbg_trace "About to use aesop with premises for {ci.name} in module {mod} (recommendation: {recommendation})"
+          let gs ← Tactic.run g $ useAesopWithPremises recommendation
+          dbg_trace "Successfully called aesop with premises"
+          match gs with
+          | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate on Prop declarations
+          | _ :: _ =>
+            dbg_trace "{decl_name%} Subgoals case"
+            pure .subgoals)
+          (ctx := {declName? := `fakeDecl, errToSorry := false})
+      catch e =>
+        dbg_trace "Encountered an error: {← e.toMessageData.toString}"
+        pure .failure
+    return some ⟨res, seconds, heartbeats⟩
+
 open Cli System
 
 /-- Gives a string of 6 emojis indicating the success of the following `hammer` stages:
@@ -784,6 +844,19 @@ def aesopHammerCoreBenchmarkAtDecl (module : ModuleName) (declName : Name) (with
     IO.println s!"Encountered an issue attempting to run aesopHammerCore benchmark at {declName} in module {module}"
     return 0
 
+def aesopWithPremisesBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) : IO UInt32 := do
+  searchPathRef.set compile_time_search_path%
+  let result ← runAesopWithPremisesAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir
+  match result with
+  | some (ci, ⟨type, seconds, heartbeats⟩) =>
+    IO.println $
+      (if type == .success then checkEmoji else if type == .failure then crossEmoji else bombEmoji) ++
+      " " ++ ci.name.toString ++ s!" ({seconds}s) ({heartbeats} heartbeats)"
+    return 0
+  | none =>
+    IO.println s!"Encountered an issue attempting to run aesop with premises benchmark at {declName} in module {module}"
+    return 0
+
 def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
   let module := args.positionalArg! "module" |>.as! ModuleName
   let declName := args.positionalArg! "declName" |>.as! String |>.toName
@@ -818,6 +891,8 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
       | "aesop_hammerCore_nosimp" => aesopHammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout false
 
       | "simp_all_with_premises" => simpAllBenchmarkAtDecl module declName withImportsPath premisesPath
+      | "aesop_with_premises" => aesopWithPremisesBenchmarkAtDecl module declName withImportsPath premisesPath
+
       | "hammerCore" => hammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout
       | "hammerCore_nosimp" => hammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout false
 
