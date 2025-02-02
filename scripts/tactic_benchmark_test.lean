@@ -32,3 +32,6 @@ succeed when we test by hand, even with portfolioInstance set to 1) **TODO** Inv
 #eval Command.liftTermElabM $ hammerCoreBenchmarkAtDecl `Mathlib.Data.Vector.Mem `Mathlib.Vector.mem_cons_of_mem withImportsDir jsonDir 10
 #eval Command.liftTermElabM $ hammerCoreBenchmarkAtDecl `Mathlib.Data.Vector.Mem `Mathlib.Vector.mem_cons_of_mem withImportsDir jsonDir 10 false
 -/
+
+-- **ISSUE** `hnot_sdiff_comm` (from Mathlib.Order.Heyting.Basic) ground truth appears to be wrong
+-- `top_sdiff'` is not captured because it does not appear in the proof term and the data extraction script misses that `top_sdiff'` is proven with a tactic
