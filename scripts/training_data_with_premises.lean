@@ -12,6 +12,7 @@ import Batteries.Data.String.Matcher
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Change
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.SimpRw
 import Cli
 
 open Lean Elab IO Meta Cli System DocGen4.Process SimpAllHint TheoremPrettyPrinting
@@ -168,42 +169,6 @@ def unfoldConstantName (constName : Name) (constantsMap : Std.HashMap Name Const
   else
     return (∅ : NameSet).insert constName
 
-def simpVariants : List String := [
-  "simp",
-  "simp?",
-  "simp!?",
-  "simp?!",
-  "simp_all",
-  "simp_all?",
-  "simp_all!",
-  "simp_all?!",
-  "simp_arith",
-  "simp_arith!",
-  "simp_wf",
-  "simpa",
-  "simpa?",
-  "simpa!",
-  "simpa?!",
-  "dsimp",
-  "dsimp?",
-  "dsimp?!"
-]
-
-def rewriteVariants : List String := [
-  "rw",
-  "rw?",
-  "rwa",
-  "rewrite",
-  "rw_mod_cast",
-  "erw"
-]
-
-def nextTacticIsSimpOrRwVariant (t : String) : Bool :=
-  simpVariants.any (fun p => (p ++ " ").isPrefixOf t) ||
-  simpVariants.any (fun p => (p ++ "[").isPrefixOf t) ||
-  rewriteVariants.any (fun p => (p ++ " ").isPrefixOf t) ||
-  rewriteVariants.any (fun p => (p ++ "[").isPrefixOf t)
-
 structure TrainingData where
   declId : String
   declName : String
@@ -321,6 +286,47 @@ def simpLemmasFromTacticStx (s : Syntax) : MetaM (Std.HashMap Name SimpAllHint) 
     return res
   | _ => return Std.HashMap.empty
 
+/-- It is possible for some tactics such as `simp_rw` to invoke rewrite lemmas that do not appear in the final proof term (for instance, to direct unfolding).
+    This function returns the set of rewrite lemmas that appear in the tactic syntax (and annotates them with `unmodified`, `backwardOnly`, or `notInSimpAll`),
+    starting for the initial hashmap `hammerRecommendation` -/
+def rwLemmasFromTacticStx (s : Syntax) (hammerRecommendation : Std.HashMap Name SimpAllHint) : MetaM (Std.HashMap Name SimpAllHint) := do
+  match s with
+  | `(tactic| simp_rw $rws:rwRuleSeq) =>
+    -- Code for iterating through `rws` adapted from `Mathlib.Tactic.withSimpRWRulesSeq`
+    let rules := rws.raw[1].getArgs
+    let numRules := (rules.size + 1) / 2
+    let mut hammerRecommendation := hammerRecommendation
+    for i in [:numRules] do
+      let rule := rules[i * 2]!
+      let hasLeftArrow := !rule[0].isNone
+      let simpAllHint := if hasLeftArrow then backwardOnly else unmodified
+      let term := rule[1]
+      match ← observing (realizeGlobalConstNoOverloadWithInfo term) with
+      | .ok declName =>
+        if (← Simp.isSimproc declName) then continue -- Ignore `declName` if it is a simproc
+        else if isBlackListed s!"{declName}" then continue -- Ignore `declName` if it appears in `hammerRecommendationBlackList`
+        hammerRecommendation := updateHammerRecommendation hammerRecommendation declName simpAllHint
+      | _ => -- `term` could be a local fvar, a builtin simproc, or non-identifer expression. In any of these cases, we ignore it
+        continue
+    return hammerRecommendation
+  | `(tactic| rw $rws:rwRuleSeq) =>
+    -- Code for iterating through `rws` adapted from `Mathlib.Tactic.withSimpRWRulesSeq`
+    let rules := rws.raw[1].getArgs
+    let numRules := (rules.size + 1) / 2
+    let mut hammerRecommendation := hammerRecommendation
+    for i in [:numRules] do
+      let rule := rules[i * 2]!
+      let term := rule[1]
+      match ← observing (realizeGlobalConstNoOverloadWithInfo term) with
+      | .ok declName =>
+        if (← Simp.isSimproc declName) then continue -- Ignore `declName` if it is a simproc
+        else if isBlackListed s!"{declName}" then continue -- Ignore `declName` if it appears in `hammerRecommendationBlackList`
+        hammerRecommendation := updateHammerRecommendation hammerRecommendation declName notInSimpAll
+      | _ => -- `term` could be a local fvar, a builtin simproc, or non-identifer expression. In any of these cases, we ignore it
+        continue
+    return hammerRecommendation
+  | _ => return hammerRecommendation
+
 /-- Creates a `TrainingData` object based on the provided tactic invocation. The `declHammerRecommendation` field of the created is provisional
     because there may be more than one tactic that must be taken into account to populate this field. -/
 def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) (declName : String) : IO TrainingData := do
@@ -350,6 +356,7 @@ def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) 
       let termPremises ← termConstants.filterM (fun n => do pure ((← Name.isTheoremOrAxiom n) && !isBlackListed s!"{n}"))
       -- Build `hammerRecommendation` starting with any `simp` lemmas that appear in the tactic stx (not including blacklisted lemmas)
       let mut hammerRecommendation ← simpLemmasFromTacticStx i.info.stx
+      hammerRecommendation ← rwLemmasFromTacticStx i.info.stx hammerRecommendation
       -- Add all of the theorems in `nextTacticAllPremises` that don't appear in `simpLemmasFromTacticStx i.info.stx`
       for thm in termPremises do
         hammerRecommendation := updateHammerRecommendation hammerRecommendation thm notInSimpAll
@@ -429,7 +436,7 @@ def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : Mod
   IO.println s!"{(trainingDataToJson data).compress}"
   return data.declHammerRecommendation
 
-def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
+def trainingDataGivenModule (module : ModuleName) (includeDebugMessages : Bool) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
   let infos ← getElabDeclInfo (← moduleInfoTrees module)
   let compilationSteps ← compileModule module
@@ -441,13 +448,23 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
     for t in t.tactics do
       match getElabDeclOfTacticInvocation infos t with
       | some elabDeclInfo => do
-        let tDeclName :=
+        if includeDebugMessages then
+          IO.println s!"Processing tactic {← t.tacticPP module}"
+        let tDeclName ←
           match t.ctx.parentDecl? with
-          | some n => s!"{n}"
-          | none => ""
+          | some n => pure s!"{n}"
+          | none =>
+            if includeDebugMessages then
+              IO.println s!"No parent declaration found for tactic {← t.tacticPP module}"
+            pure ""
         let data ←
           try t.trainingDataGivenTactic elabDeclInfo module hash tDeclName
-          catch _ => continue
+          catch e =>
+            if includeDebugMessages then
+              IO.println s!"Error processing tactic {← t.tacticPP module}: {e.toString}"
+            continue
+        if includeDebugMessages then
+          IO.println s!"{← t.tacticPP module} successfully processed (declName: {tDeclName})"
         dataArr := dataArr.push data
       | none => pure ()
   -- Perform a second pass to gather data that potentially spans multiple tactics
@@ -512,15 +529,24 @@ def trainingDataGivenModule (module : ModuleName) : IO UInt32 := do
 
 def trainingData (args : Cli.Parsed) : IO UInt32 :=
   let module := args.positionalArg! "module" |>.as! ModuleName
-  trainingDataGivenModule module
+  let includeDebugMessages := args.flag! "includeDebugMessages" |>.as! Bool
+  trainingDataGivenModule module includeDebugMessages
 
 /-- Setting up command line options and help text for `lake exe training_data_with_premises`. -/
 def training_data : Cmd := `[Cli|
   training_data VIA trainingData; ["0.0.1"]
 "Export training data from the given file."
 
+  FLAGS:
+    includeDebugMessages : Bool; "Include debug messages in the output."
+
   ARGS:
     module : ModuleName; "Lean module to compile and export training data."
+
+  EXTENSIONS:
+    defaultValues! #[
+      ("includeDebugMessages", "false")
+    ]
 ]
 
 /-- `lake exe training_data_with_premises` -/
