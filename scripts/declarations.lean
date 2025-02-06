@@ -44,7 +44,9 @@ def infoOfConstant (cinfo : ConstantInfo) : MetaM (String × Info) := do
     | .ctorInfo _ => "def"
     | .recInfo _ => "def"
     | .quotInfo _ => "def"
-  return (kind, ← Info.ofConstantVal' cinfo.toConstantVal)
+  let info ← withOptions (fun o => (o.set `pp.notation false).set `pp.fullNames true) <|
+    Info.ofConstantVal' cinfo.toConstantVal
+  return (kind, info)
 
 end DocGen4.Process
 
