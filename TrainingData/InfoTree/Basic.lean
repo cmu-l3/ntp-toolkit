@@ -30,6 +30,8 @@ def kind : Info → String
   | .ofFVarAliasInfo      _ => "FVarAliasInfo"
   | .ofFieldRedeclInfo    _ => "FieldRedeclInfo"
   | .ofOmissionInfo       _ => "OmmisionInfo"
+  | .ofChoiceInfo         _ => "ChoiceInfo"
+  | .ofPartialTermInfo    _ => "PartialTermInfo"
 
 /-- The `Syntax` for a `Lean.Elab.Info`, if there is one. -/
 def stx? : Info → Option Syntax
@@ -45,6 +47,8 @@ def stx? : Info → Option Syntax
   | .ofFVarAliasInfo      _    => none
   | .ofFieldRedeclInfo    info => info.stx
   | .ofOmissionInfo       info => info.stx
+  | .ofChoiceInfo         info => info.stx
+  | .ofPartialTermInfo    info => info.stx
 
 /-- Is the `Syntax` for this `Lean.Elab.Info` original, or synthetic? -/
 def isOriginal (i : Info) : Bool :=
