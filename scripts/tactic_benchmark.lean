@@ -28,8 +28,8 @@ def useSimpAllWithRecommendation (simpAllRecommendation : Array String) : Tactic
   evalTactic (← `(tactic| simp_all [$[$simpAllRecommendation:term],*]))
 def useOmega : TacticM Unit := do evalTactic (← `(tactic| intros; omega))
 def useDuper : TacticM Unit := do evalTactic (← `(tactic| duper [*]))
-def useQuerySMT (hammerRecommendation : Array String) (externalProverTimeout : Nat) : TacticM Unit := do
-  withOptions (fun o => (o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout) do
+def useQuerySMT (hammerRecommendation : Array String) (externalProverTimeout : Nat) (ignoreHints : Bool) : TacticM Unit := do
+  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``querySMT.ignoreHints ignoreHints) do
     let hammerRecommendation : Array Ident ←
       hammerRecommendation.mapM (fun x => do
         let [name, _] := x.splitOn ","
@@ -732,7 +732,7 @@ def runAesopWithPremisesAtDecl (mod : Name) (declName : Name) (decls : ConstantI
     return some ⟨res, seconds, heartbeats⟩
 
 def runQuerySMTAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String) (externalProverTimeout : Nat)
-  : IO (Option (ConstantInfo × QuerySMTResult)) := do
+  (ignoreHints : Bool) : IO (Option (ConstantInfo × QuerySMTResult)) := do
   runAtDecl mod declName (some withImportsPath) fun ci numArgs? => do
     if ! (← decls ci) then return none
     let g ←
@@ -764,7 +764,7 @@ def runQuerySMTAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → M
       try
         TermElabM.run' (do
           dbg_trace "About to use querySMT with premises for {ci.name} in module {mod} (recommendation: {recommendation})"
-          let gs ← Tactic.run g $ useQuerySMT recommendation externalProverTimeout
+          let gs ← Tactic.run g $ useQuerySMT recommendation externalProverTimeout ignoreHints
           dbg_trace "Successfully called querySMT"
           match gs with
           | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate on Prop declarations
@@ -786,7 +786,7 @@ def runQuerySMTAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → M
     return some ⟨res, seconds, heartbeats⟩
 
 def runQuerySMTAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String) (externalProverTimeout : Nat)
-  : MLList IO (ConstantInfo × QuerySMTResult) := do
+  (ignoreHints : Bool) : MLList IO (ConstantInfo × QuerySMTResult) := do
   runAtDecls mod (some withImportsPath) fun ci numArgs? => do
     if ! (← decls ci) then return none
     let g ←
@@ -818,7 +818,7 @@ def runQuerySMTAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withI
       try
         TermElabM.run' (do
           dbg_trace "About to use querySMT with premises for {ci.name} in module {mod} (recommendation: {recommendation})"
-          let gs ← Tactic.run g $ useQuerySMT recommendation externalProverTimeout
+          let gs ← Tactic.run g $ useQuerySMT recommendation externalProverTimeout ignoreHints
           dbg_trace "Successfully called querySMT"
           match gs with
           | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate on Prop declarations
@@ -976,9 +976,9 @@ def aesopWithPremisesBenchmarkAtDecl (module : ModuleName) (declName : Name) (wi
     IO.println s!"Encountered an issue attempting to run aesop with premises benchmark at {declName} in module {module}"
     return 0
 
-def querySMTBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat) : IO UInt32 := do
+def querySMTBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat) (ignoreHints : Bool) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
-  let result ← runQuerySMTAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout
+  let result ← runQuerySMTAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout ignoreHints
   match result with
   | some (ci, ⟨type, seconds, heartbeats⟩) =>
     IO.println $ (querySMTResultTypeToEmojiString type) ++ s!"({type}) " ++ ci.name.toString ++ s!" ({seconds}s) ({heartbeats} heartbeats)"
@@ -987,9 +987,9 @@ def querySMTBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImports
     IO.println s!"Encountered an issue attempting to run querySMT benchmark at {declName} in module {module}"
     return 0
 
-def querySMTBenchmarkFromModule (module : ModuleName) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat) : IO UInt32 := do
+def querySMTBenchmarkFromModule (module : ModuleName) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat) (ignoreHints : Bool) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
-  let result := runQuerySMTAtDecls module (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout
+  let result := runQuerySMTAtDecls module (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout ignoreHints
   IO.println s!"Running querySMT benchmark for {module}"
   for (ci, ⟨type, seconds, heartbeats⟩) in result do
     IO.println <| (querySMTResultTypeToEmojiString type) ++ s!"({type}) " ++ ci.name.toString ++
@@ -1029,8 +1029,10 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
       | "hammerCore" => hammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout
       | "hammerCore_nosimp" => hammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout false
 
-      | "querySMT" => querySMTBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout
-      | "querySMTModule" => querySMTBenchmarkFromModule module withImportsPath premisesPath externalProverTimeout
+      | "querySMT" => querySMTBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout false
+      | "querySMT_ignoreHints" => querySMTBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout true
+      | "querySMTModule" => querySMTBenchmarkFromModule module withImportsPath premisesPath externalProverTimeout false
+      | "querySMTModule_ignoreHints" => querySMTBenchmarkFromModule module withImportsPath premisesPath externalProverTimeout true
 
       | _ => IO.throwServerError s!"Unknown benchmark type {benchmarkType}"
   catch e =>
