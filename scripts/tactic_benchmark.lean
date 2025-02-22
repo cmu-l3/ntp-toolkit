@@ -887,9 +887,17 @@ def querySMTResultTypeToEmojiString (res : QuerySMTResultType) : String :=
     bombEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji
   | .notDefEq => checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ checkEmoji ++ bombEmoji
 
+def generalResultTypeToEmojiString (res : GeneralResultType) : String :=
+  match res with
+  | .success => checkEmoji
+  | .failure => crossEmoji
+  | .noJSON => bombEmoji ++ "(noJSON)"
+  | .notDefEq => bombEmoji ++ "(notDefEq)"
+  | .subgoals => bombEmoji ++ "(subgoals)"
+
 def resultTypeToEmojiString (res : ResultType) : String :=
   match res with
-  | .GeneralResult res => if res == .success then checkEmoji else crossEmoji
+  | .GeneralResult res => generalResultTypeToEmojiString res
   | .HammerResult res => hammerResultTypeToEmojiString res
   | .QuerySMTResult res => querySMTResultTypeToEmojiString res
 
@@ -941,9 +949,7 @@ def simpAllBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsD
   let result ← runSimpAllAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir
   match result with
   | some (ci, ⟨type, seconds, heartbeats⟩) =>
-    IO.println $
-      (if type == .success then checkEmoji else if type == .failure then crossEmoji else bombEmoji) ++
-      " " ++ ci.name.toString ++ s!" ({seconds}s) ({heartbeats} heartbeats)"
+    IO.println $ generalResultTypeToEmojiString type ++ " " ++ ci.name.toString ++ s!" ({seconds}s) ({heartbeats} heartbeats)"
     return 0
   | none =>
     IO.println s!"Encountered an issue attempting to run simpAll benchmark at {declName} in module {module}"
@@ -955,9 +961,7 @@ def aesopHammerCoreBenchmarkAtDecl (module : ModuleName) (declName : Name) (with
   let result ← runAesopHammerCoreAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout withSimpPreprocessing
   match result with
   | some (ci, ⟨type, seconds, heartbeats⟩) =>
-    IO.println $
-      (if type == .success then checkEmoji else if type == .failure then crossEmoji else bombEmoji) ++
-      " " ++ ci.name.toString ++ s!" ({seconds}s) ({heartbeats} heartbeats)"
+    IO.println $ generalResultTypeToEmojiString type ++ " " ++ ci.name.toString ++ s!" ({seconds}s) ({heartbeats} heartbeats)"
     return 0
   | none =>
     IO.println s!"Encountered an issue attempting to run aesopHammerCore benchmark at {declName} in module {module}"
@@ -968,9 +972,7 @@ def aesopWithPremisesBenchmarkAtDecl (module : ModuleName) (declName : Name) (wi
   let result ← runAesopWithPremisesAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir
   match result with
   | some (ci, ⟨type, seconds, heartbeats⟩) =>
-    IO.println $
-      (if type == .success then checkEmoji else if type == .failure then crossEmoji else bombEmoji) ++
-      " " ++ ci.name.toString ++ s!" ({seconds}s) ({heartbeats} heartbeats)"
+    IO.println $ generalResultTypeToEmojiString type ++ " " ++ ci.name.toString ++ s!" ({seconds}s) ({heartbeats} heartbeats)"
     return 0
   | none =>
     IO.println s!"Encountered an issue attempting to run aesop with premises benchmark at {declName} in module {module}"
