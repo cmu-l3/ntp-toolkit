@@ -9,11 +9,7 @@ require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git" @ "e9ae2a61ef5c99d6edac84f0d04f6324c5d97f67"
 
 require QuerySMT from git
-  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "1dbb3b0bd26fb6a740adc01a806557f5e0b02bb3"
-
--- **TODO** update premise-selection on LeanSMTParser
-require «premise-selection» from git
-  "https://github.com/hanwenzhu/premise-selection.git" @ "v4.15.0"
+  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "ddc3fe024237a1f3663314b568fc06be3a7a4c68"
 
 require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.15.0"
 
