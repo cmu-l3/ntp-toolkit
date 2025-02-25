@@ -37,27 +37,35 @@ lean_lib Examples where
 
 lean_exe training_data where
   root := `scripts.training_data
+  supportInterpreter := true
 
 lean_exe full_proof_training_data where
   root := `scripts.full_proof_training_data
+  supportInterpreter := true
 
 lean_exe state_comments where
   root := `scripts.state_comments
+  supportInterpreter := true
 
 lean_exe premises where
   root := `scripts.premises
+  supportInterpreter := true
 
 lean_exe training_data_with_premises where
   root := `scripts.training_data_with_premises
+  supportInterpreter := true
 
 lean_exe all_modules where
   root := `scripts.all_modules
+  supportInterpreter := true
 
 lean_exe declarations where
   root := `scripts.declarations
+  supportInterpreter := true
 
 lean_exe imports where
   root := `scripts.imports
+  supportInterpreter := true
 """ % (name, repo, commit, doc_gen % toolchain_version if require_doc_gen else "")
     with open(os.path.join(cwd, 'lakefile.lean'), 'w') as f:
         f.write(contents)
