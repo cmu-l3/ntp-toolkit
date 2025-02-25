@@ -98,7 +98,7 @@ def one : FrontendM (CompilationStep × Bool) := do
   let s := (← get).commandState
   let before := s.env
   let done ← processCommand
-  let stx := (← get).commands.back
+  let stx := (← get).commands.back!
   let src := ⟨(← read).inputCtx.input, (← get).cmdPos, (← get).parserState.pos⟩
   let s' := (← get).commandState
   let after := s'.env
@@ -182,7 +182,7 @@ def processInput (input : String) (env? : Option Environment := none)
   match steps.getLast? with
   | none => throw <| IO.userError "No commands found in input."
   | some { after, .. } =>
-    return (after, steps.bind CompilationStep.msgs, steps.bind CompilationStep.trees)
+    return (after, steps.flatMap CompilationStep.msgs, steps.flatMap CompilationStep.trees)
 
 open System
 
@@ -204,13 +204,13 @@ def findLean (mod : Name) : IO FilePath := do
 def moduleSource' (mod : Name) : IO String := do
   IO.FS.readFile (← findLean mod)
 
-initialize sourceCache : IO.Ref <| HashMap Name String ←
+initialize sourceCache : IO.Ref <| Std.HashMap Name String ←
   IO.mkRef .empty
 
 /-- Read the source code of the named module. The results are cached. -/
 def moduleSource (mod : Name) : IO String := do
   let m ← sourceCache.get
-  match m.find? mod with
+  match m[mod]? with
   | some r => return r
   | none => do
     let v ← moduleSource' mod
@@ -221,7 +221,7 @@ def moduleSource (mod : Name) : IO String := do
 def compileModule' (mod : Name) : MLList IO CompilationStep := do
   Lean.Elab.IO.processInput' (← moduleSource mod) none {} (← findLean mod).toString
 
-initialize compilationCache : IO.Ref <| HashMap Name (List CompilationStep) ←
+initialize compilationCache : IO.Ref <| Std.HashMap Name (List CompilationStep) ←
   IO.mkRef .empty
 
 /--
@@ -234,7 +234,7 @@ you should check all compiled files for error messages if attempting this.
 -/
 def compileModule (mod : Name) : IO (List CompilationStep) := do
   let m ← compilationCache.get
-  match m.find? mod with
+  match m[mod]? with
   | some r => return r
   | none => do
     let v ← compileModule' mod |>.force
@@ -244,4 +244,4 @@ def compileModule (mod : Name) : IO (List CompilationStep) := do
 /-- Compile the source file for the named module, returning all info trees. -/
 def moduleInfoTrees (mod : Name) : IO (List InfoTree) := do
   let steps ← compileModule mod
-  return steps.bind (fun c => c.trees)
+  return steps.flatMap (fun c => c.trees)

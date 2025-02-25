@@ -10,15 +10,15 @@ open Lean Elab IO Meta
 open Cli System
 
 
-def DeclIdMap := HashMap String (List Json)
+def DeclIdMap := Std.HashMap String (List Json)
 
 def addToMap (map : DeclIdMap) (declId : String) (jsonObj : Json) : DeclIdMap :=
-  match map.find? declId with
+  match map.get? declId with
   | some jsonList => map.insert declId (jsonObj :: jsonList)
   | none => map.insert declId [jsonObj]
 
 def groupByDecl (idJsons : List (String × Json)) : IO DeclIdMap := do
-  let mut map : DeclIdMap := HashMap.empty
+  let mut map : DeclIdMap := Std.HashMap.empty
   for ⟨declId, json⟩ in idJsons do
     map := addToMap map declId json
   return map
@@ -72,9 +72,9 @@ def makeElabDeclId (info: ElabDeclInfo) (module: Name) (hash: String) : String :
 
 def getInvocationTrees (module: ModuleName) : IO (List InfoTree) := do
     let mut trees ← moduleInfoTrees module
-    trees := trees.bind InfoTree.retainTacticInfo
-    trees := trees.bind InfoTree.retainOriginal
-    trees := trees.bind InfoTree.retainSubstantive
+    trees := trees.flatMap InfoTree.retainTacticInfo
+    trees := trees.flatMap InfoTree.retainOriginal
+    trees := trees.flatMap InfoTree.retainSubstantive
     return trees
 
 
@@ -111,20 +111,16 @@ def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : Str
     (elabDeclInfo.snd.stx.getPos?.getD 0) (i.info.stx.getPos?.getD 0)
 
   let state := (Format.joinSep (← i.goalState) "\n").pretty
-  let stateAfter := (Format.joinSep (← i.goalStateAfter) "\n").pretty
   let nextTactic ← tacticPP module i
   let decl ← ppDeclWithoutProof module elabDeclInfo.snd
-  let declName := (i.ctx.parentDecl?.map toString).getD ""
 
   let json : Json :=
     Json.mkObj [
       ("declId", Json.str declId),
       ("decl", Json.str decl),
-      ("declName", Json.str declName),
       ("srcUpToTactic", Json.str sourceUpToTactic.toString),
       ("declUpToTactic", Json.str declUpToTactic.toString),
       ("state", Json.str state),
-      ("stateAfter", Json.str stateAfter),
       ("nextTactic", Json.str nextTactic)
     ]
   return (declId, json)

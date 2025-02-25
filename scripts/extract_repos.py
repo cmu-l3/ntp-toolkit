@@ -9,10 +9,10 @@ from pathlib import Path
 # TODO: only add necessary lean_exe into lakefile.lean
 doc_gen = """
 require «doc-gen4» from git
-  "https://github.com/leanprover/doc-gen4.git" @ "v4.13.0-rc1"
+  "https://github.com/leanprover/doc-gen4.git" @ "%s"
 """
 
-def _lakefile(repo, commit, name, cwd, require_doc_gen=False):
+def _lakefile(repo, commit, name, cwd, require_doc_gen=False, toolchain_version="main"):
     contents = """import Lake
 open Lake DSL
 
@@ -58,7 +58,7 @@ lean_exe declarations where
 
 lean_exe imports where
   root := `scripts.imports
-""" % (name, repo, commit, doc_gen if require_doc_gen else "")
+""" % (name, repo, commit, doc_gen % toolchain_version if require_doc_gen else "")
     with open(os.path.join(cwd, 'lakefile.lean'), 'w') as f:
         f.write(contents)
 
@@ -240,6 +240,7 @@ if __name__ == '__main__':
                 cwd=args.cwd,
                 # extracting declarations require doc-gen4
                 require_doc_gen=args.declarations,
+                toolchain_version=source['lean'].removeprefix('leanprover/lean4:')
             )
             _lake_update(
                 cwd=args.cwd

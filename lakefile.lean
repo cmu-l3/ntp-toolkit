@@ -2,12 +2,20 @@ import Lake
 open Lake DSL
 
 package «lean-training-data» {
-  -- add any package configuration options here
+  moreLeanArgs := #[
+    "-Dlinter.unusedVariables=false",
+    -- for supporting more lean versions, some usages in the code are deprecated
+    -- a macro TODO is to make the code more future proof (e.g. name change of HashMap)
+    "-Dlinter.deprecated=false"
+  ]
 }
 
-require LeanCamCombi from git
-  "https://github.com/YaelDillies/LeanCamCombi.git" @ "ef325f10fab9bfde5184048021dad23c94461e1d"
+require mathlib from git
+  "https://github.com/leanprover-community/mathlib4.git" @ "v4.15.0"
 
+
+require «doc-gen4» from git
+  "https://github.com/leanprover/doc-gen4.git" @ "v4.15.0"
 
 
 @[default_target]

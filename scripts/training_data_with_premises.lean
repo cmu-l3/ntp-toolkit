@@ -145,7 +145,7 @@ def isAuxLemma : Name → Bool
     the constant name. `unfoldConstantName` should never return any names that are supposed to be unfolded, so if a name is
     supposed to be unfolded as indicated by `shouldUnfold`, then even if its constant can't actually be unfolded, we do not
     return the name itself. -/
-def unfoldConstantName (constName : Name) (constantsMap : HashMap Name ConstantInfo) (shouldUnfold : Name → Bool) : NameSet := Id.run do
+def unfoldConstantName (constName : Name) (constantsMap : Std.HashMap Name ConstantInfo) (shouldUnfold : Name → Bool) : NameSet := Id.run do
   if shouldUnfold constName then
     let some constInfo := constantsMap.find? constName
       | return ∅ -- If `n` cannot be unfolded, then return the empty set because `n` shouldn't appear in the output`
