@@ -57,6 +57,10 @@ parser.add_argument(
     'out_file', type=argparse.FileType('w'),
     help='Output in miniCTX format as .jsonl'
 )
+parser.add_argument(
+    '--include_imported_modules', action='store_true',
+    help='Include all imported module names in dependency metadata'
+)
 args = parser.parse_args()
 
 
@@ -70,11 +74,13 @@ for filename in glob.glob(os.path.join(args.input_dir, 'Premises/*.jsonl')):
 theorems = []
 for filename in glob.glob(os.path.join(args.input_dir, 'FullProof/*.jsonl')):
     dependency_map = {}
+    imports_map = {}
     premises_filename = filename.replace('FullProof', 'Premises', 1)
     with open(premises_filename) as premises_file:
         for line in premises_file:
             data = json.loads(line)
             dependency_map[data['name']] = data['dependents']
+            imports_map[data['name']] = data.get('importedModules', None)
     with open(filename) as file:
         for i, line in enumerate(file):
             data = json.loads(line)
@@ -86,10 +92,18 @@ for filename in glob.glob(os.path.join(args.input_dir, 'FullProof/*.jsonl')):
                 dependents = dependency_map[name]
                 has_in_file_dependency = any(d['name'] in dependency_map for d in dependents)
                 has_repo_dependency = any(d['name'] in repo_premises for d in dependents)
+                num_repo_dependencies = sum(d['name'] in repo_premises for d in dependents)
+                num_in_file_dependencies = sum(d['name'] in dependency_map for d in dependents)
+                num_dependencies = len(dependents)
+                imported_modules = imports_map[name]
             else:
                 # not available (because of some probably fixable error)
                 has_in_file_dependency = None
                 has_repo_dependency = None
+                imported_modules = None
+                num_repo_dependencies = None
+                num_in_file_dependencies = None
+                num_dependencies = None
 
             file_path = data['file']
             # file_dir = os.path.dirname(file_path)  # a subdirectory in the repo
@@ -104,7 +118,7 @@ for filename in glob.glob(os.path.join(args.input_dir, 'FullProof/*.jsonl')):
                 theorem_commit, theorem_date = get_theorem_commit(name, repo_path)
                 file_path_pretty = re.sub(r"(\./)*\.lake/packages/", "", file_path)
 
-            theorems.append({
+            theorem = {
                 'srcContext': context,
                 'theoremStatement': data['decl'],
                 'theoremName': name,
@@ -123,7 +137,10 @@ for filename in glob.glob(os.path.join(args.input_dir, 'FullProof/*.jsonl')):
                 },
                 'dependencyMetadata': {
                     'inFilePremises': has_in_file_dependency,
+                    'numInFilePremises': num_in_file_dependencies,
                     'repositoryPremises': has_repo_dependency,
+                    'numRepositoryPremises': num_repo_dependencies,
+                    'numPremises': num_dependencies,
                 },
                 'proofMetadata': {
                     'hasProof': 'sorry' not in proof,
@@ -132,7 +149,11 @@ for filename in glob.glob(os.path.join(args.input_dir, 'FullProof/*.jsonl')):
                     'proofLengthLines': proof.count('\n'),
                     'proofLengthTokens': len(proof),
                 }
-            })
+            }
+            theorems.append(theorem)
+
+            if args.include_imported_modules:
+                theorem['dependencyMetadata']['importedModules'] = imported_modules
 
 for theorem in theorems:
     args.out_file.write(json.dumps(theorem))
