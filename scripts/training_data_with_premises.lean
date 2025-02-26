@@ -507,7 +507,7 @@ def trainingDataGivenModule (module : ModuleName) (includeDebugMessages : Bool) 
           | some elabDeclInfo =>
             match declHammerRecommendations.get? v.name.toString with
             | some vDeclHammerRecommendation =>
-              let vDeclHammerRecommendation ← CoreM.withImportModules #[`Mathlib.Lean.PrettyPrinter.Delaborator, `Lean.PrettyPrinter, module]
+              let vDeclHammerRecommendation ← CoreM.withImportModules #[`Mathlib.Lean.PrettyPrinter.Delaborator, `Mathlib.Util.Delaborators, `Lean.PrettyPrinter, module]
                 (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v (some vDeclHammerRecommendation)).run'
               /- In addition to printing the JSON entry corresponding to `v` as a whole (which `printTrainingDataGivenTheoremVal` already does),
                  we can now print the JSON entry for each of `v`'s tactic states with a fully updated decl hammer recommendation -/
@@ -520,7 +520,7 @@ def trainingDataGivenModule (module : ModuleName) (includeDebugMessages : Bool) 
                 else if encounteredDecl then -- All entries of the same decl are contiguous in `dataArr` so if we reach this we've fixed all necessary entries
                   break
             | none => -- No need to update `dataArr` since the current theorem does not appear in `dataArr`
-              let _ ← CoreM.withImportModules #[`Mathlib.Lean.PrettyPrinter.Delaborator, `Lean.PrettyPrinter, module]
+              let _ ← CoreM.withImportModules #[`Mathlib.Lean.PrettyPrinter.Delaborator, `Mathlib.Util.Delaborators, `Lean.PrettyPrinter, module]
                 (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v none).run'
           | none => continue
       | _ => continue
