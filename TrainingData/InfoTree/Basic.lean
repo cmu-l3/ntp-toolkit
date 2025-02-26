@@ -29,9 +29,9 @@ def kind : Info → String
   | .ofCustomInfo         _ => "CustomInfo"
   | .ofFVarAliasInfo      _ => "FVarAliasInfo"
   | .ofFieldRedeclInfo    _ => "FieldRedeclInfo"
-  | .ofOmissionInfo       _ => "OmmisionInfo"
   | .ofChoiceInfo         _ => "ChoiceInfo"
   | .ofPartialTermInfo    _ => "PartialTermInfo"
+  | .ofDelabTermInfo      _ => "DelabTermInfo"
 
 /-- The `Syntax` for a `Lean.Elab.Info`, if there is one. -/
 def stx? : Info → Option Syntax
@@ -46,10 +46,9 @@ def stx? : Info → Option Syntax
   | .ofCustomInfo         info => info.stx
   | .ofFVarAliasInfo      _    => none
   | .ofFieldRedeclInfo    info => info.stx
-  | .ofOmissionInfo       info => info.stx
   | .ofChoiceInfo         info => info.stx
   | .ofPartialTermInfo    info => info.stx
-
+  | .ofDelabTermInfo      info => info.stx
 /-- Is the `Syntax` for this `Lean.Elab.Info` original, or synthetic? -/
 def isOriginal (i : Info) : Bool :=
   match i.stx? with
@@ -105,9 +104,9 @@ partial def filter (p : Info → Bool) (m : MVarId → Bool := fun _ => false) :
   | .context ctx tree => tree.filter p m |>.map (.context ctx)
   | .node info children =>
     if p info then
-      [.node info (children.toList.map (filter p m)).join.toPArray']
+      [.node info (children.toList.map (filter p m)).flatten.toPArray']
     else
-      (children.toList.map (filter p m)).join
+      (children.toList.map (filter p m)).flatten
   | .hole mvar => if m mvar then [.hole mvar] else []
 
 /-- Discard all nodes besides `.context` nodes and `TacticInfo` nodes. -/
@@ -159,7 +158,7 @@ partial def findAllInfo (t : InfoTree) (ctx? : Option ContextInfo) (p : Info →
   match t with
   | context ctx t => t.findAllInfo (ctx.mergeIntoOuter? ctx?) p
   | node i ts  =>
-      (if p i then [(i, ctx?, ts)] else []) ++ ts.toList.bind (fun t => t.findAllInfo ctx? p)
+      (if p i then [(i, ctx?, ts)] else []) ++ ts.toList.flatMap (fun t => t.findAllInfo ctx? p)
   | _ => []
 
 /-- Return all `TacticInfo` nodes in an `InfoTree` corresponding to tactics,
