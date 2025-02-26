@@ -12,8 +12,8 @@ def addImportsToModule (module : ModuleName) (importPkgs : List Name) : IO UInt3
   let fileName := (← findLean module).toString
   let src ← moduleSource module
   let inputCtx := Parser.mkInputContext src fileName
-  let (header, parserState, messages) ← Parser.parseHeader inputCtx
-  let (env, messages) ← processHeader header {} messages inputCtx
+  let (header, _parserState, messages) ← Parser.parseHeader inputCtx
+  let (env, _messages) ← processHeader header {} messages inputCtx
   let mut additionalImports := ""
   for pkg in importPkgs do
     if !env.header.moduleNames.contains pkg then

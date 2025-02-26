@@ -338,7 +338,6 @@ def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) 
   let state := (Format.joinSep (← i.goalState) "\n").pretty
 
   let nextTactic ← tacticPP module i
-  let decl ← ppDeclWithoutProof module elabDeclInfo.snd
 
   let mainGoalBeforeTactic ← i.runMetaM (fun mvarId => pure mvarId)
 

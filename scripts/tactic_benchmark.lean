@@ -71,7 +71,7 @@ def useHammerCore (hammerRecommendation : Array String) (externalProverTimeout :
       evalTactic (← `(tactic| hammerCore [$simpLemmas,*] [*, $(coreRecommendation),*] {simpTarget := no_target}))
 
 def useHammer (externalProverTimeout : Nat) (apiUrl : String) (premiseRetrievalK : Nat) (withSimpPreprocessing := true) : TacticM Unit := do
-  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``hammer.premiseSelection.apiUrl apiUrl) do
+  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``PremiseSelection.Cloud.apiBaseUrl apiUrl) do
     let k := Syntax.mkNatLit premiseRetrievalK
     if withSimpPreprocessing then
       evalTactic (← `(tactic| hammer {premiseRetrievalK := $k}))
@@ -79,7 +79,7 @@ def useHammer (externalProverTimeout : Nat) (apiUrl : String) (premiseRetrievalK
       evalTactic (← `(tactic| hammer {premiseRetrievalK := $k, simpTarget := no_target}))
 
 def useAesopHammer (externalProverTimeout : Nat) (apiUrl : String) (premiseRetrievalK : Nat) (withSimpPreprocessing := true) : TacticM Unit := do
-  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``hammer.premiseSelection.apiUrl apiUrl) do
+  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``PremiseSelection.Cloud.apiBaseUrl apiUrl) do
     let k := Syntax.mkNatLit premiseRetrievalK
     if withSimpPreprocessing then
       evalTactic (← `(tactic| aesop (add unsafe (by hammer {premiseRetrievalK := $k}))))
