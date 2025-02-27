@@ -1,64 +1,64 @@
 [
     {
         "repo": "https://github.com/ImperialCollegeLondon/FLT",
-        "commit": "5a6f0000bfcf179d217f1902eda3b85897309797",
-        "lean": "leanprover/lean4:v4.15.0",
+        "commit": "4a97c893071433d0d39cbf5261d0877f864c2189",
+        "lean": "leanprover/lean4:v4.16.0",
         "name": "FLT",
         "imports": ["FLT"]
     },
     {
         "repo": "https://github.com/fpvandoorn/carleson",
-        "commit": "386a3c6e178f3c1b92ad5547a69b48ebfe1564ea",
-        "lean": "leanprover/lean4:v4.15.0",
+        "commit": "a5d265f109105809de4aaff16776b7c16b1c0bd5",
+        "lean": "leanprover/lean4:v4.16.0",
         "name": "carleson",
         "imports": ["Carleson"]
     },
     {
         "repo": "https://github.com/emilyriehl/infinity-cosmos",
-        "commit": "070accd754765ecbf3f988c48be35fbbf1b28b77",
-        "lean": "leanprover/lean4:v4.15.0",
+        "commit": "96a5375e3ec38ecc012a635747919b049dd8201c",
+        "lean": "leanprover/lean4:v4.16.0-rc2",
         "name": "InfinityCosmos",
         "imports": ["InfinityCosmos"]
     },
     {
         "repo": "https://github.com/Ivan-Sergeyev/seymour",
-        "commit": "2abc822c6f0f2b6b65acb2c6c637c73d1bd8b1cc",
-        "lean": "leanprover/lean4:v4.15.0-rc1",
+        "commit": "27c0384977032b693daca8c4fcfc5cc274e1f2d6",
+        "lean": "leanprover/lean4:v4.16.0",
         "name": "Seymour",
         "imports": ["Seymour"]
     },
     {
         "repo": "https://github.com/FormalizedFormalLogic/Foundation",
-        "commit": "d5a5b566c4bbc8d91a509979ae5091e750e67059",
-        "lean": "leanprover/lean4:v4.15.0-rc1",
+        "commit": "54324e6e009f0d0a288897312d3feb1c0165ad19",
+        "lean": "leanprover/lean4:v4.16.0-rc2",
         "name": "foundation",
         "imports": ["Foundation"]
     },
     {
         "repo": "https://github.com/leanprover-community/con-nf",
-        "commit": "dc51a7eee7699d56229e1ad5dccc6030c2305091",
-        "lean": "leanprover/lean4:v4.15.0-rc1",
+        "commit": "51c38ad244870b8b1f40b8272b281678397dfa4f",
+        "lean": "leanprover/lean4:v4.16.0-rc1",
         "name": "ConNF",
         "imports": ["ConNF"]
     },
     {
         "repo": "https://github.com/HEPLean/PhysLean",
-        "commit": "656a3e422fe26c38c4f52081528c24fc1ec6b26c",
-        "lean": "leanprover/lean4:v4.15.0",
+        "commit": "fe082d93c2775beee6634b24b34c8482a02ba8a8",
+        "lean": "leanprover/lean4:v4.16.0",
         "name": "HepLean",
         "imports": ["HepLean"]
     },
     {
         "repo": "https://github.com/AlexKontorovich/PrimeNumberTheoremAnd",
-        "commit": "44863eeae4c5b9981af7e634e5531cb41a3135a0",
-        "lean": "leanprover/lean4:v4.15.0",
+        "commit": "34004c919166f3a3a876bfe2731ed395c973d248",
+        "lean": "leanprover/lean4:v4.16.0",
         "name": "PrimeNumberTheoremAnd",
         "imports": ["PrimeNumberTheoremAnd"]
     },
     {
         "repo": "https://github.com/leanprover-community/mathlib4",
-        "commit": "v4.15.0",
-        "lean": "leanprover/lean4:v4.15.0",
+        "commit": "v4.16.0",
+        "lean": "leanprover/lean4:v4.16.0",
         "name": "mathlib",
         "imports": ["Mathlib"]
     }

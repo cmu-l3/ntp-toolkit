@@ -11,11 +11,11 @@ package «lean-training-data» {
 }
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git" @ "v4.15.0"
+  "https://github.com/leanprover-community/mathlib4.git" @ "v4.16.0"
 
 
 require «doc-gen4» from git
-  "https://github.com/leanprover/doc-gen4.git" @ "v4.15.0"
+  "https://github.com/leanprover/doc-gen4.git" @ "v4.16.0"
 
 
 @[default_target]
