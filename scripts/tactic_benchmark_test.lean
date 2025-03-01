@@ -3,7 +3,7 @@ import Scripts.Tactic_benchmark
 open Lean Core Elab IO Meta Term Tactic -- All the monads!
 
 -- Set this option to modify the premise selection server URL when using `hammer` locally
-set_option hammer.premiseSelection.apiUrl "http://52.206.70.13/retrieve"
+-- set_option hammer.premiseSelection.apiUrl "http://52.206.70.13/retrieve"
 
 def withImportsDir := "Examples/Mathlib/WithImports"
 def jsonDir := "Examples/Mathlib/TrainingDataWithPremises"
@@ -32,3 +32,13 @@ succeed when we test by hand, even with portfolioInstance set to 1) **TODO** Inv
 #eval Command.liftTermElabM $ hammerCoreBenchmarkAtDecl `Mathlib.Data.Vector.Mem `Mathlib.Vector.mem_cons_of_mem withImportsDir jsonDir 10
 #eval Command.liftTermElabM $ hammerCoreBenchmarkAtDecl `Mathlib.Data.Vector.Mem `Mathlib.Vector.mem_cons_of_mem withImportsDir jsonDir 10 false
 -/
+
+------------------------------------------------------------------------------------------------------------------------
+
+-- #eval Command.liftTermElabM $ querySMTBenchmarkFromModule `Mathlib.Data.Int.Defs withImportsDir jsonDir 1
+-- #eval Command.liftTermElabM $ tacticBenchmarkAtDecl `Mathlib.Data.Int.Defs `Int.fakeTheorem withImportsDir useSimpAllWithSelector TacType.General
+-- #eval Command.liftTermElabM $ tacticBenchmarkAtDecl `Mathlib.Data.Int.Defs `Int.fakeTheorem withImportsDir useAesopWithSelector TacType.General
+-- #eval Command.liftTermElabM $ tacticBenchmarkAtDecl `Mathlib.Data.Int.Defs `Int.fakeTheorem withImportsDir (useHammer 10 "http://52.206.70.13/retrieve" 16) TacType.Hammer
+-- #eval Command.liftTermElabM $ tacticBenchmarkAtDecl `Mathlib.Data.Int.Defs `Int.fakeTheorem withImportsDir (useAesopHammer 10 "http://52.206.70.13/retrieve" 16) TacType.General
+
+-- **TODO** Test script calls
