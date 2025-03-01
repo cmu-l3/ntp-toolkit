@@ -1,5 +1,11 @@
 import DocGen4.Process
 import Batteries.Data.String.Basic
+/- Without this import, declarations.lean raises uncaught exception when pretty printing some theorems with `Prod.fst`.
+  (To reproduce: remove this import and run `lake exe declarations Mathlib.Data.Fin.Tuple.Basic`).
+  This is likely because of the option `Prod.PrettyPrinting.pp.numericProj.prod` in `Mathlib.Data.Prod.Basic`
+  cannot be both defined by and accessed in `Lean.withImports`.
+  TODO: is there a better fix? -/
+import Mathlib.Data.Prod.Basic
 
 open Lean IO Meta System DocGen4 Process
 

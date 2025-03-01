@@ -1088,7 +1088,7 @@ def tactic_benchmark : Cmd := `[Cli|
   EXTENSIONS:
     defaultValues! #[
       ("externalProverTimeout", "10"),
-      ("apiUrl", "http://52.206.70.13/retrieve"),
+      ("apiUrl", "http://52.206.70.13"),
       ("k", "16")
     ]
 ]

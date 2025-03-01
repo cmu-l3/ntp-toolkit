@@ -141,6 +141,7 @@ def main (args : List String) : IO UInt32 := do
   -- (e.g., if the module is Init.Prelude which does not have delaborator for Eq yet)
   let delaboratorModules := #[
     `Mathlib.Lean.PrettyPrinter.Delaborator,
+    `Mathlib.Util.Delaborators,
     `Lean.PrettyPrinter
   ]
   let importModules := modules ++ delaboratorModules
