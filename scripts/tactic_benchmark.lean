@@ -12,22 +12,35 @@ import QuerySMT
 import Hammer
 import Cli
 
-open Lean Core Elab IO Meta Term Tactic SimpAllHint TheoremPrettyPrinting -- All the monads!
+open Lean Core Elab IO Meta Term Tactic SimpAllHint TheoremPrettyPrinting PremiseSelection -- All the monads!
 
 set_option autoImplicit true
+
+def chosenSelector : Selector := Cloud.premiseSelector
 
 def useAesop : TacticM Unit := do evalTactic (← `(tactic| aesop))
 def useExact? : TacticM Unit := do evalTactic (← `(tactic| exact?))
 def useRfl : TacticM Unit := do evalTactic (← `(tactic| intros; rfl))
 def useSimpAll : TacticM Unit := do evalTactic (← `(tactic| intros; simp_all))
+def useOmega : TacticM Unit := do evalTactic (← `(tactic| intros; omega))
+def useDuper : TacticM Unit := do evalTactic (← `(tactic| duper [*]))
+
 def useSimpAllWithRecommendation (simpAllRecommendation : Array String) : TacticM Unit := do
   let simpAllRecommendation : Array Name := simpAllRecommendation.map String.toName
   let simpAllRecommendation : Array Ident := simpAllRecommendation.map mkIdent
   let simpAllRecommendation : Array Term := simpAllRecommendation.map (fun i => ⟨i.raw⟩)
   dbg_trace "simpAllRecommendation: {simpAllRecommendation}"
   evalTactic (← `(tactic| simp_all [$[$simpAllRecommendation:term],*]))
-def useOmega : TacticM Unit := do evalTactic (← `(tactic| intros; omega))
-def useDuper : TacticM Unit := do evalTactic (← `(tactic| duper [*]))
+
+def useSimpAllWithSelector : TacticM Unit := withMainContext do
+  let goal ← getMainGoal
+  let premises ← chosenSelector goal {}
+  let premises ← premises.mapM (fun x =>
+      let t : Term := ⟨(mkIdent x.1).raw⟩
+      `(Lean.Parser.Tactic.simpLemma| $t:term)
+    )
+  evalTactic (← `(tactic| intros; simp_all [$premises,*]))
+
 def useQuerySMT (hammerRecommendation : Array String) (externalProverTimeout : Nat) (ignoreHints : Bool) : TacticM Unit := do
   withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``querySMT.ignoreHints ignoreHints) do
     let hammerRecommendation : Array Ident ←
@@ -71,6 +84,7 @@ def useHammerCore (hammerRecommendation : Array String) (externalProverTimeout :
       evalTactic (← `(tactic| hammerCore [$simpLemmas,*] [*, $(coreRecommendation),*] {simpTarget := no_target}))
 
 def useHammer (externalProverTimeout : Nat) (apiUrl : String) (premiseRetrievalK : Nat) (withSimpPreprocessing := true) : TacticM Unit := do
+  PremiseSelection.registerPremiseSelector chosenSelector
   withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``PremiseSelection.Cloud.apiBaseUrl apiUrl) do
     let k := Syntax.mkNatLit premiseRetrievalK
     if withSimpPreprocessing then
@@ -79,6 +93,7 @@ def useHammer (externalProverTimeout : Nat) (apiUrl : String) (premiseRetrievalK
       evalTactic (← `(tactic| hammer {premiseRetrievalK := $k, simpTarget := no_target}))
 
 def useAesopHammer (externalProverTimeout : Nat) (apiUrl : String) (premiseRetrievalK : Nat) (withSimpPreprocessing := true) : TacticM Unit := do
+  PremiseSelection.registerPremiseSelector chosenSelector
   withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``PremiseSelection.Cloud.apiBaseUrl apiUrl) do
     let k := Syntax.mkNatLit premiseRetrievalK
     if withSimpPreprocessing then
@@ -127,6 +142,16 @@ def useAesopWithPremises (hammerRecommendation : Array String) : TacticM Unit :=
     )
   let mut addIdentStxs : TSyntaxArray `Aesop.tactic_clause := #[]
   for t in hammerRecommendation do
+    let tFeature ← `(Aesop.feature| $t:ident)
+    addIdentStxs := addIdentStxs.push (← `(Aesop.tactic_clause| (add unsafe $tFeature:Aesop.feature)))
+  evalTactic (← `(tactic| aesop $addIdentStxs*))
+
+def useAesopWithSelector : TacticM Unit := withMainContext do
+  let goal ← getMainGoal
+  let premises ← chosenSelector goal {}
+  let premises := premises.map (fun x => mkIdent x.1)
+  let mut addIdentStxs : TSyntaxArray `Aesop.tactic_clause := #[]
+  for t in premises do
     let tFeature ← `(Aesop.feature| $t:ident)
     addIdentStxs := addIdentStxs.push (← `(Aesop.tactic_clause| (add unsafe $tFeature:Aesop.feature)))
   evalTactic (← `(tactic| aesop $addIdentStxs*))
@@ -1018,6 +1043,9 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
       | "omega" => tacticBenchmarkAtDecl module declName (some withImportsPath) useOmega TacType.General
       | "hammer" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useHammer externalProverTimeout apiUrl k) TacType.Hammer
       | "hammer_nosimp" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useHammer externalProverTimeout apiUrl k false) TacType.Hammer
+
+      | "aesop_with_selector" => tacticBenchmarkAtDecl module declName (some withImportsPath) useAesopWithSelector TacType.General
+      | "simp_all_with_selector" => tacticBenchmarkAtDecl module declName (some withImportsPath) useSimpAllWithSelector TacType.General
 
       | "aesop_hammer" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammer externalProverTimeout apiUrl k) TacType.General
       | "aesop_hammer_nosimp" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammer externalProverTimeout apiUrl k false) TacType.General
