@@ -163,7 +163,7 @@ if __name__ == '__main__':
         check=True
     )
 
-    if 'premises' in args.task and 'full_proof_training_data' in args.task:
+    if 'convert_minictx' in args.task:
         subprocess.run(
             ['python', 'scripts/convert_minictx.py', args.output_base_dir, os.path.join(args.output_base_dir, 'minictx.jsonl')],
             cwd=args.cwd,

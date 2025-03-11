@@ -208,6 +208,10 @@ if __name__ == '__main__':
         '--imports',
         action='store_true'
     )
+    parser.add_argument(
+        '--convert_minictx',
+        action='store_true'
+    )
     args = parser.parse_args()
 
     with open(args.config) as f:
@@ -232,6 +236,8 @@ if __name__ == '__main__':
         flags.append('declarations')
     if args.imports:
         flags.append('imports')
+    if args.convert_minictx:
+        flags.append('convert_minictx')
 
     for source in sources:
         print("=== %s ===" % (source['repo']))
