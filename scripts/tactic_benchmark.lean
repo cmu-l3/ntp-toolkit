@@ -1173,6 +1173,8 @@ def tactic_benchmark : Cmd := `[Cli|
     externalProverTimeout : Nat; "Timeout for the external prover."
     apiUrl : String; "API URL for the premise selection server."
     k : Nat; "Number of premises for the premise retriever in `hammer` to retrieve."
+    aesopHammerPriority : Nat; "The priority percentage value for hammer as a rule for aesop."
+    aesopPremisePriority : Nat; "The priority percentage value for premises as a rule for aesop."
 
   ARGS:
     module : ModuleName; "Lean module to run the tactic on."
