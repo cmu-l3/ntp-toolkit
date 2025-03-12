@@ -132,7 +132,7 @@ def useAesopHammerCore (hammerRecommendation : Array String) (externalProverTime
     else
       evalTactic (← `(tactic| aesop (add unsafe (by hammerCore [$simpLemmas,*] [*, $(coreRecommendation),*] {simpTarget := no_target}))))
 
-def useAesopHammerCoreWithPremises (hammerRecommendation : Array String) (externalProverTimeout : Nat) (withSimpPreprocessing := false) : TacticM Unit := do
+def useAesopHammerCoreWithPremises (hammerRecommendation : Array String) (externalProverTimeout : Nat) (withSimpPreprocessing := false) (aesopHammerPriority aesopPremisePriority : Nat) : TacticM Unit := do
   withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout)) do
     let hammerRecommendation : Array (Term × SimpAllHint) ←
       hammerRecommendation.mapM (fun x => do
@@ -161,11 +161,11 @@ def useAesopHammerCoreWithPremises (hammerRecommendation : Array String) (extern
     let mut addIdentStxs : TSyntaxArray `Aesop.tactic_clause := #[]
     for (t, _) in hammerRecommendation do
       let tFeature ← `(Aesop.feature| $(mkIdent t.raw.getId):ident)
-      addIdentStxs := addIdentStxs.push (← `(Aesop.tactic_clause| (add unsafe $tFeature:Aesop.feature)))
+      addIdentStxs := addIdentStxs.push (← `(Aesop.tactic_clause| (add unsafe $(Syntax.mkNatLit aesopPremisePriority):num % $tFeature:Aesop.feature)))
     if withSimpPreprocessing then
-      evalTactic (← `(tactic| aesop $addIdentStxs* (add unsafe (by hammerCore [$simpLemmas,*] [*, $(coreRecommendation),*]))))
+      evalTactic (← `(tactic| aesop $addIdentStxs* (add unsafe $(Syntax.mkNatLit aesopHammerPriority):num% (by hammerCore [$simpLemmas,*] [*, $(coreRecommendation),*]))))
     else
-      evalTactic (← `(tactic| aesop $addIdentStxs* (add unsafe (by hammerCore [$simpLemmas,*] [*, $(coreRecommendation),*] {simpTarget := no_target}))))
+      evalTactic (← `(tactic| aesop $addIdentStxs* (add unsafe $(Syntax.mkNatLit aesopHammerPriority):num% (by hammerCore [$simpLemmas,*] [*, $(coreRecommendation),*] {simpTarget := no_target}))))
 
 def useAesopWithPremises (hammerRecommendation : Array String) : TacticM Unit := do
   let hammerRecommendation : Array Ident ←
@@ -748,7 +748,7 @@ def runAesopHammerCoreAtDecl (mod : Name) (declName : Name) (decls : ConstantInf
 /-- Like `runHammerAtDecl` but only tests `aesop` with `hammerCore` rather than just `hammerCore`.
     Still uses the `hammerRecommendation` field in the JSON file -/
 def runAesopHammerCoreWithPremisesAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String)
-  (externalProverTimeout : Nat) (withSimpPreprocessing : Bool) : IO (Option (ConstantInfo × GeneralResult)) := do
+  (externalProverTimeout : Nat) (withSimpPreprocessing : Bool) (aesopHammerPriority aesopPremisePriority : Nat) : IO (Option (ConstantInfo × GeneralResult)) := do
   runAtDecl mod declName (some withImportsPath) fun ci numArgs? => do
     if ! (← decls ci) then return none
     let g ←
@@ -780,7 +780,7 @@ def runAesopHammerCoreWithPremisesAtDecl (mod : Name) (declName : Name) (decls :
       try
         TermElabM.run' (do
           dbg_trace "About to use aesop with hammerCore for {ci.name} in module {mod} (recommendation: {recommendation})"
-          let gs ← Tactic.run g $ useAesopHammerCoreWithPremises recommendation externalProverTimeout withSimpPreprocessing
+          let gs ← Tactic.run g $ useAesopHammerCoreWithPremises recommendation externalProverTimeout withSimpPreprocessing aesopHammerPriority aesopPremisePriority
           match gs with
           | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate on Prop declarations
           | _ :: _ => pure .subgoals)
@@ -1073,9 +1073,9 @@ def aesopHammerCoreBenchmarkAtDecl (module : ModuleName) (declName : Name) (with
     return 0
 
 def aesopHammerCoreWithPremisesBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat)
-  (withSimpPreprocessing := false) : IO UInt32 := do
+  (withSimpPreprocessing := false) (aesopHammerPriority aesopPremisePriority : Nat) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
-  let result ← runAesopHammerCoreWithPremisesAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout withSimpPreprocessing
+  let result ← runAesopHammerCoreWithPremisesAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout withSimpPreprocessing aesopHammerPriority aesopPremisePriority
   match result with
   | some (ci, ⟨type, seconds, heartbeats⟩) =>
     IO.println $ generalResultTypeToEmojiString type ++ " " ++ ci.name.toString ++ s!" ({seconds}s) ({heartbeats} heartbeats)"
@@ -1123,6 +1123,8 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
   let externalProverTimeout := args.flag! "externalProverTimeout" |>.as! Nat
   let apiUrl := args.flag! "apiUrl" |>.as! String
   let k := args.flag! "k" |>.as! Nat
+  let aesopHammerPriority := args.flag! "aesopHammerPriority" |>.as! Nat
+  let aesopPremisePriority := args.flag! "aesopPremisePriority" |>.as! Nat
   let withImportsPath := "Examples/Mathlib/WithImports"
 
   try
@@ -1144,7 +1146,7 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
 
       | "aesop_hammerCore" => aesopHammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout true
       | "aesop_hammerCore_nosimp" => aesopHammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout false
-      | "aesop_hammerCore_nosimp_with_premises" => aesopHammerCoreWithPremisesBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout false
+      | "aesop_hammerCore_nosimp_with_premises" => aesopHammerCoreWithPremisesBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout false aesopHammerPriority aesopPremisePriority
 
       | "simp_all_with_premises" => simpAllBenchmarkAtDecl module declName withImportsPath premisesPath
       | "aesop_with_premises" => aesopWithPremisesBenchmarkAtDecl module declName withImportsPath premisesPath
@@ -1182,7 +1184,9 @@ def tactic_benchmark : Cmd := `[Cli|
     defaultValues! #[
       ("externalProverTimeout", "10"),
       ("apiUrl", "http://52.206.70.13"),
-      ("k", "16")
+      ("k", "16"),
+      ("aesopHammerPriority", "50"),
+      ("aesopPremisePriority", "50")
     ]
 ]
 
