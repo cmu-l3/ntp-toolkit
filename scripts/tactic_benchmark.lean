@@ -1177,7 +1177,7 @@ def tactic_benchmark : Cmd := `[Cli|
     hammerCoreK : Nat; "(Only relevant for aesop_hammerCore_nosimp_with_premises) Number of premises for the premise retriever in `hammer` to retrieve, as opposed to the number of premises directly input to aesop."
     aesopHammerPriority : Nat; "(Only relevant for aesop_hammerCore_nosimp_with_premises) The priority percentage value for hammer as a rule for aesop."
     aesopPremisePriority : Nat; "(Only relevant for aesop_hammerCore_nosimp_with_premises) The priority percentage value for premises as a rule for aesop."
-    withImportsPath : Nat; "Path to directory with .lean files with added imports like Hammer (e.g. Examples/Mathlib/WithImports)."
+    withImportsPath : String; "Path to directory with .lean files with added imports like Hammer (e.g. Examples/Mathlib/WithImports)."
 
   ARGS:
     module : ModuleName; "Lean module to run the tactic on."
