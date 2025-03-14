@@ -206,11 +206,11 @@ def runAtDecls (mod : Name) (withImportsDir : Option String := none) (tac : Cons
   let fileName ←
     match withImportsDir with
     | none => pure (← findLean mod).toString
-    | some withImportsDir => pure (← findLeanWithImports mod "mathlib" withImportsDir).toString
+    | some withImportsDir => pure (← findLeanWithImports mod withImportsDir).toString
   let steps :=
     match withImportsDir with
     | none => compileModule' mod
-    | some withImportsDir => compileModuleWithImports' mod "mathlib" withImportsDir
+    | some withImportsDir => compileModuleWithImports' mod withImportsDir
   let targets := steps.bind fun c => (MLList.ofList c.diff).map fun i => (c, i)
 
   targets.filterMapM fun (cmd, ci) => do
@@ -251,11 +251,11 @@ def runAtDecl (mod : Name) (declName : Name) (withImportsDir : Option String := 
   let fileName ←
     match withImportsDir with
     | none => pure (← findLean mod).toString
-    | some withImportsDir => pure (← findLeanWithImports mod "mathlib" withImportsDir).toString
+    | some withImportsDir => pure (← findLeanWithImports mod withImportsDir).toString
   let steps :=
     match withImportsDir with
     | none => compileModule' mod
-    | some withImportsDir => compileModuleWithImports' mod "mathlib" withImportsDir
+    | some withImportsDir => compileModuleWithImports' mod withImportsDir
   let targets := steps.bind fun c => (MLList.ofList c.diff).map fun i => (c, i)
   for (cmd, ci) in targets do
     if ci.name == declName then
@@ -564,7 +564,7 @@ def runHammerCoreAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (wit
         pure g
       | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
-    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let fileName := (← findJSONFile mod jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
     let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
     -- Find `declHammerRecommendation` corresponding to current `ci`
@@ -616,7 +616,7 @@ def runHammerCoreAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo →
         pure g
       | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
-    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let fileName := (← findJSONFile mod jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
     let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
     -- Find `declHammerRecommendation` corresponding to current `ci`
@@ -669,7 +669,7 @@ def runSimpAllAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → Me
         pure g
       | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
-    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let fileName := (← findJSONFile mod jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
     let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
     -- Find `declHammerRecommendation` corresponding to current `ci`
@@ -714,7 +714,7 @@ def runAesopHammerCoreAtDecl (mod : Name) (declName : Name) (decls : ConstantInf
         pure g
       | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
-    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let fileName := (← findJSONFile mod jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
     let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
     -- Find `declHammerRecommendation` corresponding to current `ci`
@@ -759,7 +759,7 @@ def runAesopHammerCoreWithPremisesAtDecl (mod : Name) (declName : Name) (decls :
         pure g
       | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
-    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let fileName := (← findJSONFile mod jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
     let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
     -- Find `declHammerRecommendation` corresponding to current `ci`
@@ -802,7 +802,7 @@ def runAesopWithPremisesAtDecl (mod : Name) (declName : Name) (decls : ConstantI
         pure g
       | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
-    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let fileName := (← findJSONFile mod jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
     let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
     -- Find `declHammerRecommendation` corresponding to current `ci`
@@ -848,7 +848,7 @@ def runQuerySMTAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → M
         pure g
       | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
-    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let fileName := (← findJSONFile mod jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
     let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
     -- Find `declHammerRecommendation` corresponding to current `ci`
@@ -902,7 +902,7 @@ def runQuerySMTAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withI
         pure g
       | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
-    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let fileName := (← findJSONFile mod jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
     let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
     -- Find `declHammerRecommendation` corresponding to current `ci`
