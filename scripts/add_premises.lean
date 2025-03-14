@@ -1,6 +1,7 @@
 import Lean.Util.SearchPath
 import Mathlib.Lean.CoreM
 import PremiseSelection
+import Mathlib.Data.Prod.Basic /- c/f TrainingData.Utils.TheoremPrettyPrinting -/
 
 open Lean PremiseSelection Cloud
 
@@ -55,5 +56,6 @@ def main (args : List String) : IO UInt32 := do
     let indexedModules ← getIndexedModules (getApiBaseUrl (← getOptions))
     let newNames ← Premise.getNames indexedModules
     for name in newNames do
+      logInfo m!"adding premise {name}"
       addPremise name
   return 0
