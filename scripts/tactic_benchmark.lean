@@ -1126,7 +1126,7 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
   let hammerCoreK := args.flag! "hammerCoreK" |>.as! Nat
   let aesopHammerPriority := args.flag! "aesopHammerPriority" |>.as! Nat
   let aesopPremisePriority := args.flag! "aesopPremisePriority" |>.as! Nat
-  let withImportsPath := "Examples/Mathlib/WithImports"
+  let withImportsPath := args.flag! "withImportsPath" |>.as! String
 
   try
     match benchmarkType with
@@ -1177,6 +1177,7 @@ def tactic_benchmark : Cmd := `[Cli|
     hammerCoreK : Nat; "(Only relevant for aesop_hammerCore_nosimp_with_premises) Number of premises for the premise retriever in `hammer` to retrieve, as opposed to the number of premises directly input to aesop."
     aesopHammerPriority : Nat; "(Only relevant for aesop_hammerCore_nosimp_with_premises) The priority percentage value for hammer as a rule for aesop."
     aesopPremisePriority : Nat; "(Only relevant for aesop_hammerCore_nosimp_with_premises) The priority percentage value for premises as a rule for aesop."
+    withImportsPath : Nat; "Path to directory with .lean files with added imports like Hammer (e.g. Examples/Mathlib/WithImports)."
 
   ARGS:
     module : ModuleName; "Lean module to run the tactic on."
@@ -1191,7 +1192,8 @@ def tactic_benchmark : Cmd := `[Cli|
       ("k", "16"),
       ("hammerCoreK", "16"),
       ("aesopHammerPriority", "10"),
-      ("aesopPremisePriority", "20")
+      ("aesopPremisePriority", "20"),
+      ("withImportsPath", "Examples/Mathlib/WithImports")
     ]
 ]
 
