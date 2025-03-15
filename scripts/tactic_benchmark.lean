@@ -32,9 +32,9 @@ def useSimpAllWithRecommendation (simpAllRecommendation : Array String) : Tactic
   dbg_trace "simpAllRecommendation: {simpAllRecommendation}"
   evalTactic (← `(tactic| simp_all [$[$simpAllRecommendation:term],*]))
 
-def useSimpAllWithSelector : TacticM Unit := withMainContext do
+def useSimpAllWithSelector (k : Nat) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
-  let premises ← chosenSelector goal {}
+  let premises ← chosenSelector goal {maxSuggestions := k}
   let premises ← premises.mapM (fun x =>
       let t : Term := ⟨(mkIdent x.1).raw⟩
       `(Lean.Parser.Tactic.simpLemma| $t:term)
@@ -196,9 +196,9 @@ def useAesopWithPremises (hammerRecommendation : Array String) : TacticM Unit :=
     addIdentStxs := addIdentStxs.push (← `(Aesop.tactic_clause| (add unsafe $tFeature:Aesop.feature)))
   evalTactic (← `(tactic| aesop $addIdentStxs*))
 
-def useAesopWithSelector : TacticM Unit := withMainContext do
+def useAesopWithSelector (k : Nat) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
-  let premises ← chosenSelector goal {}
+  let premises ← chosenSelector goal {maxSuggestions := k}
   let premises := premises.map (fun x => mkIdent x.1)
   let mut addIdentStxs : TSyntaxArray `Aesop.tactic_clause := #[]
   for t in premises do
@@ -1154,8 +1154,8 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
       | "hammer" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useHammer externalProverTimeout apiUrl k) TacType.Hammer
       | "hammer_nosimp" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useHammer externalProverTimeout apiUrl k false) TacType.Hammer
 
-      | "aesop_with_selector" => tacticBenchmarkAtDecl module declName (some withImportsPath) useAesopWithSelector TacType.General
-      | "simp_all_with_selector" => tacticBenchmarkAtDecl module declName (some withImportsPath) useSimpAllWithSelector TacType.General
+      | "aesop_with_selector" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopWithSelector k) TacType.General
+      | "simp_all_with_selector" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useSimpAllWithSelector k) TacType.General
 
       | "aesop_hammer" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammer externalProverTimeout apiUrl k) TacType.General
       | "aesop_hammer_nosimp" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammer externalProverTimeout apiUrl k false) TacType.General
