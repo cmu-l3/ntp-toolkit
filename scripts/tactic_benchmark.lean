@@ -1159,7 +1159,7 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
 
       | "aesop_hammer" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammer externalProverTimeout apiUrl k) TacType.General
       | "aesop_hammer_nosimp" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammer externalProverTimeout apiUrl k false) TacType.General
-      | "aesop_hammer_nosimp_with_premises" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammerWithSelector externalProverTimeout apiUrl k hammerCoreK aesopHammerPriority aesopPremisePriority false) TacType.General
+      | "aesop_hammer_nosimp_with_selector" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammerWithSelector externalProverTimeout apiUrl k hammerCoreK aesopHammerPriority aesopPremisePriority false) TacType.General
 
       | "aesop_hammerCore" => aesopHammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout true
       | "aesop_hammerCore_nosimp" => aesopHammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout false
