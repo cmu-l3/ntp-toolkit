@@ -101,6 +101,21 @@ def useAesopHammer (externalProverTimeout : Nat) (apiUrl : String) (premiseRetri
     else
       evalTactic (← `(tactic| aesop (add unsafe (by hammer {premiseRetrievalK := $k, simpTarget := no_target}))))
 
+def useAesopHammerWithSelector (externalProverTimeout : Nat) (apiUrl : String) (aesopK hammerK aesopHammerPriority aesopPremisePriority : Nat) (withSimpPreprocessing := true) : TacticM Unit := do
+  PremiseSelection.registerPremiseSelector chosenSelector
+  let goal ← getMainGoal
+  let premises ← chosenSelector goal {maxSuggestions := aesopK}
+  let addIdentStxs ← premises.mapM (fun x => do
+    let tFeature ← `(Aesop.feature| $(mkIdent x.name):ident)
+    `(Aesop.tactic_clause| (add unsafe $(Syntax.mkNatLit aesopPremisePriority):num % $tFeature:Aesop.feature))
+  )
+  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``PremiseSelection.Cloud.apiBaseUrl apiUrl) do
+    let hammerK := Syntax.mkNatLit hammerK
+    if withSimpPreprocessing then
+      evalTactic (← `(tactic| aesop $addIdentStxs* (add unsafe $(Syntax.mkNatLit aesopHammerPriority):num% (by hammer {premiseRetrievalK := $hammerK}))))
+    else
+      evalTactic (← `(tactic| aesop $addIdentStxs* (add unsafe $(Syntax.mkNatLit aesopHammerPriority):num% (by hammer {premiseRetrievalK := $hammerK, simpTarget := no_target}))))
+
 def useAesopHammerCore (hammerRecommendation : Array String) (externalProverTimeout : Nat) (withSimpPreprocessing := false) : TacticM Unit := do
   withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout)) do
     let hammerRecommendation : Array (Term × SimpAllHint) ←
@@ -1144,6 +1159,7 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
 
       | "aesop_hammer" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammer externalProverTimeout apiUrl k) TacType.General
       | "aesop_hammer_nosimp" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammer externalProverTimeout apiUrl k false) TacType.General
+      | "aesop_hammer_nosimp_with_premises" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammerWithSelector externalProverTimeout apiUrl k hammerCoreK aesopHammerPriority aesopPremisePriority false) TacType.General
 
       | "aesop_hammerCore" => aesopHammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout true
       | "aesop_hammerCore_nosimp" => aesopHammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout false
