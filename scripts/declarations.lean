@@ -18,6 +18,9 @@ namespace DocGen4.Process
 
 open DocGen4 DocGen4.Process DocGen4.Process.DocInfo TheoremPrettyPrinting
 
+/-- A variable that, when set to true, disables some of the changes that were made to improve performance. -/
+def useNaiveDataExtraction := false
+
 /--
 Returns kind (string) and Info given constant.
 Simplified version of `DocInfo.getKind`, `DocInfo.ofConstant`.
@@ -44,8 +47,12 @@ def infoOfConstant (cinfo : ConstantInfo) : MetaM (String × Info) := do
     | .ctorInfo _ => "def"
     | .recInfo _ => "def"
     | .quotInfo _ => "def"
-  let info ← withOptions (fun o => (o.set `pp.notation false).set `pp.fullNames true) <|
-    Info.ofConstantVal' cinfo.toConstantVal
+  let info ←
+    if useNaiveDataExtraction then
+      Info.ofConstantVal' cinfo.toConstantVal
+    else
+      withOptions (fun o => (o.set `pp.notation false).set `pp.fullNames true) <|
+        Info.ofConstantVal' cinfo.toConstantVal
   return (kind, info)
 
 end DocGen4.Process

@@ -10,6 +10,7 @@ import Lean.Util.Trace
 import Duper
 import QuerySMT
 import Hammer
+import KNNPremiseSelection.Tactic
 import Cli
 
 open Lean Core Elab IO Meta Term Tactic SimpAllHint TheoremPrettyPrinting PremiseSelection -- All the monads!
