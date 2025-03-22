@@ -26,6 +26,12 @@ def useSimpAll : TacticM Unit := do evalTactic (← `(tactic| intros; simp_all))
 def useOmega : TacticM Unit := do evalTactic (← `(tactic| intros; omega))
 def useDuper : TacticM Unit := do evalTactic (← `(tactic| duper [*]))
 
+deriving instance Repr for Suggestion in
+def printSelectorResults (k : Nat) : TacticM Unit := withMainContext do
+  let goal ← getMainGoal
+  let premises ← chosenSelector goal {maxSuggestions := k}
+  IO.eprintln (repr premises)
+
 def useSimpAllWithRecommendation (simpAllRecommendation : Array String) : TacticM Unit := do
   let simpAllRecommendation : Array Name := simpAllRecommendation.map String.toName
   let simpAllRecommendation : Array Ident := simpAllRecommendation.map mkIdent
@@ -1176,6 +1182,8 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
       | "querySMT_ignoreHints" => querySMTBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout true
       | "querySMTModule" => querySMTBenchmarkFromModule module withImportsPath premisesPath externalProverTimeout false
       | "querySMTModule_ignoreHints" => querySMTBenchmarkFromModule module withImportsPath premisesPath externalProverTimeout true
+
+      | "print_selector_results" => tacticBenchmarkAtDecl module declName (some withImportsPath) (printSelectorResults k) TacType.General
 
       | _ => IO.throwServerError s!"Unknown benchmark type {benchmarkType}"
   catch e =>
