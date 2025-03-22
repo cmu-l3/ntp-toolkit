@@ -30,7 +30,9 @@ deriving instance Repr for Suggestion in
 def printSelectorResults (k : Nat) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let premises ← chosenSelector goal {maxSuggestions := k}
-  IO.eprintln (repr premises)
+  IO.println (repr premises)
+  (← IO.getStdout).flush
+  throwError ""
 
 def useSimpAllWithRecommendation (simpAllRecommendation : Array String) : TacticM Unit := do
   let simpAllRecommendation : Array Name := simpAllRecommendation.map String.toName
