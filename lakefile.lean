@@ -8,8 +8,10 @@ package «lean-training-data» {
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git" @ "a6276f4c6097675b1cf5ebd49b1146b735f38c02"
 
+-- require QuerySMT from git
+--   "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "842ca2a4a780f1a3589c930ef82ebb08368682f7"
 require QuerySMT from git
-  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "842ca2a4a780f1a3589c930ef82ebb08368682f7"
+  "https://github.com/hanwenzhu/LeanSMTParser.git" @ "main"
 
 require leanPremiseSelection from git
   "https://github.com/JOSHCLUNE/lean-premise-selection.git" @ "11fe7a80d4a4dc1adc69ba23a5ad41986ee7e368"
