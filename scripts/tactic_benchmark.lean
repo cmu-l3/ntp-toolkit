@@ -94,7 +94,7 @@ def useHammerCore (hammerRecommendation : Array String) (externalProverTimeout :
 
 def useHammer (externalProverTimeout : Nat) (apiUrl : String) (premiseRetrievalK : Nat) (withSimpPreprocessing := true) : TacticM Unit := do
   PremiseSelection.registerPremiseSelector chosenSelector
-  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``PremiseSelection.Cloud.apiBaseUrl apiUrl) do
+  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``Cloud.premiseSelection.apiBaseUrl apiUrl) do
     let k := Syntax.mkNatLit premiseRetrievalK
     if withSimpPreprocessing then
       evalTactic (← `(tactic| hammer {premiseRetrievalK := $k}))
@@ -103,7 +103,7 @@ def useHammer (externalProverTimeout : Nat) (apiUrl : String) (premiseRetrievalK
 
 def useAesopHammer (externalProverTimeout : Nat) (apiUrl : String) (premiseRetrievalK : Nat) (withSimpPreprocessing := true) : TacticM Unit := do
   PremiseSelection.registerPremiseSelector chosenSelector
-  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``PremiseSelection.Cloud.apiBaseUrl apiUrl) do
+  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``Cloud.premiseSelection.apiBaseUrl apiUrl) do
     let k := Syntax.mkNatLit premiseRetrievalK
     if withSimpPreprocessing then
       evalTactic (← `(tactic| aesop (add unsafe (by hammer {premiseRetrievalK := $k}))))
@@ -118,7 +118,7 @@ def useAesopHammerWithSelector (externalProverTimeout : Nat) (apiUrl : String) (
     let tFeature ← `(Aesop.feature| $(mkIdent x.name):ident)
     `(Aesop.tactic_clause| (add unsafe $(Syntax.mkNatLit aesopPremisePriority):num % $tFeature:Aesop.feature))
   )
-  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``PremiseSelection.Cloud.apiBaseUrl apiUrl) do
+  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``Cloud.premiseSelection.apiBaseUrl apiUrl) do
     let hammerK := Syntax.mkNatLit hammerK
     if withSimpPreprocessing then
       evalTactic (← `(tactic| aesop $addIdentStxs* (add unsafe $(Syntax.mkNatLit aesopHammerPriority):num% (by hammer {premiseRetrievalK := $hammerK}))))
