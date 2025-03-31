@@ -10,15 +10,14 @@ def getModuleNameFor (env : Environment) (name : Name) : Name :=
     | none => env.header.mainModule
     | some idx => env.header.moduleNames[idx.toNat]!
 
-def addPremise (name : Name) : CoreM Unit := do
+def addPremise (premise : Premise) : CoreM Unit := do
   let env ← getEnv
-  let premise ← Premise.fromName name
-  let moduleName := getModuleNameFor env name
+  let moduleName := getModuleNameFor env premise.name
   let apiBaseUrl := getApiBaseUrl (← getOptions)
 
   let apiUrl := apiBaseUrl ++ "/add-premise"
   let data := Json.mkObj [
-    ("name", toJson name),
+    ("name", toJson premise.name),
     ("decl", toJson premise.decl),
     ("module", toJson moduleName),
   ]
@@ -53,9 +52,11 @@ def main (args : List String) : IO UInt32 := do
   | args => args.toArray.map fun s => s.toName
   searchPathRef.set compile_time_search_path%
   CoreM.withImportModules modules (options := options) do
-    let indexedModules ← getIndexedModules (getApiBaseUrl (← getOptions))
-    let newNames ← Premise.getNames indexedModules
-    for name in newNames do
-      logInfo m!"adding premise {name}"
-      addPremise name
+    let env ← getEnv
+    let indexedModules ← Cloud.getIndexedModules
+    let newPremises ← Cloud.getUnindexedPremises
+    for premise in newPremises do
+      unless indexedModules.contains (getModuleNameFor env premise.name) do
+        logInfo m!"adding premise {premise.name}"
+        addPremise premise
   return 0
