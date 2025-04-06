@@ -9,10 +9,10 @@ require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git" @ "a6276f4c6097675b1cf5ebd49b1146b735f38c02"
 
 require leanPremiseSelection from git
-  "https://github.com/JOSHCLUNE/lean-premise-selection.git" @ "11fe7a80d4a4dc1adc69ba23a5ad41986ee7e368"
+  "https://github.com/JOSHCLUNE/lean-premise-selection.git" @ "0076d43fad5969b7087603e6216b2178a90a7512"
 
 require QuerySMT from git
-  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "1461548594a24380b94b32b73c92389d5759253b"
+  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "7a05a373863b41558ef212c585810046543d04d7"
 
 require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.16.0"
 
