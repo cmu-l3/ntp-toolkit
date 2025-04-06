@@ -13,13 +13,13 @@ package «lean-training-data» {
   -- add any package configuration options here
 }
 
-require %s from git
-  "%s.git" @ "%s"
-
 require QuerySMT from git
   "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "842ca2a4a780f1a3589c930ef82ebb08368682f7"
 
 require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.16.0"
+
+require %s from git
+  "%s.git" @ "%s"
 
 @[default_target]
 lean_lib TrainingData where
@@ -76,6 +76,11 @@ lean_exe imports where
 @[default_target]
 lean_exe update_hammer_blacklist where
   root := `scripts.update_hammer_blacklist
+  supportInterpreter := true
+
+@[default_target]
+lean_exe add_premises where
+  root := `scripts.add_premises
   supportInterpreter := true
 """ % (name, repo, commit)
     with open(os.path.join(cwd, 'lakefile.lean'), 'w') as f:
@@ -173,7 +178,7 @@ if __name__ == '__main__':
         '--add_imports',
         action='store_true'
     )
-    parser.add_argument(    
+    parser.add_argument(
         '--declarations',
         action='store_true'
     )

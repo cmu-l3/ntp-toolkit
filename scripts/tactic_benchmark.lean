@@ -26,6 +26,14 @@ def useSimpAll : TacticM Unit := do evalTactic (← `(tactic| intros; simp_all))
 def useOmega : TacticM Unit := do evalTactic (← `(tactic| intros; omega))
 def useDuper : TacticM Unit := do evalTactic (← `(tactic| duper [*]))
 
+deriving instance Repr for Suggestion in
+def printSelectorResults (k : Nat) : TacticM Unit := withMainContext do
+  let goal ← getMainGoal
+  let premises ← chosenSelector goal {maxSuggestions := k}
+  IO.println (repr premises)
+  (← IO.getStdout).flush
+  throwError ""
+
 def useSimpAllWithRecommendation (simpAllRecommendation : Array String) : TacticM Unit := do
   let simpAllRecommendation : Array Name := simpAllRecommendation.map String.toName
   let simpAllRecommendation : Array Ident := simpAllRecommendation.map mkIdent
@@ -33,9 +41,9 @@ def useSimpAllWithRecommendation (simpAllRecommendation : Array String) : Tactic
   dbg_trace "simpAllRecommendation: {simpAllRecommendation}"
   evalTactic (← `(tactic| simp_all [$[$simpAllRecommendation:term],*]))
 
-def useSimpAllWithSelector : TacticM Unit := withMainContext do
+def useSimpAllWithSelector (k : Nat) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
-  let premises ← chosenSelector goal {}
+  let premises ← chosenSelector goal {maxSuggestions := k}
   let premises ← premises.mapM (fun x =>
       let t : Term := ⟨(mkIdent x.1).raw⟩
       `(Lean.Parser.Tactic.simpLemma| $t:term)
@@ -86,7 +94,7 @@ def useHammerCore (hammerRecommendation : Array String) (externalProverTimeout :
 
 def useHammer (externalProverTimeout : Nat) (apiUrl : String) (premiseRetrievalK : Nat) (withSimpPreprocessing := true) : TacticM Unit := do
   PremiseSelection.registerPremiseSelector chosenSelector
-  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``PremiseSelection.Cloud.apiBaseUrl apiUrl) do
+  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``Cloud.premiseSelection.apiBaseUrl apiUrl) do
     let k := Syntax.mkNatLit premiseRetrievalK
     if withSimpPreprocessing then
       evalTactic (← `(tactic| hammer {premiseRetrievalK := $k}))
@@ -95,12 +103,27 @@ def useHammer (externalProverTimeout : Nat) (apiUrl : String) (premiseRetrievalK
 
 def useAesopHammer (externalProverTimeout : Nat) (apiUrl : String) (premiseRetrievalK : Nat) (withSimpPreprocessing := true) : TacticM Unit := do
   PremiseSelection.registerPremiseSelector chosenSelector
-  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``PremiseSelection.Cloud.apiBaseUrl apiUrl) do
+  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``Cloud.premiseSelection.apiBaseUrl apiUrl) do
     let k := Syntax.mkNatLit premiseRetrievalK
     if withSimpPreprocessing then
       evalTactic (← `(tactic| aesop (add unsafe (by hammer {premiseRetrievalK := $k}))))
     else
       evalTactic (← `(tactic| aesop (add unsafe (by hammer {premiseRetrievalK := $k, simpTarget := no_target}))))
+
+def useAesopHammerWithSelector (externalProverTimeout : Nat) (apiUrl : String) (aesopK hammerK aesopHammerPriority aesopPremisePriority : Nat) (withSimpPreprocessing := true) : TacticM Unit := do
+  PremiseSelection.registerPremiseSelector chosenSelector
+  let goal ← getMainGoal
+  let premises ← chosenSelector goal {maxSuggestions := aesopK}
+  let addIdentStxs ← premises.mapM (fun x => do
+    let tFeature ← `(Aesop.feature| $(mkIdent x.name):ident)
+    `(Aesop.tactic_clause| (add unsafe $(Syntax.mkNatLit aesopPremisePriority):num % $tFeature:Aesop.feature))
+  )
+  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout).set ``Cloud.premiseSelection.apiBaseUrl apiUrl) do
+    let hammerK := Syntax.mkNatLit hammerK
+    if withSimpPreprocessing then
+      evalTactic (← `(tactic| aesop $addIdentStxs* (add unsafe $(Syntax.mkNatLit aesopHammerPriority):num% (by hammer {premiseRetrievalK := $hammerK}))))
+    else
+      evalTactic (← `(tactic| aesop $addIdentStxs* (add unsafe $(Syntax.mkNatLit aesopHammerPriority):num% (by hammer {premiseRetrievalK := $hammerK, simpTarget := no_target}))))
 
 def useAesopHammerCore (hammerRecommendation : Array String) (externalProverTimeout : Nat) (withSimpPreprocessing := false) : TacticM Unit := do
   withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout)) do
@@ -133,6 +156,41 @@ def useAesopHammerCore (hammerRecommendation : Array String) (externalProverTime
     else
       evalTactic (← `(tactic| aesop (add unsafe (by hammerCore [$simpLemmas,*] [*, $(coreRecommendation),*] {simpTarget := no_target}))))
 
+def  useAesopHammerCoreWithPremises (hammerRecommendation : Array String) (externalProverTimeout : Nat) (withSimpPreprocessing := false) (aesopHammerPriority aesopPremisePriority hammerCoreK : Nat) : TacticM Unit := do
+  withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout)) do
+    let hammerRecommendation : Array (Term × SimpAllHint) ←
+      hammerRecommendation.mapM (fun x => do
+        let [name, simpAllHint] := x.splitOn ","
+          | throwError "{decl_name%} :: Unable to parse hammerRecommendation {x}"
+        let name := name.drop 1 -- Remove leading left parenthesis
+        let name := ⟨(mkIdent name.toName).raw⟩
+        let simpAllHint := simpAllHint.removeLeadingSpaces
+        let simpAllHint := simpAllHint.dropRight 1 -- Removing ending right parenthesis
+        let simpAllHint ← parseSimpAllHint simpAllHint
+        pure (name, simpAllHint)
+      )
+    let mut simpLemmas : Array (TSyntax [`Lean.Parser.Tactic.simpErase, `Lean.Parser.Tactic.simpLemma]) := #[]
+    let mut coreRecommendation : Array Term := #[]
+    for (name, hint) in hammerRecommendation.take hammerCoreK do
+      coreRecommendation := coreRecommendation.push name
+      match hint with
+      | notInSimpAll => pure ()
+      | unmodified => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpLemma| $name:term)
+      | simpErase => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpErase| -$name:term)
+      | simpPreOnly => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpLemma| ↓$name:term)
+      | simpPostOnly => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpLemma| ↑$name:term)
+      | backwardOnly => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpLemma| ←$name:term)
+      | simpPreAndBackward => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpLemma| ↓←$name:term)
+      | simpPostAndBackward => simpLemmas := simpLemmas.push $ ← `(Lean.Parser.Tactic.simpLemma| ↑←$name:term)
+    let mut addIdentStxs : TSyntaxArray `Aesop.tactic_clause := #[]
+    for (t, _) in hammerRecommendation do
+      let tFeature ← `(Aesop.feature| $(mkIdent t.raw.getId):ident)
+      addIdentStxs := addIdentStxs.push (← `(Aesop.tactic_clause| (add unsafe $(Syntax.mkNatLit aesopPremisePriority):num % $tFeature:Aesop.feature)))
+    if withSimpPreprocessing then
+      evalTactic (← `(tactic| aesop $addIdentStxs* (add unsafe $(Syntax.mkNatLit aesopHammerPriority):num% (by hammerCore [$simpLemmas,*] [*, $(coreRecommendation),*]))))
+    else
+      evalTactic (← `(tactic| aesop $addIdentStxs* (add unsafe $(Syntax.mkNatLit aesopHammerPriority):num% (by hammerCore [$simpLemmas,*] [*, $(coreRecommendation),*] {simpTarget := no_target}))))
+
 def useAesopWithPremises (hammerRecommendation : Array String) : TacticM Unit := do
   let hammerRecommendation : Array Ident ←
     hammerRecommendation.mapM (fun x => do
@@ -147,9 +205,9 @@ def useAesopWithPremises (hammerRecommendation : Array String) : TacticM Unit :=
     addIdentStxs := addIdentStxs.push (← `(Aesop.tactic_clause| (add unsafe $tFeature:Aesop.feature)))
   evalTactic (← `(tactic| aesop $addIdentStxs*))
 
-def useAesopWithSelector : TacticM Unit := withMainContext do
+def useAesopWithSelector (k : Nat) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
-  let premises ← chosenSelector goal {}
+  let premises ← chosenSelector goal {maxSuggestions := k}
   let premises := premises.map (fun x => mkIdent x.1)
   let mut addIdentStxs : TSyntaxArray `Aesop.tactic_clause := #[]
   for t in premises do
@@ -172,11 +230,11 @@ def runAtDecls (mod : Name) (withImportsDir : Option String := none) (tac : Cons
   let fileName ←
     match withImportsDir with
     | none => pure (← findLean mod).toString
-    | some withImportsDir => pure (← findLeanWithImports mod "mathlib" withImportsDir).toString
+    | some withImportsDir => pure (← findLeanWithImports mod withImportsDir).toString
   let steps :=
     match withImportsDir with
     | none => compileModule' mod
-    | some withImportsDir => compileModuleWithImports' mod "mathlib" withImportsDir
+    | some withImportsDir => compileModuleWithImports' mod withImportsDir
   let targets := steps.bind fun c => (MLList.ofList c.diff).map fun i => (c, i)
 
   targets.filterMapM fun (cmd, ci) => do
@@ -217,11 +275,11 @@ def runAtDecl (mod : Name) (declName : Name) (withImportsDir : Option String := 
   let fileName ←
     match withImportsDir with
     | none => pure (← findLean mod).toString
-    | some withImportsDir => pure (← findLeanWithImports mod "mathlib" withImportsDir).toString
+    | some withImportsDir => pure (← findLeanWithImports mod withImportsDir).toString
   let steps :=
     match withImportsDir with
     | none => compileModule' mod
-    | some withImportsDir => compileModuleWithImports' mod "mathlib" withImportsDir
+    | some withImportsDir => compileModuleWithImports' mod withImportsDir
   let targets := steps.bind fun c => (MLList.ofList c.diff).map fun i => (c, i)
   for (cmd, ci) in targets do
     if ci.name == declName then
@@ -530,7 +588,7 @@ def runHammerCoreAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (wit
         pure g
       | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
-    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let fileName := (← findJSONFile mod jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
     let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
     -- Find `declHammerRecommendation` corresponding to current `ci`
@@ -582,7 +640,7 @@ def runHammerCoreAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo →
         pure g
       | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
-    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let fileName := (← findJSONFile mod jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
     let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
     -- Find `declHammerRecommendation` corresponding to current `ci`
@@ -635,7 +693,7 @@ def runSimpAllAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → Me
         pure g
       | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
-    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let fileName := (← findJSONFile mod jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
     let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
     -- Find `declHammerRecommendation` corresponding to current `ci`
@@ -680,7 +738,7 @@ def runAesopHammerCoreAtDecl (mod : Name) (declName : Name) (decls : ConstantInf
         pure g
       | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
-    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let fileName := (← findJSONFile mod jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
     let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
     -- Find `declHammerRecommendation` corresponding to current `ci`
@@ -711,6 +769,51 @@ def runAesopHammerCoreAtDecl (mod : Name) (declName : Name) (decls : ConstantInf
         pure .failure
     return some ⟨res, seconds, heartbeats⟩
 
+/-- Like `runHammerAtDecl` but only tests `aesop` with `hammerCore` rather than just `hammerCore`.
+    Still uses the `hammerRecommendation` field in the JSON file -/
+def runAesopHammerCoreWithPremisesAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String)
+  (externalProverTimeout : Nat) (withSimpPreprocessing : Bool) (aesopHammerPriority aesopPremisePriority hammerCoreK : Nat) : IO (Option (ConstantInfo × GeneralResult)) := do
+  runAtDecl mod declName (some withImportsPath) fun ci numArgs? => do
+    if ! (← decls ci) then return none
+    let g ←
+      match numArgs? with
+      | some numArgs =>
+        let g ← mkFreshExprMVar ci.type
+        let (_, g) ← g.mvarId!.introNP numArgs -- Introduce universal binders corresponding to arguments of the theorem
+        pure g
+      | none => return none -- Only run the tactic on theorems
+    -- Find JSON file corresponding to current `mod`
+    let fileName := (← findJSONFile mod jsonDir).toString
+    let jsonObjects ← IO.FS.lines fileName
+    let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
+    -- Find `declHammerRecommendation` corresponding to current `ci`
+    let mut ciEntry := Json.null
+    for jsonEntry in json do
+      let jsonDeclName ← IO.ofExcept $ jsonEntry.getObjVal? "declName"
+      let curDeclName ← IO.ofExcept $ jsonDeclName.getStr?
+      if curDeclName == s!"{ci.name}" then
+        ciEntry := jsonEntry
+        dbg_trace "Found jsonEntry for {declName}"
+        break
+    if ciEntry.isNull then
+      return some ⟨.noJSON, 0.0, 0⟩
+    let recommendation ← IO.ofExcept $ ciEntry.getObjVal? "declHammerRecommendation"
+    let recommendation ← IO.ofExcept $ recommendation.getArr?
+    let recommendation ← IO.ofExcept $ recommendation.mapM Json.getStr?
+    let ((res, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
+      try
+        TermElabM.run' (do
+          dbg_trace "About to use aesop with hammerCore for {ci.name} in module {mod} (recommendation: {recommendation})"
+          let gs ← Tactic.run g $ useAesopHammerCoreWithPremises recommendation externalProverTimeout withSimpPreprocessing aesopHammerPriority aesopPremisePriority hammerCoreK
+          match gs with
+          | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate on Prop declarations
+          | _ :: _ => pure .subgoals)
+          (ctx := {declName? := `fakeDecl, errToSorry := false})
+      catch e =>
+        dbg_trace "Encountered an error: {← e.toMessageData.toString}"
+        pure .failure
+    return some ⟨res, seconds, heartbeats⟩
+
 def runAesopWithPremisesAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String)
   : IO (Option (ConstantInfo × GeneralResult)) := do
   runAtDecl mod declName (some withImportsPath) fun ci numArgs? => do
@@ -723,7 +826,7 @@ def runAesopWithPremisesAtDecl (mod : Name) (declName : Name) (decls : ConstantI
         pure g
       | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
-    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let fileName := (← findJSONFile mod jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
     let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
     -- Find `declHammerRecommendation` corresponding to current `ci`
@@ -769,7 +872,7 @@ def runQuerySMTAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → M
         pure g
       | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
-    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let fileName := (← findJSONFile mod jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
     let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
     -- Find `declHammerRecommendation` corresponding to current `ci`
@@ -823,7 +926,7 @@ def runQuerySMTAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withI
         pure g
       | none => return none -- Only run the tactic on theorems
     -- Find JSON file corresponding to current `mod`
-    let fileName := (← findJSONFile mod "mathlib" jsonDir).toString
+    let fileName := (← findJSONFile mod jsonDir).toString
     let jsonObjects ← IO.FS.lines fileName
     let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
     -- Find `declHammerRecommendation` corresponding to current `ci`
@@ -993,6 +1096,18 @@ def aesopHammerCoreBenchmarkAtDecl (module : ModuleName) (declName : Name) (with
     IO.println s!"Encountered an issue attempting to run aesopHammerCore benchmark at {declName} in module {module}"
     return 0
 
+def aesopHammerCoreWithPremisesBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat)
+  (withSimpPreprocessing := false) (aesopHammerPriority aesopPremisePriority hammerCoreK : Nat) : IO UInt32 := do
+  searchPathRef.set compile_time_search_path%
+  let result ← runAesopHammerCoreWithPremisesAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout withSimpPreprocessing aesopHammerPriority aesopPremisePriority hammerCoreK
+  match result with
+  | some (ci, ⟨type, seconds, heartbeats⟩) =>
+    IO.println $ generalResultTypeToEmojiString type ++ " " ++ ci.name.toString ++ s!" ({seconds}s) ({heartbeats} heartbeats)"
+    return 0
+  | none =>
+    IO.println s!"Encountered an issue attempting to run aesopHammerCore benchmark at {declName} in module {module}"
+    return 0
+
 def aesopWithPremisesBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
   let result ← runAesopWithPremisesAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir
@@ -1032,7 +1147,10 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
   let externalProverTimeout := args.flag! "externalProverTimeout" |>.as! Nat
   let apiUrl := args.flag! "apiUrl" |>.as! String
   let k := args.flag! "k" |>.as! Nat
-  let withImportsPath := "Examples/Mathlib/WithImports"
+  let hammerCoreK := args.flag! "hammerCoreK" |>.as! Nat
+  let aesopHammerPriority := args.flag! "aesopHammerPriority" |>.as! Nat
+  let aesopPremisePriority := args.flag! "aesopPremisePriority" |>.as! Nat
+  let withImportsPath := args.flag! "withImportsPath" |>.as! String
 
   try
     match benchmarkType with
@@ -1045,14 +1163,16 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
       | "hammer" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useHammer externalProverTimeout apiUrl k) TacType.Hammer
       | "hammer_nosimp" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useHammer externalProverTimeout apiUrl k false) TacType.Hammer
 
-      | "aesop_with_selector" => tacticBenchmarkAtDecl module declName (some withImportsPath) useAesopWithSelector TacType.General
-      | "simp_all_with_selector" => tacticBenchmarkAtDecl module declName (some withImportsPath) useSimpAllWithSelector TacType.General
+      | "aesop_with_selector" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopWithSelector k) TacType.General
+      | "simp_all_with_selector" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useSimpAllWithSelector k) TacType.General
 
       | "aesop_hammer" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammer externalProverTimeout apiUrl k) TacType.General
       | "aesop_hammer_nosimp" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammer externalProverTimeout apiUrl k false) TacType.General
+      | "aesop_hammer_nosimp_with_selector" => tacticBenchmarkAtDecl module declName (some withImportsPath) (useAesopHammerWithSelector externalProverTimeout apiUrl k hammerCoreK aesopHammerPriority aesopPremisePriority false) TacType.General
 
       | "aesop_hammerCore" => aesopHammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout true
       | "aesop_hammerCore_nosimp" => aesopHammerCoreBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout false
+      | "aesop_hammerCore_nosimp_with_premises" => aesopHammerCoreWithPremisesBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout false aesopHammerPriority aesopPremisePriority hammerCoreK
 
       | "simp_all_with_premises" => simpAllBenchmarkAtDecl module declName withImportsPath premisesPath
       | "aesop_with_premises" => aesopWithPremisesBenchmarkAtDecl module declName withImportsPath premisesPath
@@ -1064,6 +1184,8 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
       | "querySMT_ignoreHints" => querySMTBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout true
       | "querySMTModule" => querySMTBenchmarkFromModule module withImportsPath premisesPath externalProverTimeout false
       | "querySMTModule_ignoreHints" => querySMTBenchmarkFromModule module withImportsPath premisesPath externalProverTimeout true
+
+      | "print_selector_results" => tacticBenchmarkAtDecl module declName (some withImportsPath) (printSelectorResults k) TacType.General
 
       | _ => IO.throwServerError s!"Unknown benchmark type {benchmarkType}"
   catch e =>
@@ -1079,6 +1201,10 @@ def tactic_benchmark : Cmd := `[Cli|
     externalProverTimeout : Nat; "Timeout for the external prover."
     apiUrl : String; "API URL for the premise selection server."
     k : Nat; "Number of premises for the premise retriever in `hammer` to retrieve."
+    hammerCoreK : Nat; "(Only relevant for aesop_hammerCore_nosimp_with_premises) Number of premises for the premise retriever in `hammer` to retrieve, as opposed to the number of premises directly input to aesop."
+    aesopHammerPriority : Nat; "(Only relevant for aesop_hammerCore_nosimp_with_premises) The priority percentage value for hammer as a rule for aesop."
+    aesopPremisePriority : Nat; "(Only relevant for aesop_hammerCore_nosimp_with_premises) The priority percentage value for premises as a rule for aesop."
+    withImportsPath : String; "Path to directory with .lean files with added imports like Hammer (e.g. Examples/Mathlib/WithImports)."
 
   ARGS:
     module : ModuleName; "Lean module to run the tactic on."
@@ -1090,7 +1216,11 @@ def tactic_benchmark : Cmd := `[Cli|
     defaultValues! #[
       ("externalProverTimeout", "10"),
       ("apiUrl", "http://52.206.70.13"),
-      ("k", "16")
+      ("k", "16"),
+      ("hammerCoreK", "16"),
+      ("aesopHammerPriority", "10"),
+      ("aesopPremisePriority", "20"),
+      ("withImportsPath", "Examples/Mathlib/WithImports")
     ]
 ]
 

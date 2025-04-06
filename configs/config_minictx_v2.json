@@ -1,0 +1,51 @@
+[
+    {
+        "repo": "https://github.com/ImperialCollegeLondon/FLT",
+        "commit": "4a97c893071433d0d39cbf5261d0877f864c2189",
+        "lean": "leanprover/lean4:v4.16.0",
+        "name": "FLT",
+        "imports": ["FLT"]
+    },
+    {
+        "repo": "https://github.com/fpvandoorn/carleson",
+        "commit": "a5d265f109105809de4aaff16776b7c16b1c0bd5",
+        "lean": "leanprover/lean4:v4.16.0",
+        "name": "carleson",
+        "imports": ["Carleson"]
+    },
+    {
+        "repo": "https://github.com/Ivan-Sergeyev/seymour",
+        "commit": "27c0384977032b693daca8c4fcfc5cc274e1f2d6",
+        "lean": "leanprover/lean4:v4.16.0",
+        "name": "Seymour",
+        "imports": ["Seymour"]
+    },
+    {
+        "repo": "https://github.com/FormalizedFormalLogic/Foundation",
+        "commit": "54324e6e009f0d0a288897312d3feb1c0165ad19",
+        "lean": "leanprover/lean4:v4.16.0-rc2",
+        "name": "foundation",
+        "imports": ["Foundation"]
+    },
+    {
+        "repo": "https://github.com/leanprover-community/con-nf",
+        "commit": "51c38ad244870b8b1f40b8272b281678397dfa4f",
+        "lean": "leanprover/lean4:v4.16.0-rc1",
+        "name": "ConNF",
+        "imports": ["ConNF"]
+    },
+    {
+        "repo": "https://github.com/HEPLean/PhysLean",
+        "commit": "fe082d93c2775beee6634b24b34c8482a02ba8a8",
+        "lean": "leanprover/lean4:v4.16.0",
+        "name": "HepLean",
+        "imports": ["HepLean"]
+    },
+    {
+        "repo": "https://github.com/leanprover-community/mathlib4",
+        "commit": "v4.16.0",
+        "lean": "leanprover/lean4:v4.16.0",
+        "name": "mathlib",
+        "imports": ["Mathlib"]
+    }
+]
