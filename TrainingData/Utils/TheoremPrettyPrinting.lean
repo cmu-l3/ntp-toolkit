@@ -6,6 +6,7 @@ import Batteries.Data.String.Basic
   cannot be both defined by and accessed in `Lean.withImports`.
   TODO: is there a better fix? -/
 import Mathlib.Data.Prod.Basic
+import Mathlib.Util.PPOptions
 
 open Lean IO Meta System DocGen4 Process
 

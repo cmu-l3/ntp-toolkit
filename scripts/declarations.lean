@@ -143,13 +143,10 @@ def main (args : List String) : IO UInt32 := do
   let modules := match args with
   | [] => #[`Mathlib]
   | args => args.toArray.map fun s => s.toName
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   -- Proper delaborators need also be loaded for better printing of results
   -- (e.g., if the module is Init.Prelude which does not have delaborator for Eq yet)
   let delaboratorModules := #[
-    `Mathlib.Lean.PrettyPrinter.Delaborator,
-    `Mathlib.Util.Delaborators,
-    `Lean.PrettyPrinter
   ]
   let importModules := modules ++ delaboratorModules
   CoreM.withImportModules importModules (options := options) do
