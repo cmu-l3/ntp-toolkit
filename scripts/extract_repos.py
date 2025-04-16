@@ -13,10 +13,13 @@ package «lean-training-data» {
   -- add any package configuration options here
 }
 
-require QuerySMT from git
-  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "842ca2a4a780f1a3589c930ef82ebb08368682f7"
+require leanPremiseSelection from git
+  "https://github.com/JOSHCLUNE/lean-premise-selection.git" @ "86f02182e5b30737b41aae20b8ef59d3f03d0a84"
 
-require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.16.0"
+require QuerySMT from git
+  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "ffd54223145eea1d76c9ab4e48d38ba1ba1b3c4a"
+
+require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.18.0"
 
 require %s from git
   "%s.git" @ "%s"

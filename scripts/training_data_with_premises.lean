@@ -43,7 +43,7 @@ def generateRandomHash (length : Nat := 15): IO String := do
   let chars := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toList
   let mut hash := ""
   for _ in List.range length do
-    hash := hash ++ (chars.get! (← IO.rand 1 (chars.length-1))).toString
+    hash := hash ++ (chars[← IO.rand 1 (chars.length-1)]!).toString
   return hash
 
 def findCommandInfo (t : InfoTree) : List (CommandInfo × ContextInfo) :=
@@ -445,7 +445,7 @@ def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : Mod
   return data.declHammerRecommendation
 
 def trainingDataGivenModule (module : ModuleName) (includeDebugMessages : Bool) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let infos ← getElabDeclInfo (← moduleInfoTrees module)
   let compilationSteps ← compileModule module
   let trees ← getInvocationTrees $ compilationSteps.flatMap (fun c => c.trees)
@@ -516,7 +516,7 @@ def trainingDataGivenModule (module : ModuleName) (includeDebugMessages : Bool) 
           | some elabDeclInfo =>
             match declHammerRecommendations.get? v.name.toString with
             | some vDeclHammerRecommendation =>
-              let vDeclHammerRecommendation ← CoreM.withImportModules #[`Mathlib.Lean.PrettyPrinter.Delaborator, `Mathlib.Util.Delaborators, `Lean.PrettyPrinter, module]
+              let vDeclHammerRecommendation ← CoreM.withImportModules #[module]
                 (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v (some vDeclHammerRecommendation)).run'
               /- In addition to printing the JSON entry corresponding to `v` as a whole (which `printTrainingDataGivenTheoremVal` already does),
                  we can now print the JSON entry for each of `v`'s tactic states with a fully updated decl hammer recommendation -/
@@ -529,7 +529,7 @@ def trainingDataGivenModule (module : ModuleName) (includeDebugMessages : Bool) 
                 else if encounteredDecl then -- All entries of the same decl are contiguous in `dataArr` so if we reach this we've fixed all necessary entries
                   break
             | none => -- No need to update `dataArr` since the current theorem does not appear in `dataArr`
-              let _ ← CoreM.withImportModules #[`Mathlib.Lean.PrettyPrinter.Delaborator, `Mathlib.Util.Delaborators, `Lean.PrettyPrinter, module]
+              let _ ← CoreM.withImportModules #[module]
                 (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v none).run'
           | none => continue
       | _ => continue
