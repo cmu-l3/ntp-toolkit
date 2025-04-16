@@ -195,7 +195,7 @@ def findLean (mod : Name) : IO FilePath := do
   if let some fname ← srcSearchPath.findModuleWithExt "lean" mod then
     return fname
   else
-    let fname := FilePath.mk ((← findOLean mod).toString.replace ".lake/build/lib/" "") |>.withExtension "lean"
+    let fname := FilePath.mk ((← findOLean mod).toString.replace ".lake/build/lib/lean/" "") |>.withExtension "lean"
     if !(← fname.pathExists) then
       throw <| IO.userError s!"Path to {mod} not found"
     return fname

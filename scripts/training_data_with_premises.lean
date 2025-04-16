@@ -43,7 +43,7 @@ def generateRandomHash (length : Nat := 15): IO String := do
   let chars := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toList
   let mut hash := ""
   for _ in List.range length do
-    hash := hash ++ (chars.get! (← IO.rand 1 (chars.length-1))).toString
+    hash := hash ++ (chars[← IO.rand 1 (chars.length-1)]!).toString
   return hash
 
 def findCommandInfo (t : InfoTree) : List (CommandInfo × ContextInfo) :=
@@ -445,7 +445,7 @@ def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : Mod
   return data.declHammerRecommendation
 
 def trainingDataGivenModule (module : ModuleName) (includeDebugMessages : Bool) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let infos ← getElabDeclInfo (← moduleInfoTrees module)
   let compilationSteps ← compileModule module
   let trees ← getInvocationTrees $ compilationSteps.flatMap (fun c => c.trees)

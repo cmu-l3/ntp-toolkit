@@ -156,7 +156,7 @@ def useAesopHammerCore (hammerRecommendation : Array String) (externalProverTime
     else
       evalTactic (← `(tactic| aesop (add unsafe (by hammerCore [$simpLemmas,*] [*, $(coreRecommendation),*] {simpTarget := no_target}))))
 
-def  useAesopHammerCoreWithPremises (hammerRecommendation : Array String) (externalProverTimeout : Nat) (withSimpPreprocessing := false) (aesopHammerPriority aesopPremisePriority hammerCoreK : Nat) : TacticM Unit := do
+def useAesopHammerCoreWithPremises (hammerRecommendation : Array String) (externalProverTimeout : Nat) (withSimpPreprocessing := false) (aesopHammerPriority aesopPremisePriority hammerCoreK : Nat) : TacticM Unit := do
   withOptions (fun o => ((o.set ``auto.tptp.timeout externalProverTimeout).set ``duper.maxSaturationTime externalProverTimeout)) do
     let hammerRecommendation : Array (Term × SimpAllHint) ←
       hammerRecommendation.mapM (fun x => do
