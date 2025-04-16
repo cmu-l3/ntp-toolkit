@@ -149,7 +149,7 @@ partial def syntaxPremises (lctx : LocalContext) (s : Syntax) : MetaM (NameSet �
 
 def Name.isTheoremOrAxiom (name : Name) : CoreM Bool := do
   let .some ci := (← getEnv).find? name
-    | throwError "Name.isTheorem :: Cannot find name {name}"
+    | return false
   match ci with
   | .thmInfo _ => return true
   | .axiomInfo _ => return true
@@ -400,14 +400,14 @@ def trainingDataToJson (d : TrainingData) : Json :=
     in as well so that the information from there can be included. -/
 def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (cmd : CompilationStep) (v : TheoremVal)
   (declHammerRecommendation : Option (Std.HashMap Name SimpAllHint)) : MetaM (Std.HashMap Name SimpAllHint) := do
-  let thmInfo ← Info.ofConstantVal' v.toConstantVal
+  let numArgs ← numArgsOfConstantVal v.toConstantVal
   let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (cmd.stx.getTailPos?.getD 0)
   let declUpToTactic := Substring.mk (← moduleSource module) (cmd.stx.getPos?.getD 0) (cmd.stx.getTailPos?.getD 0)
 
   let vType := v.type
   let Expr.mvar m ← mkFreshExprMVar vType
     | throwError "trainingDataGivenTheoremVal :: Failed to build an mvar of type {vType}"
-  let (_, m) ← m.introNP thmInfo.args.size
+  let (_, m) ← m.introNP numArgs
   let state ←
     if useNaiveDataExtraction then
       pure (← Meta.ppGoal m).pretty
@@ -567,3 +567,5 @@ def main (args : List String) : IO UInt32 :=
 -- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Data.Int.Defs
 -- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Data.Option.Basic
 -- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Data.Set.Basic
+-- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Algebra.BigOperators.Group.List.Defs false
+-- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Algebra.SkewMonoidAlgebra.Basic false
