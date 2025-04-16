@@ -516,8 +516,13 @@ def trainingDataGivenModule (module : ModuleName) (includeDebugMessages : Bool) 
           | some elabDeclInfo =>
             match declHammerRecommendations.get? v.name.toString with
             | some vDeclHammerRecommendation =>
-              let vDeclHammerRecommendation ← CoreM.withImportModules #[module]
-                (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v (some vDeclHammerRecommendation)).run'
+              let vDeclHammerRecommendation ←
+                try
+                  CoreM.withImportModules #[module] (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v (some vDeclHammerRecommendation)).run'
+                catch e =>
+                  if includeDebugMessages then
+                    IO.println s!"Error processing declaration {v.name}: {e.toString}"
+                  pure {}
               /- In addition to printing the JSON entry corresponding to `v` as a whole (which `printTrainingDataGivenTheoremVal` already does),
                  we can now print the JSON entry for each of `v`'s tactic states with a fully updated decl hammer recommendation -/
               let mut encounteredDecl := false
@@ -529,8 +534,11 @@ def trainingDataGivenModule (module : ModuleName) (includeDebugMessages : Bool) 
                 else if encounteredDecl then -- All entries of the same decl are contiguous in `dataArr` so if we reach this we've fixed all necessary entries
                   break
             | none => -- No need to update `dataArr` since the current theorem does not appear in `dataArr`
-              let _ ← CoreM.withImportModules #[module]
-                (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v none).run'
+              try
+                let _ ← CoreM.withImportModules #[module] (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v none).run'
+              catch e =>
+                if includeDebugMessages then
+                  IO.println s!"Error processing declaration {v.name}: {e.toString}"
           | none => continue
       | _ => continue
   return 0
@@ -569,3 +577,4 @@ def main (args : List String) : IO UInt32 :=
 -- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Data.Set.Basic
 -- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Algebra.BigOperators.Group.List.Defs false
 -- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Algebra.SkewMonoidAlgebra.Basic false
+-- #eval Command.liftTermElabM $ trainingDataGivenModule `Init.System.Promise false
