@@ -79,4 +79,11 @@ def Info.ofConstantVal' (v : ConstantVal) : MetaM Info := do
     attrs := ← getAllAttributes v.name
   }
 
+def numArgsOfConstantVal (v : ConstantVal) : MetaM Nat := do
+  try
+    let thmInfo ← Info.ofConstantVal' v
+    return thmInfo.args.size
+  catch _ =>
+    return getIntrosSize v.type
+
 end TheoremPrettyPrinting

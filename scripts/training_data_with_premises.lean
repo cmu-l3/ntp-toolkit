@@ -149,7 +149,7 @@ partial def syntaxPremises (lctx : LocalContext) (s : Syntax) : MetaM (NameSet �
 
 def Name.isTheoremOrAxiom (name : Name) : CoreM Bool := do
   let .some ci := (← getEnv).find? name
-    | throwError "Name.isTheorem :: Cannot find name {name}"
+    | return false
   match ci with
   | .thmInfo _ => return true
   | .axiomInfo _ => return true
@@ -400,14 +400,14 @@ def trainingDataToJson (d : TrainingData) : Json :=
     in as well so that the information from there can be included. -/
 def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (cmd : CompilationStep) (v : TheoremVal)
   (declHammerRecommendation : Option (Std.HashMap Name SimpAllHint)) : MetaM (Std.HashMap Name SimpAllHint) := do
-  let thmInfo ← Info.ofConstantVal' v.toConstantVal
+  let numArgs ← numArgsOfConstantVal v.toConstantVal
   let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (cmd.stx.getTailPos?.getD 0)
   let declUpToTactic := Substring.mk (← moduleSource module) (cmd.stx.getPos?.getD 0) (cmd.stx.getTailPos?.getD 0)
 
   let vType := v.type
   let Expr.mvar m ← mkFreshExprMVar vType
     | throwError "trainingDataGivenTheoremVal :: Failed to build an mvar of type {vType}"
-  let (_, m) ← m.introNP thmInfo.args.size
+  let (_, m) ← m.introNP numArgs
   let state ←
     if useNaiveDataExtraction then
       pure (← Meta.ppGoal m).pretty
@@ -516,8 +516,13 @@ def trainingDataGivenModule (module : ModuleName) (includeDebugMessages : Bool) 
           | some elabDeclInfo =>
             match declHammerRecommendations.get? v.name.toString with
             | some vDeclHammerRecommendation =>
-              let vDeclHammerRecommendation ← CoreM.withImportModules #[module]
-                (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v (some vDeclHammerRecommendation)).run'
+              let vDeclHammerRecommendation ←
+                try
+                  CoreM.withImportModules #[module] (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v (some vDeclHammerRecommendation)).run'
+                catch e =>
+                  if includeDebugMessages then
+                    IO.println s!"Error processing declaration {v.name}: {e.toString}"
+                  pure {}
               /- In addition to printing the JSON entry corresponding to `v` as a whole (which `printTrainingDataGivenTheoremVal` already does),
                  we can now print the JSON entry for each of `v`'s tactic states with a fully updated decl hammer recommendation -/
               let mut encounteredDecl := false
@@ -529,8 +534,11 @@ def trainingDataGivenModule (module : ModuleName) (includeDebugMessages : Bool) 
                 else if encounteredDecl then -- All entries of the same decl are contiguous in `dataArr` so if we reach this we've fixed all necessary entries
                   break
             | none => -- No need to update `dataArr` since the current theorem does not appear in `dataArr`
-              let _ ← CoreM.withImportModules #[module]
-                (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v none).run'
+              try
+                let _ ← CoreM.withImportModules #[module] (printTrainingDataGivenTheoremVal elabDeclInfo module hash cmd v none).run'
+              catch e =>
+                if includeDebugMessages then
+                  IO.println s!"Error processing declaration {v.name}: {e.toString}"
           | none => continue
       | _ => continue
   return 0
@@ -567,3 +575,6 @@ def main (args : List String) : IO UInt32 :=
 -- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Data.Int.Defs
 -- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Data.Option.Basic
 -- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Data.Set.Basic
+-- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Algebra.BigOperators.Group.List.Defs false
+-- #eval Command.liftTermElabM $ trainingDataGivenModule `Mathlib.Algebra.SkewMonoidAlgebra.Basic false
+-- #eval Command.liftTermElabM $ trainingDataGivenModule `Init.System.Promise false
