@@ -1120,7 +1120,7 @@ def aesopWithPremisesBenchmarkAtDecl (module : ModuleName) (declName : Name) (wi
     return 0
 
 def querySMTBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat) (ignoreHints : Bool) : IO UInt32 := do
-  initSearchPath (← findSysroot) -- searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let result ← runQuerySMTAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout ignoreHints
   match result with
   | some (ci, ⟨type, seconds, heartbeats⟩) =>
