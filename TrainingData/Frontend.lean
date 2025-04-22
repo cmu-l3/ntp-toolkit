@@ -208,7 +208,7 @@ def findLeanWithImports (mod : Name) (withImportsDir : String) : IO FilePath := 
   let path := path.replace "./" ""
   let path := path.replace ".lake/packages/" ""
   let path := path.dropWhile (· ≠ '/')  -- remove project name, e.g. "mathlib"
-  let path := path.replace "/.lake/build/lib/" ""
+  let path := path.replace "/.lake/build/lib/lean/" ""
   let path := path.replace "/" "."
   let path := withImportsPathPrefix ++ path
   return FilePath.mk path |>.withExtension "lean"
@@ -221,7 +221,7 @@ def findJSONFile (mod : Name) (jsonDir : String) : IO FilePath := do
   let path := path.replace "./" ""
   let path := path.replace ".lake/packages/" ""
   let path := path.dropWhile (· ≠ '/')  -- remove project name, e.g. "mathlib"
-  let path := path.replace "/.lake/build/lib/" ""
+  let path := path.replace "/.lake/build/lib/lean/" ""
   let path := path.replace "/" "."
   let path := jsonDirPrefix ++ path
   return FilePath.mk path |>.withExtension "jsonl"
