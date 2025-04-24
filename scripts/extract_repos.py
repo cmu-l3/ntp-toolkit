@@ -17,7 +17,7 @@ require leanPremiseSelection from git
   "https://github.com/JOSHCLUNE/lean-premise-selection.git" @ "86f02182e5b30737b41aae20b8ef59d3f03d0a84"
 
 require QuerySMT from git
-  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "ffd54223145eea1d76c9ab4e48d38ba1ba1b3c4a"
+  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "87c56a696de111d3dced49e9413b6f03bde0e8c7"
 
 require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.18.0"
 
