@@ -24,7 +24,17 @@ def useExact? : TacticM Unit := do evalTactic (← `(tactic| exact?))
 def useRfl : TacticM Unit := do evalTactic (← `(tactic| intros; rfl))
 def useSimpAll : TacticM Unit := do evalTactic (← `(tactic| intros; simp_all))
 def useOmega : TacticM Unit := do evalTactic (← `(tactic| intros; omega))
-def useDuper : TacticM Unit := do evalTactic (← `(tactic| duper [*]))
+
+def useDuper (hammerRecommendation : Array String) (externalProverTimeout : Nat) : TacticM Unit := do
+  withOptions (fun o => o.set ``duper.maxSaturationTime externalProverTimeout) do
+    let hammerRecommendation : Array Ident ←
+      hammerRecommendation.mapM (fun x => do
+        let [name, _] := x.splitOn ","
+          | throwError "{decl_name%} :: Unable to parse hammerRecommendation {x}"
+        let name := name.drop 1 -- Remove leading left parenthesis
+        pure (mkIdent name.toName)
+      )
+    evalTactic (← `(tactic| duper [*, $hammerRecommendation,*]))
 
 deriving instance Repr for Suggestion in
 def printSelectorResults (k : Nat) : TacticM Unit := withMainContext do
@@ -914,6 +924,52 @@ def runQuerySMTAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → M
           pure .miscFailure
     return some ⟨res, seconds, heartbeats⟩
 
+def runDuperAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String) (proverTimeout : Nat)
+  : IO (Option (ConstantInfo × GeneralResult)) := do
+  runAtDecl mod declName (some withImportsPath) fun ci numArgs? => do
+    if ! (← decls ci) then return none
+    let g ←
+      match numArgs? with
+      | some numArgs =>
+        let g ← mkFreshExprMVar ci.type
+        let (_, g) ← g.mvarId!.introNP numArgs -- Introduce universal binders corresponding to arguments of the theorem
+        pure g
+      | none => return none -- Only run the tactic on theorems
+    -- Find JSON file corresponding to current `mod`
+    let fileName := (← findJSONFile mod jsonDir).toString
+    let jsonObjects ← IO.FS.lines fileName
+    let json ← IO.ofExcept $ jsonObjects.mapM Json.parse
+    -- Find `declHammerRecommendation` corresponding to current `ci`
+    let mut ciEntry := Json.null
+    for jsonEntry in json do
+      let jsonDeclName ← IO.ofExcept $ jsonEntry.getObjVal? "declName"
+      let curDeclName ← IO.ofExcept $ jsonDeclName.getStr?
+      if curDeclName == s!"{ci.name}" then
+        ciEntry := jsonEntry
+        dbg_trace "Found jsonEntry for {declName}"
+        break
+    if ciEntry.isNull then
+      return some ⟨.noJSON, 0.0, 0⟩
+    let recommendation ← IO.ofExcept $ ciEntry.getObjVal? "declHammerRecommendation"
+    let recommendation ← IO.ofExcept $ recommendation.getArr?
+    let recommendation ← IO.ofExcept $ recommendation.mapM Json.getStr?
+    let ((res, heartbeats), seconds) ← withSeconds <| withHeartbeats <|
+      try
+        TermElabM.run' (do
+          dbg_trace "About to use Duper with premises for {ci.name} in module {mod} (recommendation: {recommendation})"
+          let gs ← Tactic.run g $ useDuper recommendation proverTimeout
+          dbg_trace "Successfully called Duper"
+          match gs with
+          | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate on Prop declarations
+          | _ :: _ =>
+            dbg_trace "{decl_name%} Subgoals case"
+            pure .subgoals)
+          (ctx := {declName? := `fakeDecl, errToSorry := false})
+      catch e =>
+        dbg_trace "{decl_name%} :: failure for {ci.name} in module {mod}: {← e.toMessageData.toString}"
+        pure .failure
+    return some ⟨res, seconds, heartbeats⟩
+
 def runQuerySMTAtDecls (mod : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String) (externalProverTimeout : Nat)
   (ignoreHints : Bool) : MLList IO (ConstantInfo × QuerySMTResult) := do
   runAtDecls mod (some withImportsPath) fun ci numArgs? => do
@@ -1031,7 +1087,7 @@ def resultTypeToEmojiString (res : ResultType) : String :=
   | .QuerySMTResult res => querySMTResultTypeToEmojiString res
 
 def tacticBenchmarkFromModule (module : ModuleName) (withImportsPath? : Option String) (tac : TacticM Unit) (tacType : TacType) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let result := runTacticAtDecls module (fun _ => pure true) withImportsPath? tac tacType
   IO.println s!"{module}"
   for (ci, ⟨type, seconds, heartbeats⟩) in result do
@@ -1040,7 +1096,7 @@ def tacticBenchmarkFromModule (module : ModuleName) (withImportsPath? : Option S
   return 0
 
 def tacticBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsPath? : Option String) (tac : TacticM Unit) (tacType : TacType) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let result ← runTacticAtDecl module declName (fun _ => pure true) withImportsPath? tac tacType
   IO.println s!"Testing on {declName} in {module}"
   match result with
@@ -1053,7 +1109,7 @@ def tacticBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsPa
     return 0
 
 def hammerCoreBenchmarkFromModule (module : ModuleName) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let result := runHammerCoreAtDecls module (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout
   IO.println s!"{module}"
   for (ci, ⟨type, seconds, heartbeats⟩) in result do
@@ -1063,7 +1119,7 @@ def hammerCoreBenchmarkFromModule (module : ModuleName) (withImportsDir : String
 
 def hammerCoreBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat)
   (withSimpPreprocessing := true) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let result ← runHammerCoreAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout withSimpPreprocessing
   match result with
   | some (ci, ⟨type, seconds, heartbeats⟩) =>
@@ -1074,7 +1130,7 @@ def hammerCoreBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImpor
     return 0
 
 def simpAllBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let result ← runSimpAllAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir
   match result with
   | some (ci, ⟨type, seconds, heartbeats⟩) =>
@@ -1086,7 +1142,7 @@ def simpAllBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsD
 
 def aesopHammerCoreBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat)
   (withSimpPreprocessing := false) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let result ← runAesopHammerCoreAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout withSimpPreprocessing
   match result with
   | some (ci, ⟨type, seconds, heartbeats⟩) =>
@@ -1098,7 +1154,7 @@ def aesopHammerCoreBenchmarkAtDecl (module : ModuleName) (declName : Name) (with
 
 def aesopHammerCoreWithPremisesBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat)
   (withSimpPreprocessing := false) (aesopHammerPriority aesopPremisePriority hammerCoreK : Nat) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let result ← runAesopHammerCoreWithPremisesAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout withSimpPreprocessing aesopHammerPriority aesopPremisePriority hammerCoreK
   match result with
   | some (ci, ⟨type, seconds, heartbeats⟩) =>
@@ -1109,7 +1165,7 @@ def aesopHammerCoreWithPremisesBenchmarkAtDecl (module : ModuleName) (declName :
     return 0
 
 def aesopWithPremisesBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let result ← runAesopWithPremisesAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir
   match result with
   | some (ci, ⟨type, seconds, heartbeats⟩) =>
@@ -1120,7 +1176,7 @@ def aesopWithPremisesBenchmarkAtDecl (module : ModuleName) (declName : Name) (wi
     return 0
 
 def querySMTBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat) (ignoreHints : Bool) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let result ← runQuerySMTAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout ignoreHints
   match result with
   | some (ci, ⟨type, seconds, heartbeats⟩) =>
@@ -1130,8 +1186,19 @@ def querySMTBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImports
     IO.println s!"Encountered an issue attempting to run querySMT benchmark at {declName} in module {module}"
     return 0
 
+def duperBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat) : IO UInt32 := do
+  initSearchPath (← findSysroot)
+  let result ← runDuperAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout
+  match result with
+  | some (ci, ⟨type, seconds, heartbeats⟩) =>
+    IO.println $ (generalResultTypeToEmojiString type) ++ s!"({type}) " ++ ci.name.toString ++ s!" ({seconds}s) ({heartbeats} heartbeats)"
+    return 0
+  | none =>
+    IO.println s!"Encountered an issue attempting to run Duper benchmark at {declName} in module {module}"
+    return 0
+
 def querySMTBenchmarkFromModule (module : ModuleName) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat) (ignoreHints : Bool) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let result := runQuerySMTAtDecls module (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout ignoreHints
   IO.println s!"Running querySMT benchmark for {module}"
   for (ci, ⟨type, seconds, heartbeats⟩) in result do
@@ -1154,7 +1221,7 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
 
   try
     match benchmarkType with
-      | "duper" => tacticBenchmarkAtDecl module declName (some withImportsPath) useDuper TacType.General
+      | "duper" => duperBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout
       | "aesop" => tacticBenchmarkAtDecl module declName (some withImportsPath) useAesop TacType.General
       | "exact" => tacticBenchmarkAtDecl module declName (some withImportsPath) useExact? TacType.General
       | "rfl" => tacticBenchmarkAtDecl module declName (some withImportsPath) useRfl TacType.General
