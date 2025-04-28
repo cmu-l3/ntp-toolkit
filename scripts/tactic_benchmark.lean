@@ -36,10 +36,23 @@ def useDuper (hammerRecommendation : Array String) (externalProverTimeout : Nat)
       )
     evalTactic (← `(tactic| duper [*, $hammerRecommendation,*]))
 
-def useAuto (hammerRecommendation : Array String) (externalProverTimeout : Nat) : TacticM Unit := do
-  withOptions (fun o => o.set ``auto.tptp false) do
-  withOptions (fun o => o.set ``auto.smt false) do
-  withOptions (fun o => o.set ``auto.native true) do
+def useAuto (hammerRecommendation : Array String) (externalProverTimeout : Nat) (smtBackend : Bool) : TacticM Unit := do
+  let autoOptions :=
+    if smtBackend then
+      fun o =>
+        let o := o.set ``auto.tptp false
+        let o := o.set ``auto.smt true
+        let o := o.set ``auto.smt.trust true
+        let o := o.set ``auto.smt.solver.name "cvc5"
+        let o := o.set ``auto.native false
+        o
+    else
+      fun o =>
+        let o := o.set ``auto.tptp false
+        let o := o.set ``auto.smt false
+        let o := o.set ``auto.native true
+        o
+  withOptions autoOptions do
   withOptions (fun o => o.set ``duper.maxSaturationTime externalProverTimeout) do
     let hammerRecommendation : Array (TSyntax `Auto.hintelem) ←
       hammerRecommendation.mapM (fun x => do
@@ -985,7 +998,7 @@ def runDuperAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → Meta
     return some ⟨res, seconds, heartbeats⟩
 
 def runAutoAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM Bool) (withImportsPath : String) (jsonDir : String) (proverTimeout : Nat)
-  : IO (Option (ConstantInfo × GeneralResult)) := do
+  (smtBackend : Bool) : IO (Option (ConstantInfo × GeneralResult)) := do
   runAtDecl mod declName (some withImportsPath) fun ci numArgs? => do
     if ! (← decls ci) then return none
     let g ←
@@ -1017,7 +1030,7 @@ def runAutoAtDecl (mod : Name) (declName : Name) (decls : ConstantInfo → MetaM
       try
         TermElabM.run' (do
           dbg_trace "About to use Auto with premises for {ci.name} in module {mod} (recommendation: {recommendation})"
-          let gs ← Tactic.run g $ useAuto recommendation proverTimeout
+          let gs ← Tactic.run g $ useAuto recommendation proverTimeout smtBackend
           dbg_trace "Successfully called Auto"
           match gs with
           | [] => pure .success -- Don't need to case on whether `ci.type` is a Prop because we only evaluate on Prop declarations
@@ -1257,9 +1270,9 @@ def duperBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir
     IO.println s!"Encountered an issue attempting to run Duper benchmark at {declName} in module {module}"
     return 0
 
-def autoBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat) : IO UInt32 := do
+def autoBenchmarkAtDecl (module : ModuleName) (declName : Name) (withImportsDir : String) (jsonDir : String) (externalProverTimeout : Nat) (smtBackend : Bool) : IO UInt32 := do
   initSearchPath (← findSysroot)
-  let result ← runAutoAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout
+  let result ← runAutoAtDecl module declName (fun ci => try isProp ci.type catch _ => pure false) withImportsDir jsonDir externalProverTimeout smtBackend
   match result with
   | some (ci, ⟨type, seconds, heartbeats⟩) =>
     IO.println $ (generalResultTypeToEmojiString type) ++ s!"({type}) " ++ ci.name.toString ++ s!" ({seconds}s) ({heartbeats} heartbeats)"
@@ -1293,7 +1306,8 @@ def tacticBenchmarkMain (args : Cli.Parsed) : IO UInt32 := do
   try
     match benchmarkType with
       | "duper" => duperBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout
-      | "auto" => autoBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout
+      | "autoDuper" => autoBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout false
+      | "autoSMT" => autoBenchmarkAtDecl module declName withImportsPath premisesPath externalProverTimeout true
       | "aesop" => tacticBenchmarkAtDecl module declName (some withImportsPath) useAesop TacType.General
       | "exact" => tacticBenchmarkAtDecl module declName (some withImportsPath) useExact? TacType.General
       | "rfl" => tacticBenchmarkAtDecl module declName (some withImportsPath) useRfl TacType.General
