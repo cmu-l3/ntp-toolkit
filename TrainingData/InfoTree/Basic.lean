@@ -49,7 +49,6 @@ def stx? : Info → Option Syntax
   | .ofChoiceInfo         info => info.stx
   | .ofPartialTermInfo    info => info.stx
   | .ofDelabTermInfo      info => info.stx
-
 /-- Is the `Syntax` for this `Lean.Elab.Info` original, or synthetic? -/
 def isOriginal (i : Info) : Bool :=
   match i.stx? with
