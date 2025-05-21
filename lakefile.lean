@@ -10,16 +10,10 @@ package «lean-training-data» {
   ]
 }
 
+require «doc-gen4» from git "https://github.com/leanprover/doc-gen4.git" @ "v4.18.0"
+
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git" @ "v4.18.0"
-
-require leanPremiseSelection from git
-  "https://github.com/JOSHCLUNE/lean-premise-selection.git" @ "86f02182e5b30737b41aae20b8ef59d3f03d0a84"
-
-require QuerySMT from git
-  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "15c641b2f5330aef1451e97d1c5fcf7ad584ffcf"
-
-require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.18.0"
 
 @[default_target]
 lean_lib TrainingData where
@@ -47,11 +41,6 @@ lean_exe premises where
 @[default_target]
 lean_exe training_data_with_premises where
   root := `scripts.training_data_with_premises
-  supportInterpreter := true
-
-@[default_target]
-lean_exe tactic_benchmark where
-  root := `scripts.tactic_benchmark
   supportInterpreter := true
 
 @[default_target]

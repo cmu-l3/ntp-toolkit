@@ -6,13 +6,7 @@ import json
 from pathlib import Path
 
 
-# TODO: only add necessary lean_exe into lakefile.lean
-doc_gen = """
-require «doc-gen4» from git
-  "https://github.com/leanprover/doc-gen4.git" @ "%s"
-"""
-
-def _lakefile(repo, commit, name, cwd, require_doc_gen=False, toolchain_version="main"):
+def _lakefile(repo, commit, name, cwd, toolchain_version="main"):
     contents = """import Lake
 open Lake DSL
 
@@ -25,13 +19,7 @@ package «lean-training-data» {
   ]
 }
 
-require leanPremiseSelection from git
-  "https://github.com/JOSHCLUNE/lean-premise-selection.git" @ "86f02182e5b30737b41aae20b8ef59d3f03d0a84"
-
-require QuerySMT from git
-  "https://github.com/JOSHCLUNE/LeanSMTParser.git" @ "15c641b2f5330aef1451e97d1c5fcf7ad584ffcf"
-
-require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "v4.18.0"
+require «doc-gen4» from git "https://github.com/leanprover/doc-gen4.git" @ "%s"
 
 require %s from git
   "%s.git" @ "%s"
@@ -65,11 +53,6 @@ lean_exe training_data_with_premises where
   supportInterpreter := true
 
 @[default_target]
-lean_exe tactic_benchmark where
-  root := `scripts.tactic_benchmark
-  supportInterpreter := true
-
-@[default_target]
 lean_exe add_imports where
   root := `scripts.add_imports
   supportInterpreter := true
@@ -97,7 +80,7 @@ lean_exe update_hammer_blacklist where
 lean_exe add_premises where
   root := `scripts.add_premises
   supportInterpreter := true
-""" % (name, repo, commit)
+""" % (toolchain_version, name, repo, commit)
     with open(os.path.join(cwd, 'lakefile.lean'), 'w') as f:
         f.write(contents)
 
@@ -289,8 +272,6 @@ if __name__ == '__main__':
                 commit=source['commit'],
                 name=source['name'],
                 cwd=args.cwd,
-                # extracting declarations require doc-gen4
-                require_doc_gen=args.declarations,
                 toolchain_version=source['lean'].removeprefix('leanprover/lean4:')
             )
             _lake_update(
