@@ -25,7 +25,7 @@ def addToMap (map : DeclIdMap) (declId : String) (jsonObj : Json) : DeclIdMap :=
   | none => map.insert declId [jsonObj]
 
 def groupByDecl (idJsons : List (String × Json)) : IO DeclIdMap := do
-  let mut map : DeclIdMap := Std.HashMap.empty
+  let mut map : DeclIdMap := (∅ : Std.HashMap _ _)
   for ⟨declId, json⟩ in idJsons do
     map := addToMap map declId json
   return map
@@ -214,7 +214,7 @@ def mergeHammerRecommendations (hammerRecommendation1 hammerRecommendation2 : St
     simprocs, though it may make sense to update this to include output pertaining to simprocs in the future. `simpLemmasFromTacticStx` ignores all
     lemmas that appear in the hammer blacklist. -/
 def simpLemmasFromTacticStx (s : Syntax) : MetaM (Std.HashMap Name SimpAllHint) := do
-  if useNaiveDataExtraction then return Std.HashMap.empty -- If `useNaiveDataExtraction` is enabled, then we don't gather any simp lemmas
+  if useNaiveDataExtraction then return ∅ -- If `useNaiveDataExtraction` is enabled, then we don't gather any simp lemmas
   match s with
   | `(tactic| simp [$simpLemmas,*])
   | `(tactic| simp? [$simpLemmas,*])
@@ -249,7 +249,7 @@ def simpLemmasFromTacticStx (s : Syntax) : MetaM (Std.HashMap Name SimpAllHint) 
   | `(tactic| dsimp? only [$simpLemmas,*])
   | `(tactic| dsimp?! only [$simpLemmas,*]) =>
     let simpLemmas := simpLemmas.getElems
-    let mut res : Std.HashMap Name SimpAllHint := Std.HashMap.empty
+    let mut res : Std.HashMap Name SimpAllHint := ∅
     for simpLemma in simpLemmas do
       let simpLemma := simpLemma.raw
       if simpLemma.getKind == ``Lean.Parser.Tactic.simpErase then
@@ -288,7 +288,7 @@ def simpLemmasFromTacticStx (s : Syntax) : MetaM (Std.HashMap Name SimpAllHint) 
       else
         throwUnsupportedSyntax
     return res
-  | _ => return Std.HashMap.empty
+  | _ => return ∅
 
 /-- It is possible for some tactics such as `simp_rw` to invoke rewrite lemmas that do not appear in the final proof term (for instance, to direct unfolding).
     This function returns the set of rewrite lemmas that appear in the tactic syntax (and annotates them with `unmodified`, `backwardOnly`, or `notInSimpAll`),
@@ -477,7 +477,7 @@ def trainingDataGivenModule (module : ModuleName) (includeDebugMessages : Bool) 
       | none => pure ()
   -- Perform a second pass to gather data that potentially spans multiple tactics
   let mut activeDeclId : String := (dataArr.getD 0 default).declId
-  let mut declHammerRecommendations : Std.HashMap String (Std.HashMap Name SimpAllHint) := Std.HashMap.empty
+  let mut declHammerRecommendations : Std.HashMap String (Std.HashMap Name SimpAllHint) := ∅
   let mut activeDeclName : String := (dataArr.getD 0 default).declName
   let mut activeDeclHammerRecommendation : Std.HashMap Name SimpAllHint := (dataArr.getD 0 default).nextTacticHammerRecommendation
   for i in [:dataArr.size] do

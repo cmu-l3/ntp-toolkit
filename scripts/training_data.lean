@@ -20,7 +20,7 @@ def addToMap (map : DeclIdMap) (declId : String) (jsonObj : Json) : DeclIdMap :=
   | none => map.insert declId [jsonObj]
 
 def groupByDecl (idJsons : List (String × Json)) : IO DeclIdMap := do
-  let mut map : DeclIdMap := Std.HashMap.empty
+  let mut map : DeclIdMap := (∅ : Std.HashMap _ _)
   for ⟨declId, json⟩ in idJsons do
     map := addToMap map declId json
   return map
@@ -38,7 +38,7 @@ def generateRandomHash (length : Nat := 15): IO String := do
   let chars := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toList
   let mut hash := ""
   for _ in List.range length do
-    hash := hash ++ (chars.get! (← IO.rand 1 (chars.length-1))).toString
+    hash := hash ++ chars[← IO.rand 1 (chars.length-1)]!.toString
   return hash
 
 def findCommandInfo (t : InfoTree) : List (CommandInfo × ContextInfo) :=
@@ -131,29 +131,29 @@ end Lean.Elab.TacticInvocation
 
 
 def trainingData (args : Cli.Parsed) : IO UInt32 := do
-    searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
 
-    let module := args.positionalArg! "module" |>.as! ModuleName
-    let infos ← getElabDeclInfo (← moduleInfoTrees module)
-    let trees ← getInvocationTrees module
-    let hash ← generateRandomHash
+  let module := args.positionalArg! "module" |>.as! ModuleName
+  let infos ← getElabDeclInfo (← moduleInfoTrees module)
+  let trees ← getInvocationTrees module
+  let hash ← generateRandomHash
 
-    let mut idJsons : List (String × Json) := []
-    for t in trees do
-      for t in t.tactics do
+  let mut idJsons : List (String × Json) := []
+  for t in trees do
+    for t in t.tactics do
 
-        match getElabDeclOfTacticInvocation infos t with
-        | some elabDeclInfo => do
-          let json ← t.trainingData' elabDeclInfo module hash
-          idJsons := json :: idJsons
-        | none => pure ()
+      match getElabDeclOfTacticInvocation infos t with
+      | some elabDeclInfo => do
+        let json ← t.trainingData' elabDeclInfo module hash
+        idJsons := json :: idJsons
+      | none => pure ()
 
-    let out := idJsons.reverse.map fun (_, j) => j
+  let out := idJsons.reverse.map fun (_, j) => j
 
-    for item in out do
-      IO.println item.compress
+  for item in out do
+    IO.println item.compress
 
-    return 0
+  return 0
 
 
 /-- Setting up command line options and help text for `lake exe training_data`. -/
