@@ -238,7 +238,7 @@ def moduleSourceWithImports' (mod : Name) (withImportsDir : String) : IO String 
   IO.FS.readFile (← findLeanWithImports mod withImportsDir)
 
 initialize sourceCache : IO.Ref <| Std.HashMap Name String ←
-  IO.mkRef .empty
+  IO.mkRef ∅
 
 /-- Read the source code of the named module. The results are cached. -/
 def moduleSource (mod : Name) : IO String := do
@@ -270,7 +270,7 @@ def compileModuleWithImports' (mod : Name) (withImportsDir : String) : MLList IO
   Lean.Elab.IO.processInput' modSource none {} (← findLeanWithImports mod withImportsDir).toString
 
 initialize compilationCache : IO.Ref <| Std.HashMap Name (List CompilationStep) ←
-  IO.mkRef .empty
+  IO.mkRef ∅
 
 /--
 Compile the source file for the named module, returning the

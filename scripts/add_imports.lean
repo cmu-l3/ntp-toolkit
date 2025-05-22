@@ -33,7 +33,7 @@ def addImportsToModuleWithoutChecking (module : ModuleName) (importPkgs : List N
   return 0
 
 def addImports (args : Cli.Parsed) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let module := args.positionalArg! "module" |>.as! ModuleName
   let mut needToCheck := false -- Only bother checking for duplicate imports if that is possible
   let mut importPkgs := []
