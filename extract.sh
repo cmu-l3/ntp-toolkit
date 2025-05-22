@@ -10,17 +10,16 @@ source /home/thomaszh/.bashrc
 cd /home/thomaszh/ntp-toolkit
 conda activate lm
 
-MW=16
-
-lake exe cache get
-lake build
+MAX_WORKERS=16 # set according to your RAM capacity
+CONFIG=configs/config_mathlib_full.json
 rm -rf Examples/Mathlib
-python scripts/extract_repos.py --config configs/config_mathlib_full.json --cwd "`pwd`" --imports --skip_setup --max-workers $MW
-python scripts/extract_repos.py --config configs/config_mathlib_full.json --cwd "`pwd`" --declarations --skip_setup --max-workers $MW
-python scripts/extract_repos.py --config configs/config_mathlib_full.json --cwd "`pwd`" --training_data_with_premises --skip_setup --max-workers $MW
-python scripts/extract_repos.py --config configs/config_mathlib_full.json --cwd "`pwd`" --full_proof_training_data --skip_setup --max-workers $MW
-python scripts/extract_repos.py --config configs/config_mathlib_full.json --cwd "`pwd`" --add_imports --skip_setup --max-workers $MW
+python scripts/extract_repos.py --config $CONFIG --cwd "`pwd`" --imports --max-workers $MAX_WORKERS
+python scripts/extract_repos.py --config $CONFIG --cwd "`pwd`" --declarations --skip_setup --max-workers $MAX_WORKERS
+python scripts/extract_repos.py --config $CONFIG --cwd "`pwd`" --training_data_with_premises --skip_setup --max-workers $MAX_WORKERS
+python scripts/extract_repos.py --config $CONFIG --cwd "`pwd`" --full_proof_training_data --skip_setup --max-workers $MAX_WORKERS  # this one is not necessary; only used for e.g. proof length analysis in paper
+python scripts/extract_repos.py --config $CONFIG --cwd "`pwd`" --add_imports --skip_setup --max-workers $MAX_WORKERS
 lake exe update_hammer_blacklist > Examples/Mathlib/HammerBlacklist.jsonl
+python scripts/get_config_revision.py --config $CONFIG > Examples/Mathlib/revision
 
 OUTPUT_DIR=/data/user_data/thomaszh
 
