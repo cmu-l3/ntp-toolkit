@@ -186,9 +186,12 @@ def processInput (input : String) (env? : Option Environment := none)
 
 open System
 
-/-- Parallel to compile_time_search_path% -/
+/--
+Parallel to compile_time_search_path%
+(TODO: Lean core has its own `findLean` now)
+-/
 elab "compile_time_src_search_path%" : term =>
-  return toExpr (← initSrcSearchPath)
+  return toExpr (← getSrcSearchPath)
 
 def findLean (mod : Name) : IO FilePath := do
   let srcSearchPath : SearchPath := compile_time_src_search_path%
