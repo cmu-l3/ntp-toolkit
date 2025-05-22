@@ -249,9 +249,9 @@ if __name__ == '__main__':
     if args.full_proof_training_data_states:
         flags.append('full_proof_training_data_states')
     if args.training_data_with_premises:
-        flags.append('--training_data_with_premises')
+        flags.append('training_data_with_premises')
     if args.add_imports:
-        flags.append('--add_imports')
+        flags.append('add_imports')
     if args.declarations:
         flags.append('declarations')
     if args.imports:
