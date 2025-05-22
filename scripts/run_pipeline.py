@@ -1,5 +1,3 @@
-from typing import Optional
-from dataclasses import dataclass
 import json
 import os
 import argparse
@@ -22,25 +20,19 @@ DIR_NAMES = {
     'declarations': 'Declarations'
 }
 
-TASKS = [
-    Task('training_data', 'TacticPrediction', '.jsonl', 'training_data'),
-    Task('state_comments', 'StateComments', '.lean', 'state_comments'),
-    Task('full_proof_training_data', 'FullProof', '.jsonl', 'full_proof_training_data'),
-    Task('full_proof_training_data_states', 'FullProofWithStates', '.jsonl', 'full_proof_training_data', input_file_from_task='state_comments'),
-    Task('premises', 'Premises', '.jsonl', 'premises'),
-    Task('training_data_with_premises', 'TrainingDataWithPremises', '.jsonl', 'training_data_with_premises'),
-    Task('imports', 'Imports', '.jsonl', 'imports'),
-    Task('declarations', 'Declarations', '.jsonl', 'declarations'),
-]
-TASK_NAME_TO_TASK = {task.name: task for task in TASKS}
+def _get_stem(input_module, input_file_mode):
+    if input_file_mode:
+        stem = Path(input_module).stem
+    else:
+        stem = input_module
+    return stem
 
-
-def _run_cmd(cmd, cwd, inputs, output_file):
-    if isinstance(inputs, str):
-        inputs = [inputs]
+def _run_cmd(cmd, cwd, input_file, output_file):
+    if isinstance(input_file, str):
+        input_file = [input_file]
     with open(output_file, 'w') as f:
         subprocess.run(
-            ['lake', 'exe', cmd, *inputs],
+            ['lake', 'exe', cmd, *input_file],
             cwd=cwd,
             check=True,
             stdout=f
@@ -92,21 +84,11 @@ def _extract_module(input_module, input_file_mode, output_base_dir, cwd, trainin
     if state_comments:
         state_comments_output_file = os.path.join(
             output_base_dir,
-            task.output_dir,
-            input_module + task.output_file_extension
+            DIR_NAMES['state_comments'],
+            _get_stem(input_module, input_file_mode) + '.lean'
         )
-        if skip_existing and os.path.exists(output_file):
-            continue
-        if task.input_file_from_task is not None:
-            # For full_proof_training_data, it takes the output .lean files from state_comments as input module
-            input_task = TASK_NAME_TO_TASK[task.input_file_from_task]
-            input_module = '.'.join([
-                output_base_dir.replace(os.path.sep, '.'),
-                input_task.output_dir,
-                input_module,
-            ])
         _run_cmd(
-            cmd=task.command,
+            cmd='state_comments',
             cwd=cwd,
             input_file=input_module,
             output_file=state_comments_output_file
@@ -137,7 +119,7 @@ def _extract_module(input_module, input_file_mode, output_base_dir, cwd, trainin
                 _get_stem(input_module, input_file_mode) + '.jsonl'
             )
         )
-    
+
     # Reproduces source code with additional specified imports
     if add_imports:
         _run_cmd(
@@ -150,7 +132,7 @@ def _extract_module(input_module, input_file_mode, output_base_dir, cwd, trainin
                 _get_stem(input_module, input_file_mode) + '.lean'
             )
         )
-    
+
     if declarations:
         _run_cmd(
             cmd='declarations',
@@ -195,10 +177,8 @@ if __name__ == '__main__':
         help="maximum number of processes; defaults to number of processors"
     )
     parser.add_argument(
-        '--task',
-        choices=[task.name for task in TASKS],
-        nargs='+',
-        help='Choice of script(s) to run on (e.g. training_data)'
+        '--training_data',
+        action='store_true'
     )
     parser.add_argument(
         '--full_proof_training_data',
@@ -232,7 +212,6 @@ if __name__ == '__main__':
         '--imports',
         action='store_true'
     )
-    parser.add_argument('--skip_existing', action="store_true", help="If specified, existing outputs will not be overwritten")
     args = parser.parse_args()
 
     if ((not args.training_data) and (not args.full_proof_training_data) and (not args.premises) and (not args.state_comments)
@@ -243,8 +222,8 @@ if __name__ == '__main__':
                              --add_imports, --declarations, --imports]''')
 
     Path(args.output_base_dir).mkdir(parents=True, exist_ok=True)
-    for task in tasks:
-        Path(os.path.join(args.output_base_dir, task.output_dir)).mkdir(parents=True, exist_ok=True)
+    for name in DIR_NAMES.values():
+        Path(os.path.join(args.output_base_dir, name)).mkdir(parents=True, exist_ok=True)
 
     print("Building...")
     subprocess.run(['lake', 'build', 'all_modules'], check=True)
@@ -264,7 +243,7 @@ if __name__ == '__main__':
     _run_cmd(
         cmd='all_modules',
         cwd=args.cwd,
-        inputs=args.import_module,
+        input_file=args.import_module,
         output_file=input_modules_file
     )
     input_modules = []
@@ -279,6 +258,7 @@ if __name__ == '__main__':
             executor.submit(
                 _extract_module,
                 input_module=input_module,
+                input_file_mode=False,
                 output_base_dir=args.output_base_dir,
                 cwd=args.cwd,
                 training_data=args.training_data,
@@ -305,12 +285,12 @@ if __name__ == '__main__':
     print("Elapsed %.2f" % (round(end - start, 2)))
 
     subprocess.run(
-        ['python', 'scripts/data_stats.py', '--pipeline-output-base-dir', args.output_base_dir, '--out-json', os.path.join(args.output_base_dir, 'stats.json')],
+        ['python', 'scripts/data_stats.py', '--pipeline-output-base-dir', args.output_base_dir],
         cwd=args.cwd,
         check=True
     )
 
-    if 'convert_minictx' in args.task:
+    if args.premises and args.full_proof_training_data:
         subprocess.run(
             ['python', 'scripts/convert_minictx.py', args.output_base_dir, os.path.join(args.output_base_dir, 'minictx.jsonl')],
             cwd=args.cwd,
