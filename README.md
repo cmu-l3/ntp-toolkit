@@ -5,26 +5,26 @@
 To run data extraction specifically for training a premise selector for LeanHammer, run the following.
 
 ```sh
-MAX_WORKERS=4 # set according to your RAM capacity
+MAX_WORKERS=4  # set according to your RAM capacity
 CONFIG=configs/config_mathlib_full.json
-rm -rf Examples/Mathlib
+rm -rf Examples/mathlib
 python scripts/extract_repos.py --config $CONFIG --cwd "`pwd`" --imports --max-workers $MAX_WORKERS
 python scripts/extract_repos.py --config $CONFIG --cwd "`pwd`" --declarations --skip_setup --max-workers $MAX_WORKERS
 python scripts/extract_repos.py --config $CONFIG --cwd "`pwd`" --training_data_with_premises --skip_setup --max-workers $MAX_WORKERS
 python scripts/extract_repos.py --config $CONFIG --cwd "`pwd`" --add_imports --skip_setup --max-workers $MAX_WORKERS
-lake exe update_hammer_blacklist > Examples/Mathlib/HammerBlacklist.jsonl
-python scripts/get_config_revision.py --config $CONFIG > Examples/Mathlib/revision
+lake exe update_hammer_blacklist > Examples/mathlib/HammerBlacklist.jsonl
+python scripts/get_config_revision.py --config $CONFIG > Examples/mathlib/revision
 ```
 
 The outputs are respectively to:
 
 ```
-Examples/Mathlib/Imports/*.jsonl                   # imports of each module
-Examples/Mathlib/Declarations/*.jsonl              # declarations in each module
-Examples/Mathlib/TrainingDataWithPremises/*.jsonl  # pairs of (proof state, set of premises) in each module
-Examples/Mathlib/WithImports/*.lean                # source Lean code for each module, modified with a `import Hammer` line inserted at the beginning (for benchmarking purposes)
-Examples/Mathlib/HammerBlacklist.jsonl             # blacklist of very basic logic theorems not included in training
-Examples/Mathlib/revision                          # revision (commit or tag) of Mathlib extracted
+Examples/mathlib/Imports/*.jsonl                   # imports of each module
+Examples/mathlib/Declarations/*.jsonl              # declarations in each module
+Examples/mathlib/TrainingDataWithPremises/*.jsonl  # pairs of (proof state, set of premises) in each module
+Examples/mathlib/WithImports/*.lean                # source Lean code for each module, modified with a `import Hammer` line inserted at the beginning (for benchmarking purposes)
+Examples/mathlib/HammerBlacklist.jsonl             # blacklist of very basic logic theorems not included in training
+Examples/mathlib/revision                          # revision (commit or tag) of Mathlib extracted
 ```
 
 (Note the first run sets up the correct `lean-toolchain` and `lakefile.lean` files, and builds the project. The following runs therefore use `--skip_setup`.)
