@@ -54,3 +54,7 @@ lean_exe declarations where
 lean_exe imports where
   root := `scripts.imports
   supportInterpreter := true
+
+lean_exe intermediate_states where
+  root := `scripts.intermediate_states
+  supportInterpreter := true
