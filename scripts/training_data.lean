@@ -9,36 +9,6 @@ import Cli
 open Lean Elab IO Meta
 open Cli System
 
-
-def DeclIdMap := Std.HashMap String (List Json)
-
-def addToMap (map : DeclIdMap) (declId : String) (jsonObj : Json) : DeclIdMap :=
-  match map.get? declId with
-  | some jsonList => map.insert declId (jsonObj :: jsonList)
-  | none => map.insert declId [jsonObj]
-
-def groupByDecl (idJsons : List (String × Json)) : IO DeclIdMap := do
-  let mut map : DeclIdMap := Std.HashMap.empty
-  for ⟨declId, json⟩ in idJsons do
-    map := addToMap map declId json
-  return map
-
-def mapToJson (map : DeclIdMap) : List Json :=
-  let entries := map.toList
-  let jsonEntries : List Json := entries.map fun (declId, jsonList) =>
-    Json.mkObj [
-      ("declId", declId),
-      ("tacticExamples", Json.arr jsonList.toArray)
-    ]
-  jsonEntries
-
-def generateRandomHash (length : Nat := 15): IO String := do
-  let chars := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toList
-  let mut hash := ""
-  for _ in List.range length do
-    hash := hash ++ (chars.get! (← IO.rand 1 (chars.length-1))).toString
-  return hash
-
 def findCommandInfo (t : InfoTree) : List (CommandInfo × ContextInfo) :=
   let infos := t.findAllInfo none fun i => match i with
     | .ofCommandInfo _ => true
@@ -47,14 +17,17 @@ def findCommandInfo (t : InfoTree) : List (CommandInfo × ContextInfo) :=
   | (.ofCommandInfo i, some ctx, _) => (i, ctx)
   | _ => none
 
-def ElabDeclInfo := (Range × CommandInfo)
+structure ElabDeclInfo where
+  range : Range
+  cmdInfo : CommandInfo
+  currNamespace : Name
 
 def getElabDeclInfo (trees : List InfoTree) : IO (List ElabDeclInfo) := do
     let mut out  := []
     for tree in trees do
       let infos := findCommandInfo tree
       for ⟨cmdInfo, ctxInfo⟩ in infos do
-        out := (FileMap.stxRange ctxInfo.fileMap cmdInfo.stx, cmdInfo) :: out
+        out := ⟨FileMap.stxRange ctxInfo.fileMap cmdInfo.stx, cmdInfo, ctxInfo.currNamespace⟩ :: out
     return out
 
 def ppCommandInfo (info : CommandInfo) : String :=
@@ -63,12 +36,7 @@ def ppCommandInfo (info : CommandInfo) : String :=
 def getElabDeclOfTacticInvocation (elabDeclInfo : List ElabDeclInfo) (ti: TacticInvocation) :
   Option ElabDeclInfo := do
     let ⟨s, e⟩ := FileMap.stxRange ti.ctx.fileMap ti.info.stx
-    elabDeclInfo.find? fun ⟨⟨s', e'⟩, _⟩ => s' <= s && e <= e'
-
-def makeElabDeclId (info: ElabDeclInfo) (module: Name) (hash: String) : String :=
-  let ⟨x, y⟩ := info.fst.fst
-  let declId := s!"{module}.{x}_{y}.{hash}"
-  declId
+    elabDeclInfo.find? fun ⟨⟨s', e'⟩, _, _⟩ => s' <= s && e <= e'
 
 def getInvocationTrees (module: ModuleName) : IO (List InfoTree) := do
     let mut trees ← moduleInfoTrees module
@@ -104,26 +72,27 @@ def ppDeclWithoutProof (module: ModuleName) (info: CommandInfo) : IO String := d
     else
       return ""
 
-def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) : IO (String × Json) := do
-  let declId := makeElabDeclId elabDeclInfo module hash
+def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (i : TacticInvocation) : IO (Name × Json) := do
+  let declName := i.ctx.parentDecl?.getD Name.anonymous
+  let declNameString := match declName with | Name.anonymous => "" | n => n.toString
   let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (i.info.stx.getPos?.getD 0)
   let declUpToTactic := Substring.mk (← moduleSource module)
-    (elabDeclInfo.snd.stx.getPos?.getD 0) (i.info.stx.getPos?.getD 0)
+    (elabDeclInfo.cmdInfo.stx.getPos?.getD 0) (i.info.stx.getPos?.getD 0)
 
   let state := (Format.joinSep (← i.goalState) "\n").pretty
   let nextTactic ← tacticPP module i
-  let decl ← ppDeclWithoutProof module elabDeclInfo.snd
+  let decl ← ppDeclWithoutProof module elabDeclInfo.cmdInfo
 
   let json : Json :=
     Json.mkObj [
-      ("declId", Json.str declId),
+      ("declName", Json.str declNameString),
       ("decl", Json.str decl),
       ("srcUpToTactic", Json.str sourceUpToTactic.toString),
       ("declUpToTactic", Json.str declUpToTactic.toString),
       ("state", Json.str state),
       ("nextTactic", Json.str nextTactic)
     ]
-  return (declId, json)
+  return (declName, json)
 
 end Lean.Elab.TacticInvocation
 
@@ -134,19 +103,18 @@ def trainingData (args : Cli.Parsed) : IO UInt32 := do
     let module := args.positionalArg! "module" |>.as! ModuleName
     let infos ← getElabDeclInfo (← moduleInfoTrees module)
     let trees ← getInvocationTrees module
-    let hash ← generateRandomHash
 
-    let mut idJsons : List (String × Json) := []
+    let mut declNameJsons : List (Name × Json) := []
     for t in trees do
       for t in t.tactics do
 
         match getElabDeclOfTacticInvocation infos t with
         | some elabDeclInfo => do
-          let json ← t.trainingData' elabDeclInfo module hash
-          idJsons := json :: idJsons
+          let json ← t.trainingData' elabDeclInfo module
+          declNameJsons := json :: declNameJsons
         | none => pure ()
 
-    let out := idJsons.reverse.map fun (_, j) => j
+    let out := declNameJsons.reverse.map fun (_, j) => j
 
     for item in out do
       IO.println item.compress
