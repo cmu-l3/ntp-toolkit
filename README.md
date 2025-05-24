@@ -1,6 +1,6 @@
 # ntp-toolkit
 
-**This is a branch of ntp-toolkit specialized for extracting training data for LeanHammer.**
+**This is a branch of ntp-toolkit specialized for extracting training data for [LeanHammer](https://github.com/JOSHCLUNE/LeanHammer).**
 
 To run data extraction specifically for training a premise selector for LeanHammer, run the following.
 
@@ -32,7 +32,8 @@ Examples/mathlib/revision                          # revision (commit or tag) of
 (Here the `configs/config_mathlib_full.json` config contains training data for Mathlib, Batteries, and Lean core. To only include Mathlib,
 you may specify `configs/config_mathlib.json`.)
 
-See <https://github.com/hanwenzhu/LeanHammer-training> for the full training script that takes these files as input.
+After data extraction, one may train a model on it using [LeanHammer-training](https://github.com/hanwenzhu/LeanHammer-training) script
+and deploy the data and model to a premise selection service using [lean-premise-server](https://github.com/hanwenzhu/lean-premise-server).
 
 ---
 
