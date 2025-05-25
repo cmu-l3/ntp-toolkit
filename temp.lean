@@ -1,6 +1,3 @@
-import QuerySMT
-import Aesop
-
 def p := True
 def q := True
 axiom p_eq_true : p = True
@@ -16,3 +13,15 @@ theorem list_eq_self (l : List α) : l = l := by
     rfl
 
 theorem zero_eq_zero : 0 = 0 := by omega
+
+theorem true : ∃ a : Nat, ∀ p : Prop, p → p := by
+  have : True := trivial
+  refine ⟨0, ?_⟩
+  intro p
+  have : p → p := by
+    intro hp
+    have h1 : p := hp
+    have h2 : p := hp
+    have h3 : p := hp
+    trivial
+  exact this

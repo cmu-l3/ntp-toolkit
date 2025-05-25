@@ -209,6 +209,10 @@ if __name__ == '__main__':
         action='store_true'
     )
     parser.add_argument(
+        '--intermediate_states',
+        action='store_true'
+    )
+    parser.add_argument(
         '--convert_minictx',
         action='store_true'
     )
@@ -238,6 +242,8 @@ if __name__ == '__main__':
         flags.append('imports')
     if args.convert_minictx:
         flags.append('convert_minictx')
+    if args.intermediate_states:
+        flags.append('intermediate_states')
 
     for source in sources:
         print("=== %s ===" % (source['repo']))

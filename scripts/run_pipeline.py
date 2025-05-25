@@ -33,6 +33,7 @@ TASKS = [
     Task('training_data_with_premises', 'TrainingDataWithPremises', '.jsonl', 'training_data_with_premises'),
     Task('imports', 'Imports', '.jsonl', 'imports'),
     Task('declarations', 'Declarations', '.jsonl', 'declarations'),
+    Task('intermediate_states', 'IntermediateStates', '.jsonl', 'intermediate_states'),
 ]
 TASK_NAME_TO_TASK = {task.name: task for task in TASKS}
 

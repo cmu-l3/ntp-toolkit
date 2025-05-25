@@ -23,6 +23,8 @@ lean_lib TrainingData where
 
 lean_lib Examples where
 
+lean_lib temp
+
 lean_exe training_data where
   root := `scripts.training_data
   supportInterpreter := true

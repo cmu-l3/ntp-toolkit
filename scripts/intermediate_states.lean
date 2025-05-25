@@ -85,6 +85,7 @@ open Tactic PrettyPrinter in
 def stateAsSignature (noRevertFVarIds : Array FVarId) : TacticM Format := do
   -- This is copied from extract_goal in mathlib
   let name : Name := `extracted
+  withOptions (pp.funBinderTypes.set · true |> (pp.universes.set · false) |> (pp.coercions.types.set · true)) do
   withoutModifyingEnv <| withoutModifyingState do
     let g ← getMainGoal
     let g ← do
@@ -99,22 +100,44 @@ def stateAsSignature (noRevertFVarIds : Array FVarId) : TacticM Format := do
     -- The set of free variables not reverted will be the ones in the initial state
     let revertFvarIds := fvarIds.filter fun id => !noRevertFVarIds.contains id
     let (_, g) ← g.revert (clearAuxDeclsInsteadOfRevert := true) revertFvarIds
-    let ty ← instantiateMVars (← g.getType)
+    let ty ← g.getType
+    -- Also, we deviate from extract_goal by
+    -- zeta reducing the type so the resulting type doesn't have `let` binders
+    let ty ← zetaReduce ty
+    let ty ← instantiateMVars ty
     let ty ← Term.levelMVarToParam ty
     let (stx, _) ← delabCore ty (delab := delabTypeSignature name)
     PrettyPrinter.ppTerm ⟨stx⟩  -- HACK: not a term
 
+section Test
 elab "extract_goal" : tactic => do
-  logInfo (← stateAsSignature #[])
   let fvars := (← getLCtx).getFVarIds
-  logInfo (← stateAsSignature fvars)
+  logInfo (← stateAsSignature (fvars.take 0))
+  logInfo (← stateAsSignature (fvars.take 1))
+  logInfo (← stateAsSignature (fvars.take 2))
+  logInfo (← stateAsSignature (fvars.take 3))
+  logInfo (← stateAsSignature (fvars.take 4))
 /--
 info: extracted {α : Type u_1} (a : α) [inst : Add α] : a + a = a + a
+---
+info: extracted {α : Type u_1} (a : α) [inst : Add α] : a + a = a + a
+---
+info: extracted (a : α) [inst : Add α] : a + a = a + a
+---
+info: extracted [inst : Add α] : a + a = a + a
 ---
 info: extracted : a + a = a + a
 -/
 #guard_msgs in
 example {α} (a : α) [Add α] : a + a = a + a := by extract_goal; rfl
+end Test
+
+def stateAsSignatureMetaM (g : MVarId) (noRevertFVarIds : Array FVarId) : MetaM Format := do
+  g.withContext do
+    Term.TermElabM.run' do
+      -- We do not revert free variables occuring in the initial proof state for conciseness
+      let (fmt, _) ← stateAsSignature noRevertFVarIds { elaborator := .anonymous } |>.run { goals := [g] }
+      return fmt.pretty 1000000000
 
 open Term in
 def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (i : TacticInvocation) (initFVars? : Name → Option (Array FVarId)) :
@@ -130,14 +153,15 @@ def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (i : Tactic
   let fvars? ← i.runMetaMGoalsBefore fun gs => gs[0]?.mapM fun g => do
     return (← g.getDecl).lctx.getFVarIds
   let fvars := fvars?.getD #[]
+
   let statesAsSignatures ← i.runMetaMGoalsBefore fun gs => gs.mapM fun g => do
-    g.withContext do
-      TermElabM.run' do
-        -- We do not revert free variables occuring in the initial proof state for conciseness
-        let (fmt, _) ← stateAsSignature ((initFVars? declName).getD fvars) { elaborator := .anonymous } |>.run { goals := [g] }
-        return fmt.pretty 1000000000
+    let fmt ← stateAsSignatureMetaM g ((initFVars? declName).getD fvars)
+    return fmt.pretty 1000000000
   let states := (← i.goalState).map (·.pretty 1000000000)
   let statesAfter := (← i.goalStateAfter).map (·.pretty 1000000000)
+  let statesAfterAsSignatures ← i.runMetaMGoalsAfter fun gs => gs.mapM fun g => do
+    let fmt ← stateAsSignatureMetaM g ((initFVars? declName).getD fvars)
+    return fmt.pretty 1000000000
   let nextTactic ← tacticPP module i
   let decl ← ppDeclWithoutProof module elabDeclInfo.cmdInfo
 
@@ -150,6 +174,7 @@ def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (i : Tactic
       ("states", toJson states),
       ("statesAsSignatures", toJson statesAsSignatures),
       ("statesAfter", toJson statesAfter),
+      ("statesAfterAsSignatures", toJson statesAfterAsSignatures),
       ("nextTactic", Json.str nextTactic)
     ]
   return (declName, fvars, data)
