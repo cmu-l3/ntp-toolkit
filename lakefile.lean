@@ -10,10 +10,10 @@ package «lean-training-data» {
   ]
 }
 
-require «doc-gen4» from git "https://github.com/leanprover/doc-gen4.git" @ "v4.20.0-rc5"
+require «doc-gen4» from git "https://github.com/leanprover/doc-gen4.git" @ "v4.20.0"
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git" @ "v4.20.0-rc5"
+  "https://github.com/leanprover-community/mathlib4.git" @ "v4.20.0"
 
 @[default_target]
 lean_lib TrainingData where
