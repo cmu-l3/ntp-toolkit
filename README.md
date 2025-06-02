@@ -35,7 +35,15 @@ you may specify `configs/config_mathlib.json`.)
 After data extraction, one may train a model on it using [LeanHammer-training](https://github.com/hanwenzhu/LeanHammer-training) script
 and deploy the data and model to a premise selection service using [lean-premise-server](https://github.com/hanwenzhu/lean-premise-server).
 
+## Updating LeanHammer data extraction
+
+To update the revision of Lean & Mathlib to extract data from,
+update the `commit` and `lean` fields of `configs/config_mathlib_full.json` and `configs/config_mathlib.json`,
+then re-run extraction as above.
+
 ---
+
+## Original ntp-toolkit README:
 
 The neural theorem proving toolkit transforms Lean repositories into datasets for training and evaluating machine learning models.
 
