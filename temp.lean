@@ -14,7 +14,7 @@ theorem list_eq_self (l : List α) : l = l := by
 
 theorem zero_eq_zero : 0 = 0 := by omega
 
-theorem true : ∃ a : Nat, ∀ p : Prop, p → p := by
+theorem true (x : Nat) : ∃ a : Nat, ∀ p : Prop, x = x ∧ (p → p) := by
   have : True := trivial
   refine ⟨0, ?_⟩
   intro p
@@ -24,4 +24,4 @@ theorem true : ∃ a : Nat, ∀ p : Prop, p → p := by
     have h2 : p := hp
     have h3 : p := hp
     trivial
-  exact this
+  exact ⟨rfl, this⟩
