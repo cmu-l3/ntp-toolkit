@@ -86,4 +86,7 @@ def numArgsOfConstantVal (v : ConstantVal) : MetaM Nat := do
   catch _ =>
     return getIntrosSize v.type
 
+def withHammerPPOptions {m α} [MonadWithOptions m] (x : m α) : m α :=
+  withOptions (fun o => (o.set `pp.notation false).set `pp.fullNames true) x
+
 end TheoremPrettyPrinting

@@ -51,7 +51,7 @@ def infoOfConstant (cinfo : ConstantInfo) : MetaM (String × Info) := do
     if useNaiveDataExtraction then
       Info.ofConstantVal' cinfo.toConstantVal
     else
-      withOptions (fun o => (o.set `pp.notation false).set `pp.fullNames true) <|
+      withHammerPPOptions <|
         Info.ofConstantVal' cinfo.toConstantVal
   return (kind, info)
 
