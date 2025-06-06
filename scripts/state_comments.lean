@@ -49,6 +49,7 @@ def stateComment (state: List String) (column: Nat) :=
     ++ ("-/".indent column)
 
 def stateComments (args : Cli.Parsed) : IO UInt32 := do
+    unsafe enableInitializersExecution
     initSearchPath (← findSysroot)
     let module := args.positionalArg! "module" |>.as! ModuleName
     let mut trees ← moduleInfoTrees module

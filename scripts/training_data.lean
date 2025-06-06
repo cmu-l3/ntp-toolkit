@@ -131,6 +131,7 @@ end Lean.Elab.TacticInvocation
 
 
 def trainingData (args : Cli.Parsed) : IO UInt32 := do
+  unsafe enableInitializersExecution
   initSearchPath (← findSysroot)
 
   let module := args.positionalArg! "module" |>.as! ModuleName

@@ -445,6 +445,7 @@ def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : Mod
   return data.declHammerRecommendation
 
 def trainingDataGivenModule (module : ModuleName) (includeDebugMessages : Bool) : IO UInt32 := do
+  unsafe enableInitializersExecution
   initSearchPath (← findSysroot)
   let infos ← getElabDeclInfo (← moduleInfoTrees module)
   let compilationSteps ← compileModule module
