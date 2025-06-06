@@ -143,6 +143,7 @@ def main (args : List String) : IO UInt32 := do
   let modules := match args with
   | [] => #[`Mathlib]
   | args => args.toArray.map fun s => s.toName
+  unsafe enableInitializersExecution
   initSearchPath (← findSysroot)
   -- Proper delaborators need also be loaded for better printing of results
   -- (e.g., if the module is Init.Prelude which does not have delaborator for Eq yet)
