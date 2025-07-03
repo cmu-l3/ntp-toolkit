@@ -12,8 +12,8 @@ def addImportsToModule (module : ModuleName) (importPkgs : List Name) : IO UInt3
   let fileName := (← findLean module).toString
   let src ← moduleSource module
   let inputCtx := Parser.mkInputContext src fileName
-  let (header, parserState, messages) ← Parser.parseHeader inputCtx
-  let (env, messages) ← processHeader header {} messages inputCtx
+  let (header, _parserState, messages) ← Parser.parseHeader inputCtx
+  let (env, _messages) ← processHeader header {} messages inputCtx
   let mut additionalImports := ""
   for pkg in importPkgs do
     if !env.header.moduleNames.contains pkg then
@@ -33,7 +33,7 @@ def addImportsToModuleWithoutChecking (module : ModuleName) (importPkgs : List N
   return 0
 
 def addImports (args : Cli.Parsed) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let module := args.positionalArg! "module" |>.as! ModuleName
   let mut needToCheck := false -- Only bother checking for duplicate imports if that is possible
   let mut importPkgs := []
@@ -44,7 +44,7 @@ def addImports (args : Cli.Parsed) : IO UInt32 := do
     needToCheck := true
   if args.hasFlag "duper" && !args.hasFlag "querySMT" && !args.hasFlag "hammer" then importPkgs := `Duper :: importPkgs
   if importPkgs.isEmpty then
-    importPkgs := [`Hammer] -- Default behavior if no flags are included
+    importPkgs := [`Hammer, `Aesop] -- Default behavior if no flags are included
   if needToCheck then addImportsToModule module importPkgs
   else addImportsToModuleWithoutChecking module importPkgs
 

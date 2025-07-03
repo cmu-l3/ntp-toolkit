@@ -6,6 +6,7 @@ import Batteries.Data.String.Basic
   cannot be both defined by and accessed in `Lean.withImports`.
   TODO: is there a better fix? -/
 import Mathlib.Data.Prod.Basic
+import Mathlib.Util.PPOptions
 
 open Lean IO Meta System DocGen4 Process
 
@@ -77,5 +78,15 @@ def Info.ofConstantVal' (v : ConstantVal) : MetaM Info := do
     declarationRange := range.range,
     attrs := ← getAllAttributes v.name
   }
+
+def numArgsOfConstantVal (v : ConstantVal) : MetaM Nat := do
+  try
+    let thmInfo ← Info.ofConstantVal' v
+    return thmInfo.args.size
+  catch _ =>
+    return getIntrosSize v.type
+
+def withHammerPPOptions {m α} [MonadWithOptions m] (x : m α) : m α :=
+  withOptions (fun o => (o.set `pp.notation false).set `pp.fullNames true) x
 
 end TheoremPrettyPrinting

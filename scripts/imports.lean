@@ -3,8 +3,7 @@ Prints all (transitively) imported modules of a module.
 -/
 
 import Mathlib.Lean.CoreM
-import Batteries
-import Lean
+import Lean.Util.SearchPath
 
 open Lean Meta
 
@@ -14,7 +13,7 @@ def main (args : List String) : IO UInt32 := do
   let modules := match args with
   | [] => #[`Mathlib]
   | args => args.toArray.map fun s => s.toName
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   CoreM.withImportModules modules (options := options) do
     let env ← getEnv
     let allModulesSorted := env.allImportedModuleNames.qsort (·.toString < ·.toString)

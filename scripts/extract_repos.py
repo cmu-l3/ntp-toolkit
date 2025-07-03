@@ -6,13 +6,7 @@ import json
 from pathlib import Path
 
 
-# TODO: only add necessary lean_exe into lakefile.lean
-doc_gen = """
-require «doc-gen4» from git
-  "https://github.com/leanprover/doc-gen4.git" @ "%s"
-"""
-
-def _lakefile(repo, commit, name, cwd, require_doc_gen=False, toolchain_version="main"):
+def _lakefile(repo, commit, name, cwd, toolchain_version="main"):
     contents = """import Lake
 open Lake DSL
 
@@ -25,13 +19,15 @@ package «lean-training-data» {
   ]
 }
 
+require «doc-gen4» from git "https://github.com/leanprover/doc-gen4.git" @ "%s"
+
 require %s from git
   "%s.git" @ "%s"
 
-%s
-
 @[default_target]
 lean_lib TrainingData where
+
+lean_lib temp where
 
 lean_lib Examples where
 
@@ -51,22 +47,40 @@ lean_exe premises where
   root := `scripts.premises
   supportInterpreter := true
 
+@[default_target]
 lean_exe training_data_with_premises where
   root := `scripts.training_data_with_premises
+  supportInterpreter := true
+
+@[default_target]
+lean_exe add_imports where
+  root := `scripts.add_imports
   supportInterpreter := true
 
 lean_exe all_modules where
   root := `scripts.all_modules
   supportInterpreter := true
 
+@[default_target]
 lean_exe declarations where
   root := `scripts.declarations
   supportInterpreter := true
 
+@[default_target]
 lean_exe imports where
   root := `scripts.imports
   supportInterpreter := true
-""" % (name, repo, commit, doc_gen % toolchain_version if require_doc_gen else "")
+
+@[default_target]
+lean_exe update_hammer_blacklist where
+  root := `scripts.update_hammer_blacklist
+  supportInterpreter := true
+
+@[default_target]
+lean_exe add_premises where
+  root := `scripts.add_premises
+  supportInterpreter := true
+""" % (toolchain_version, name, repo, commit)
     with open(os.path.join(cwd, 'lakefile.lean'), 'w') as f:
         f.write(contents)
 
@@ -201,6 +215,10 @@ if __name__ == '__main__':
         action='store_true'
     )
     parser.add_argument(
+        '--add_imports',
+        action='store_true'
+    )
+    parser.add_argument(
         '--declarations',
         action='store_true'
     )
@@ -232,6 +250,8 @@ if __name__ == '__main__':
         flags.append('full_proof_training_data_states')
     if args.training_data_with_premises:
         flags.append('training_data_with_premises')
+    if args.add_imports:
+        flags.append('add_imports')
     if args.declarations:
         flags.append('declarations')
     if args.imports:
@@ -252,8 +272,6 @@ if __name__ == '__main__':
                 commit=source['commit'],
                 name=source['name'],
                 cwd=args.cwd,
-                # extracting declarations require doc-gen4
-                require_doc_gen=args.declarations,
                 toolchain_version=source['lean'].removeprefix('leanprover/lean4:')
             )
             _lake_update(
