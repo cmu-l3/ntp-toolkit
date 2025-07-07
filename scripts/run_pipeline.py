@@ -32,6 +32,7 @@ TASKS = [
     Task('premises', 'Premises', '.jsonl', 'premises'),
     Task('training_data_with_premises', 'TrainingDataWithPremises', '.jsonl', 'training_data_with_premises'),
     Task('imports', 'Imports', '.jsonl', 'imports'),
+    Task('add_imports', 'WithImports', '.lean', 'add_imports'),
     Task('declarations', 'Declarations', '.jsonl', 'declarations'),
 ]
 TASK_NAME_TO_TASK = {task.name: task for task in TASKS}

@@ -2,8 +2,10 @@ import TrainingData.Frontend
 import TrainingData.InfoTree.ToJson
 import TrainingData.InfoTree.TacticInvocation.Basic
 import TrainingData.Utils.Range
-import Batteries
-import Lean
+import Mathlib.Data.String.Defs
+import Mathlib.Lean.CoreM
+import Batteries.Data.String.Basic
+import Mathlib.Tactic.Change
 import Cli
 
 open Lean Elab IO Meta
@@ -98,28 +100,29 @@ end Lean.Elab.TacticInvocation
 
 
 def trainingData (args : Cli.Parsed) : IO UInt32 := do
-    searchPathRef.set compile_time_search_path%
+  unsafe enableInitializersExecution
+  initSearchPath (← findSysroot)
 
-    let module := args.positionalArg! "module" |>.as! ModuleName
-    let infos ← getElabDeclInfo (← moduleInfoTrees module)
-    let trees ← getInvocationTrees module
+  let module := args.positionalArg! "module" |>.as! ModuleName
+  let infos ← getElabDeclInfo (← moduleInfoTrees module)
+  let trees ← getInvocationTrees module
 
-    let mut declNameJsons : List (Name × Json) := []
-    for t in trees do
-      for t in t.tactics do
+  let mut declNameJsons : List (Name × Json) := []
+  for t in trees do
+    for t in t.tactics do
 
-        match getElabDeclOfTacticInvocation infos t with
-        | some elabDeclInfo => do
-          let json ← t.trainingData' elabDeclInfo module
-          declNameJsons := json :: declNameJsons
-        | none => pure ()
+      match getElabDeclOfTacticInvocation infos t with
+      | some elabDeclInfo => do
+        let json ← t.trainingData' elabDeclInfo module
+        declNameJsons := json :: declNameJsons
+      | none => pure ()
 
-    let out := declNameJsons.reverse.map fun (_, j) => j
+  let out := declNameJsons.reverse.map fun (_, j) => j
 
-    for item in out do
-      IO.println item.compress
+  for item in out do
+    IO.println item.compress
 
-    return 0
+  return 0
 
 
 /-- Setting up command line options and help text for `lake exe training_data`. -/

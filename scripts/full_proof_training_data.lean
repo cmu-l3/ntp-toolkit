@@ -1,8 +1,10 @@
 import TrainingData.Frontend
 import TrainingData.InfoTree.ToJson
 import TrainingData.InfoTree.TacticInvocation.Basic
-import Batteries
-import Lean
+import Mathlib.Data.String.Defs
+import Mathlib.Lean.CoreM
+import Batteries.Data.String.Basic
+import Mathlib.Tactic.Change
 import TrainingData.Utils.Range
 import Cli
 
@@ -100,24 +102,25 @@ def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) : IO (Optio
   return none
 
 def trainingData (args : Cli.Parsed) : IO UInt32 := do
-    searchPathRef.set compile_time_search_path%
+  unsafe enableInitializersExecution
+  initSearchPath (← findSysroot)
 
-    let module := args.positionalArg! "module" |>.as! ModuleName
-    let infos ← getElabDeclInfo (← moduleInfoTrees module)
+  let module := args.positionalArg! "module" |>.as! ModuleName
+  let infos ← getElabDeclInfo (← moduleInfoTrees module)
 
-    let mut visited : NameSet := ∅
-    let mut jsons : List Json := []
-    for elabDeclInfo in infos do
-      if let some (name, json) ← trainingData' elabDeclInfo module then
-        unless visited.contains name do
-          jsons := json :: jsons
-          visited := visited.insert name
+  let mut visited : NameSet := ∅
+  let mut jsons : List Json := []
+  for elabDeclInfo in infos do
+    if let some (name, json) ← trainingData' elabDeclInfo module then
+      unless visited.contains name do
+        jsons := json :: jsons
+        visited := visited.insert name
 
-    let out := jsons
+  let out := jsons
 
-    for item in out do
-      IO.println item.compress
-    return 0
+  for item in out do
+    IO.println item.compress
+  return 0
 
 
 /-- Setting up command line options and help text for `lake exe full_proof_training_data`. -/

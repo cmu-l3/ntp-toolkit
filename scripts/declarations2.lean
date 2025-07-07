@@ -4,6 +4,9 @@ import Mathlib.Lean.Expr.Basic
 import Batteries
 import TrainingData.Utils.TheoremPrettyPrinting
 import TrainingData.Utils.WithImports
+import TrainingData.Frontend
+import TrainingData.InfoTree.ToJson
+import Cli
 
 /-!
 Generate name, type, docstring, and pretty-printed information for each declaration in a module.
@@ -13,11 +16,19 @@ This uses doc-gen4 and outputs approximately the same format as doc-gen4.
 The extracted declarations are usually used as potential premises to select from for a premise retriever.
 -/
 
-open Lean Meta DocGen4.Process
+open Lean Elab IO Meta
+
+def findCommandInfo (t : InfoTree) : List (CommandInfo × ContextInfo) :=
+  let infos := t.findAllInfo none fun i => match i with
+    | .ofCommandInfo _ => true
+    | _ => false
+  infos.filterMap fun p => match p with
+  | (.ofCommandInfo i, some ctx, _) => (i, ctx)
+  | _ => none
 
 namespace DocGen4.Process
 
-open DocGen4 DocGen4.Process DocGen4.Process.DocInfo TheoremPrettyPrinting
+open DocInfo TheoremPrettyPrinting
 
 /--
 Returns kind (string) and Info given constant.
@@ -133,18 +144,28 @@ def allDeclarations (moduleNames : Array Name) (callback : Nat → Nat → Name 
               continue
     i := i + 1
 
-def main (args : List String) : IO UInt32 := do
-  let modules := match args with
-  | [] => #[`Mathlib]
-  | args => args.toArray.map fun s => s.toName
-  -- Proper delaborators need also be loaded for better printing of results
-  -- (e.g., if the module is Init.Prelude which does not have delaborator for Eq yet)
-  let delaboratorModules := #[
-  ]
-  let importModules := modules ++ delaboratorModules
-  MetaM.withImportModules' importModules do
-    allDeclarations modules fun _ _ _ json ↦ do
-      -- IO.eprint s!"\x1B[2K\rProcessing [{i}/{total}] {name.toString.take 60}"
-      IO.println json.compress
-    -- IO.eprintln ""
+open Cli
+
+def runDeclarations (args : Cli.Parsed) : IO UInt32 := do
+  unsafe enableInitializersExecution
+  initSearchPath (← findSysroot)
+
+  let module := args.positionalArg! "module" |>.as! ModuleName
+  let infos ← moduleInfoTrees module
+  for (ctx, cmd) in infos do
+    sorry
+
   return 0
+
+/-- Setting up command line options and help text for `lake exe declarations`. -/
+def declarations : Cmd := `[Cli|
+  declarations VIA runDeclarations; ["0.0.1"]
+"Export declarations from the given file."
+
+  ARGS:
+    module : ModuleName; "Lean module to compile and export declarations."
+]
+
+/-- `lake exe declarations` -/
+def main (args : List String) : IO UInt32 :=
+  declarations.validate args
