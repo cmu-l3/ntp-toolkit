@@ -13,3 +13,4 @@ Extracted
 .idea
 .DS_Store
 *.pyc
+/temp.lean

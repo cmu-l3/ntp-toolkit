@@ -3,6 +3,7 @@ import Mathlib.Control.Basic
 import Mathlib.Lean.Expr.Basic
 import Batteries
 import TrainingData.Utils.TheoremPrettyPrinting
+import TrainingData.Utils.WithImports
 
 /-!
 Generate name, type, docstring, and pretty-printed information for each declaration in a module.
@@ -44,8 +45,9 @@ def infoOfConstant (cinfo : ConstantInfo) : MetaM (String × Info) := do
     | .ctorInfo _ => "def"
     | .recInfo _ => "def"
     | .quotInfo _ => "def"
-  let info ← withOptions (fun o => (o.set `pp.notation false).set `pp.fullNames true) <|
-    Info.ofConstantVal' cinfo.toConstantVal
+  let info ←
+    withNtpToolkitPPOptions <|
+      Info.ofConstantVal' cinfo.toConstantVal
   return (kind, info)
 
 end DocGen4.Process
@@ -132,21 +134,16 @@ def allDeclarations (moduleNames : Array Name) (callback : Nat → Nat → Name 
     i := i + 1
 
 def main (args : List String) : IO UInt32 := do
-  let options := Options.empty.insert `maxHeartbeats (0 : Nat)
   let modules := match args with
   | [] => #[`Mathlib]
   | args => args.toArray.map fun s => s.toName
-  searchPathRef.set compile_time_search_path%
   -- Proper delaborators need also be loaded for better printing of results
   -- (e.g., if the module is Init.Prelude which does not have delaborator for Eq yet)
   let delaboratorModules := #[
-    `Mathlib.Lean.PrettyPrinter.Delaborator,
-    `Mathlib.Util.Delaborators,
-    `Lean.PrettyPrinter
   ]
   let importModules := modules ++ delaboratorModules
-  CoreM.withImportModules importModules (options := options) do
-    MetaM.run' <| allDeclarations modules fun _ _ _ json ↦ do
+  MetaM.withImportModules' importModules do
+    allDeclarations modules fun _ _ _ json ↦ do
       -- IO.eprint s!"\x1B[2K\rProcessing [{i}/{total}] {name.toString.take 60}"
       IO.println json.compress
     -- IO.eprintln ""

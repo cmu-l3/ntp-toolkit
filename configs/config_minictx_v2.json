@@ -14,13 +14,6 @@
         "imports": ["Carleson"]
     },
     {
-        "repo": "https://github.com/emilyriehl/infinity-cosmos",
-        "commit": "96a5375e3ec38ecc012a635747919b049dd8201c",
-        "lean": "leanprover/lean4:v4.16.0-rc2",
-        "name": "InfinityCosmos",
-        "imports": ["InfinityCosmos"]
-    },
-    {
         "repo": "https://github.com/Ivan-Sergeyev/seymour",
         "commit": "27c0384977032b693daca8c4fcfc5cc274e1f2d6",
         "lean": "leanprover/lean4:v4.16.0",
@@ -47,13 +40,6 @@
         "lean": "leanprover/lean4:v4.16.0",
         "name": "HepLean",
         "imports": ["HepLean"]
-    },
-    {
-        "repo": "https://github.com/AlexKontorovich/PrimeNumberTheoremAnd",
-        "commit": "34004c919166f3a3a876bfe2731ed395c973d248",
-        "lean": "leanprover/lean4:v4.16.0",
-        "name": "PrimeNumberTheoremAnd",
-        "imports": ["PrimeNumberTheoremAnd"]
     },
     {
         "repo": "https://github.com/leanprover-community/mathlib4",

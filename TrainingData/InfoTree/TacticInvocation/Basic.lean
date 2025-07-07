@@ -1,8 +1,9 @@
 import TrainingData.InfoTree.Basic
+import TrainingData.Utils.TheoremPrettyPrinting
 
 set_option autoImplicit true
 
-open Lean Elab
+open Lean Elab TheoremPrettyPrinting
 
 /--
 A helper structure containing a `TacticInfo` and `ContextInfo`,
@@ -51,23 +52,23 @@ def formatMainGoal (t : TacticInvocation) : IO Format :=
   t.runMetaM (fun g => do ppExpr (← instantiateMVars (← g.getType)))
 
 def goalState (t : TacticInvocation) : IO (List Format) := do
-  t.runMetaMGoalsBefore (fun gs => gs.mapM fun g => do Meta.ppGoal g)
+  t.runMetaMGoalsBefore (fun gs => gs.mapM fun g => withNtpToolkitPPOptions do Meta.ppGoal g)
 
 def goalStateAfter (t : TacticInvocation) : IO (List Format) := do
-  t.runMetaMGoalsAfter (fun gs => gs.mapM fun g => do Meta.ppGoal g)
+  t.runMetaMGoalsAfter (fun gs => gs.mapM fun g => withNtpToolkitPPOptions do Meta.ppGoal g)
 
 def mainGoalStateBefore (t : TacticInvocation) : IO Format := do
   t.runMetaMGoalsBefore (fun gs => do
     match gs.head? with
     | none => pure ""
-    | some g => Meta.ppGoal g
+    | some g => withNtpToolkitPPOptions $ Meta.ppGoal g
   )
 
 def mainGoalStateAfter (t : TacticInvocation) : IO Format := do
   t.runMetaMGoalsAfter (fun gs => do
     match gs.head? with
     | none => pure ""
-    | some g => Meta.ppGoal g
+    | some g => withNtpToolkitPPOptions $ Meta.ppGoal g
   )
 
 def ppExpr (t : TacticInvocation) (e : Expr) : IO Format :=

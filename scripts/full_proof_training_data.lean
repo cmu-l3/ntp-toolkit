@@ -1,8 +1,10 @@
 import TrainingData.Frontend
 import TrainingData.InfoTree.ToJson
 import TrainingData.InfoTree.TacticInvocation.Basic
-import Batteries
-import Lean
+import Mathlib.Data.String.Defs
+import Mathlib.Lean.CoreM
+import Batteries.Data.String.Basic
+import Mathlib.Tactic.Change
 import TrainingData.Utils.Range
 import Cli
 
@@ -21,7 +23,7 @@ def generateRandomHash (length : Nat := 15): IO String := do
   let chars := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toList
   let mut hash := ""
   for _ in List.range length do
-    hash := hash ++ (chars.get! (← IO.rand 1 (chars.length-1))).toString
+    hash := hash ++ chars[← IO.rand 1 (chars.length-1)]!.toString
   return hash
 
 def findCommandInfo (t : InfoTree) : List (CommandInfo × ContextInfo) :=
@@ -71,7 +73,7 @@ def ppDeclAndProof (module: ModuleName) (info: CommandInfo) : IO (Option (String
     else
       return none
 
-def validateDecl (decl : String) (keep : Bool) : IO Bool :=
+def validateDecl (_decl : String) (keep : Bool) : IO Bool :=
   return keep
 
 def validateProof (proof : String) (keep : Bool) : IO Bool :=
@@ -120,19 +122,20 @@ def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : Str
   return (keep, declId, json)
 
 def trainingData (args : Cli.Parsed) : IO UInt32 := do
-    searchPathRef.set compile_time_search_path%
+    unsafe enableInitializersExecution
+    initSearchPath (← findSysroot)
 
     let module := args.positionalArg! "module" |>.as! ModuleName
     let infos ← getElabDeclInfo (← moduleInfoTrees module)
     let hash ← generateRandomHash
 
-    let mut declMap : DeclIdMap  := Std.HashMap.empty
+    let mut declMap : DeclIdMap  := (∅ : Std.HashMap _ _)
     let mut jsons : List Json := []
     for elabDeclInfo in infos do
       let ⟨keep, ⟨id, json⟩⟩  ← (trainingData' elabDeclInfo module hash)
       if keep then
         match declMap.get? id with
-        | some id => pure ()
+        | some _ => pure ()
         | none => do
           jsons := json :: jsons
           declMap := addToMap declMap id json
