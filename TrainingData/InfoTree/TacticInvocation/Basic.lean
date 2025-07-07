@@ -51,27 +51,24 @@ def mainGoal (t : TacticInvocation) : IO Expr :=
 def formatMainGoal (t : TacticInvocation) : IO Format :=
   t.runMetaM (fun g => do ppExpr (← instantiateMVars (← g.getType)))
 
-def goalState (t : TacticInvocation) (optimizeOptions := true) : IO (List Format) := do
-  if optimizeOptions then
-    t.runMetaMGoalsBefore (fun gs => gs.mapM fun g => withHammerPPOptions do Meta.ppGoal g)
-  else
-    t.runMetaMGoalsBefore (fun gs => gs.mapM fun g => do Meta.ppGoal g)
+def goalState (t : TacticInvocation) : IO (List Format) := do
+  t.runMetaMGoalsBefore (fun gs => gs.mapM fun g => withNtpToolkitPPOptions do Meta.ppGoal g)
 
 def goalStateAfter (t : TacticInvocation) : IO (List Format) := do
-  t.runMetaMGoalsAfter (fun gs => gs.mapM fun g => withHammerPPOptions do Meta.ppGoal g)
+  t.runMetaMGoalsAfter (fun gs => gs.mapM fun g => withNtpToolkitPPOptions do Meta.ppGoal g)
 
 def mainGoalStateBefore (t : TacticInvocation) : IO Format := do
   t.runMetaMGoalsBefore (fun gs => do
     match gs.head? with
     | none => pure ""
-    | some g => withHammerPPOptions $ Meta.ppGoal g
+    | some g => withNtpToolkitPPOptions $ Meta.ppGoal g
   )
 
 def mainGoalStateAfter (t : TacticInvocation) : IO Format := do
   t.runMetaMGoalsAfter (fun gs => do
     match gs.head? with
     | none => pure ""
-    | some g => withHammerPPOptions $ Meta.ppGoal g
+    | some g => withNtpToolkitPPOptions $ Meta.ppGoal g
   )
 
 def ppExpr (t : TacticInvocation) (e : Expr) : IO Format :=

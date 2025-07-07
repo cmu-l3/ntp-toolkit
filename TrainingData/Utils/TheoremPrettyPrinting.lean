@@ -86,7 +86,20 @@ def numArgsOfConstantVal (v : ConstantVal) : MetaM Nat := do
   catch _ =>
     return getIntrosSize v.type
 
-def withHammerPPOptions {m α} [MonadWithOptions m] (x : m α) : m α :=
-  withOptions (fun o => (o.set `pp.notation false).set `pp.fullNames true) x
+def withNtpToolkitPPOptions {m α} [Monad m] [MonadEnv m] [MonadWithOptions m] (x : m α) : m α := do
+  withOptions (fun o => o
+    -- |>.set `pp.notation false  -- TODO: decide on this
+    |>.set `pp.fullNames true
+    -- Thomas thinks the following should be true
+    |>.set `pp.funBinderTypes true
+    |>.set `pp.numericTypes true
+    |>.set `pp.coercions.types true
+    |>.set `pp.letVarTypes true
+    -- Thomas thinks the following should be false
+    -- |>.set `pp.analyze true
+    -- |>.set `pp.proofs true
+    -- |>.set `pp.deepTerms true
+    -- |>.set `pp.structureInstanceTypes true
+  ) x
 
 end TheoremPrettyPrinting

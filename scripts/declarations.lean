@@ -3,6 +3,7 @@ import Mathlib.Control.Basic
 import Mathlib.Lean.Expr.Basic
 import Batteries
 import TrainingData.Utils.TheoremPrettyPrinting
+import TrainingData.Utils.WithImports
 
 /-!
 Generate name, type, docstring, and pretty-printed information for each declaration in a module.
@@ -17,9 +18,6 @@ open Lean Meta DocGen4.Process
 namespace DocGen4.Process
 
 open DocGen4 DocGen4.Process DocGen4.Process.DocInfo TheoremPrettyPrinting
-
-/-- A variable that, when set to true, disables some of the changes that were made to improve performance. -/
-def useNaiveDataExtraction := false
 
 /--
 Returns kind (string) and Info given constant.
@@ -48,11 +46,8 @@ def infoOfConstant (cinfo : ConstantInfo) : MetaM (String × Info) := do
     | .recInfo _ => "def"
     | .quotInfo _ => "def"
   let info ←
-    if useNaiveDataExtraction then
+    withNtpToolkitPPOptions <|
       Info.ofConstantVal' cinfo.toConstantVal
-    else
-      withHammerPPOptions <|
-        Info.ofConstantVal' cinfo.toConstantVal
   return (kind, info)
 
 end DocGen4.Process
@@ -139,19 +134,16 @@ def allDeclarations (moduleNames : Array Name) (callback : Nat → Nat → Name 
     i := i + 1
 
 def main (args : List String) : IO UInt32 := do
-  let options := Options.empty.insert `maxHeartbeats (0 : Nat)
   let modules := match args with
   | [] => #[`Mathlib]
   | args => args.toArray.map fun s => s.toName
-  unsafe enableInitializersExecution
-  initSearchPath (← findSysroot)
   -- Proper delaborators need also be loaded for better printing of results
   -- (e.g., if the module is Init.Prelude which does not have delaborator for Eq yet)
   let delaboratorModules := #[
   ]
   let importModules := modules ++ delaboratorModules
-  CoreM.withImportModules importModules (options := options) do
-    MetaM.run' <| allDeclarations modules fun _ _ _ json ↦ do
+  MetaM.withImportModules' importModules do
+    allDeclarations modules fun _ _ _ json ↦ do
       -- IO.eprint s!"\x1B[2K\rProcessing [{i}/{total}] {name.toString.take 60}"
       IO.println json.compress
     -- IO.eprintln ""

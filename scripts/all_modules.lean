@@ -4,18 +4,16 @@ Prints all imported modules of a project, in order. Takes as input the base modu
 
 import Mathlib.Lean.CoreM
 import Lean.Util.SearchPath
+import TrainingData.Utils.WithImports
 
 open Lean Meta System.FilePath
 
 /-- Extracts modules imported by a lean module (eg Mathlib) that starts with this name (eg Mathlib.*) -/
 def main (args : List String) : IO UInt32 := do
-  let options := Options.empty.insert `maxHeartbeats (0 : Nat)
   let modules := match args with
   | [] => #[`Mathlib]
   | args => args.toArray.map fun s => s.toName
-  unsafe enableInitializersExecution
-  initSearchPath (← findSysroot)
-  CoreM.withImportModules modules (options := options) do
+  CoreM.withImportModules' modules do
     let env ← getEnv
     let allModules := env.allImportedModuleNames.filter fun module =>
       modules.contains module.components.head!

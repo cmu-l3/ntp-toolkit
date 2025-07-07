@@ -11,6 +11,7 @@ import Mathlib.Lean.CoreM
 import Mathlib.Control.Basic
 import Mathlib.Lean.Expr.Basic
 import Batteries.Lean.HashMap
+import TrainingData.Utils.WithImports
 
 /-!
 Generate declaration dependencies up to a target file.
@@ -106,13 +107,10 @@ def allExplicitConstants (moduleNames : Array Name) : MetaM (NameMap NameSet) :=
   return result
 
 def main (args : List String) : IO UInt32 := do
-  let options := Options.empty.insert `maxHeartbeats (0 : Nat)
   let modules := match args with
   | [] => #[`Mathlib]
   | args => args.toArray.map fun s => s.toName
-  unsafe enableInitializersExecution
-  initSearchPath (← findSysroot)
-  CoreM.withImportModules modules (options := options) do
+  CoreM.withImportModules' modules do
     let allConstants ← allUsedConstants modules
     let explicitConstants ← MetaM.run' (allExplicitConstants modules)
     for (n, (d, u)) in allConstants do
