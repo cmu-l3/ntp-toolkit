@@ -3,7 +3,7 @@ import Mathlib.Control.Basic
 import Mathlib.Lean.Expr.Basic
 import Batteries
 import TrainingData.Utils.TheoremPrettyPrinting
-import TrainingData.Utils.WithImports
+import TrainingData.Frontend
 
 /-!
 Generate name, type, docstring, and pretty-printed information for each declaration in a module.
@@ -13,11 +13,11 @@ This uses doc-gen4 and outputs approximately the same format as doc-gen4.
 The extracted declarations are usually used as potential premises to select from for a premise retriever.
 -/
 
-open Lean Meta DocGen4.Process
+open Lean Elab IO Meta DocGen4.Process
 
 namespace DocGen4.Process
 
-open DocGen4 DocGen4.Process DocGen4.Process.DocInfo TheoremPrettyPrinting
+open DocInfo TheoremPrettyPrinting
 
 /--
 Returns kind (string) and Info given constant.
@@ -71,11 +71,11 @@ def Lean.Name.isHumanTheorem (name : Name) : CoreM Bool := do
   return hasDeclRange && isTheorem && notProjFn
 
 /-- Pretty-prints a constant to JSON -/
-def constantInfoToJson (cinfo : ConstantInfo) : MetaM Json := do
+def constantInfoToJson (cinfo : ConstantInfo) (step : CompilationStep) : MetaM Json := do
   let (kind, info) ← infoOfConstant cinfo
   let name := cinfo.name.toString
   let args := info.args.map (fun arg => arg.binder.stripTags)
-  let type := info.type.stripTags
+  let typeBody := info.type.stripTags
   let doc? := info.doc
 
   -- format declaration into `decl`
@@ -86,13 +86,17 @@ def constantInfoToJson (cinfo : ConstantInfo) : MetaM Json := do
   decl := decl ++ name ++ " "
   for arg in args do
     decl := decl ++ arg ++ " "
-  decl := decl ++ ": " ++ type
+  decl := decl ++ ": " ++ typeBody
+
+  let type ← ppExpr cinfo.type
+  let type := type.pretty 100000000000000
 
   return Json.mkObj [
     ("name", Json.str name),
     ("kind", Json.str kind),
-    ("args", Json.arr (args.map .str)),
     ("type", Json.str type),
+    ("typeArgs", Json.arr (args.map .str)),
+    ("typeBody", Json.str typeBody),
     ("doc", match doc? with
       | some doc => Json.str doc
       | none => Json.null),
@@ -100,8 +104,38 @@ def constantInfoToJson (cinfo : ConstantInfo) : MetaM Json := do
     ("line", Json.num info.declarationRange.pos.line),
     ("column", Json.num info.declarationRange.pos.column),
     ("isProp", Json.bool (← isProp cinfo.type)),
+    ("src", Json.str step.src.toString),
+    ("module", Json.str step.after.mainModule.toString),
     -- Only certain declarations can be in the eval/test set
     ("isHumanTheorem", Json.bool (← Name.isHumanTheorem cinfo.name)),
+  ]
+
+open Core in
+/-- Delaborates the current scope using `#where`. -/
+def frontendStateToJson (state : Frontend.State) : CoreM Json := do
+  let imports := state.commandState.env.header.imports.toList
+  let mut importsStr := ""
+  if imports.all (·.module != `Init) then importsStr := importsStr ++ "prelude\n"
+  for imp in imports do
+    unless imp.module == `Init do
+      importsStr := importsStr ++ s!"import {imp.module}\n"
+
+  let savedState ← saveState
+  resetMessageLog
+  liftCommandElabM do
+    set state.commandState
+    Command.elabWhere (← `(command| #where))
+  let messages ← getAndEmptyMessageLog
+  let scopeStr? ← messages.toArray.findSomeRevM? fun msg => do
+    if msg.severity == MessageSeverity.information then
+      return some <| (← msg.toString).replace "-- In root namespace with initial scope" "" |>.trim
+    else
+      return none
+  savedState.restore
+
+  let scopeStr := (importsStr.trim ++ "\n\n" ++ (scopeStr?.getD "").trim).trim
+  return Json.mkObj [
+    ("scope", Json.str scopeStr),
   ]
 
 /-- If a constant should not be included (more permissive than Name.isBlackListed). -/
@@ -109,42 +143,39 @@ def isBlackListedName (name : Name) : Bool :=
   name == ``sorryAx || name.isInternalDetail
 
 /--
-Traverse all declarations from modules, collecting prettified declarations
+Process all declarations from compilation steps, collecting prettified declarations.
 Calls callback on each extracted declaration.
-(Should convert to MLList instead of callback?)
 -/
-def allDeclarations (moduleNames : Array Name) (callback : Nat → Nat → Name → Json → MetaM Unit) :
-    MetaM Unit := do
-  let env ← getEnv
-  let constantsMap := env.constants.map₁
-  let total := constantsMap.size
-  let mut i := 0
-  for (name, cinfo) in constantsMap do
-    if !isBlackListedName name then
-      if let some moduleIdx := env.getModuleIdxFor? name then
-        if let some moduleName := env.header.moduleNames[moduleIdx.toNat]? then
-          if moduleNames.contains moduleName then
-            try
-              let json ← constantInfoToJson cinfo
-              callback i total name json
-            catch _ =>
-              -- Extremely rare cases (e.g. Fin.eq_of_val_eq, Qq.Quoted.unsafeMk)
-              IO.eprintln s!"warning: failed to extract constant {name}"
-              continue
-    i := i + 1
+def allDeclarationsFromSteps (compilationSteps : List CompilationStep) (callback : Nat → Name → Json → MetaM Unit) :
+    IO Unit := do
+  let mut processed := 0
+  for step in compilationSteps do
+    for cinfo in step.diff do
+      if isBlackListedName cinfo.name then continue
+      let ctxCore : Core.Context := { fileName := "<ntp-toolkit>", fileMap := default, maxHeartbeats := 0 }
+      let sCore : Core.State := { env := step.after }
+      let _ ← MetaM.toIO (ctxCore := ctxCore) (sCore := sCore) (ctx := {}) (s := {}) do
+        try
+          let json ← constantInfoToJson cinfo step
+          let json' ← frontendStateToJson step.state
+          let json := json.mergeObj json'
+          callback processed cinfo.name json
+        catch _ =>
+          -- Extremely rare cases (e.g. Fin.eq_of_val_eq, Qq.Quoted.unsafeMk)
+          IO.eprintln s!"warning: failed to extract constant {cinfo.name}"
+      processed := processed + 1
 
 def main (args : List String) : IO UInt32 := do
+  unsafe enableInitializersExecution
+  initSearchPath (← findSysroot)
+
   let modules := match args with
   | [] => #[`Mathlib]
-  | args => args.toArray.map fun s => s.toName
-  -- Proper delaborators need also be loaded for better printing of results
-  -- (e.g., if the module is Init.Prelude which does not have delaborator for Eq yet)
-  let delaboratorModules := #[
-  ]
-  let importModules := modules ++ delaboratorModules
-  MetaM.withImportModules' importModules do
-    allDeclarations modules fun _ _ _ json ↦ do
-      -- IO.eprint s!"\x1B[2K\rProcessing [{i}/{total}] {name.toString.take 60}"
+  | args => args.toArray.map fun s : String => s.toName
+
+  -- Process each module using compilation steps
+  for module in modules do
+    let compilationSteps ← compileModule module
+    allDeclarationsFromSteps compilationSteps fun _ _ json ↦ do
       IO.println json.compress
-    -- IO.eprintln ""
   return 0

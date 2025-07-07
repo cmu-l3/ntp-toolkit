@@ -87,6 +87,7 @@ structure CompilationStep where
   after : Environment
   msgs : List Message
   trees : List InfoTree
+  state : Frontend.State
 
 namespace CompilationStep
 
@@ -104,7 +105,8 @@ def one : FrontendM (CompilationStep × Bool) := do
   let after := s'.env
   let msgs := s'.messages.toList.drop s.messages.toList.length -- not using `msgs` for v4.8.0 support
   let trees := s'.infoState.trees.drop s.infoState.trees.size
-  return ({ src, stx, before, after, msgs, trees }, done)
+  let state ← getThe Frontend.State
+  return ({ src, stx, before, after, msgs, trees, state }, done)
 
 /-- Process all commands in the input. -/
 partial def all : FrontendM (List CompilationStep) := do
