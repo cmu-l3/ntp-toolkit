@@ -69,7 +69,7 @@ def Lean.Name.isHumanTheorem (name : Name) : CoreM Bool := do
   return hasDeclRange && isTheorem && notProjFn
 
 /-- Pretty-prints a constant to JSON -/
-def constantInfoToJson (cinfo : ConstantInfo) (step : CompilationStep) : MetaM Json := do
+def constantInfoToJson (cinfo : ConstantInfo) : MetaM Json := do
   let (kind, info) ← infoOfConstant cinfo
   let name := cinfo.name.toString
   let args := info.args.map (fun arg => arg.binder.stripTags)
@@ -102,14 +102,14 @@ def constantInfoToJson (cinfo : ConstantInfo) (step : CompilationStep) : MetaM J
     ("line", Json.num info.declarationRange.pos.line),
     ("column", Json.num info.declarationRange.pos.column),
     ("isProp", Json.bool (← isProp cinfo.type)),
-    ("src", Json.str step.src.toString),
     -- Only certain declarations can be in the eval/test set
     ("isHumanTheorem", Json.bool (← Name.isHumanTheorem cinfo.name)),
   ]
 
 open Core in
 /-- Delaborates the current scope using `#where`. -/
-def frontendStateToJson (state : Frontend.State) : CoreM Json := do
+def compilationStepToJson (step : CompilationStep) : CoreM Json := do
+  let state := step.state
   let imports := state.commandState.env.header.imports.toList
   let mut importsStr := ""
   if imports.all (·.module != `Init) then importsStr := importsStr ++ "prelude\n"
@@ -133,6 +133,7 @@ def frontendStateToJson (state : Frontend.State) : CoreM Json := do
   let scopeStr := (importsStr.trim ++ "\n\n" ++ (scopeStr?.getD "").trim).trim
   return Json.mkObj [
     ("scope", Json.str scopeStr),
+    ("src", Json.str step.src.toString),
   ]
 
 /-- If a constant should not be included (more permissive than Name.isBlackListed). -/
@@ -160,8 +161,8 @@ def allDeclarationsFromSteps (moduleName : Name) (compilationSteps : List Compil
       let sCore : Core.State := { env := step.after }
       let _ ← MetaM.toIO (ctxCore := ctxCore) (sCore := sCore) (ctx := {}) (s := {}) do
         try
-          let json ← withNtpToolkitPPOptions <| constantInfoToJson cinfo step
-          let json := json.mergeObj (← frontendStateToJson step.state)
+          let json ← withNtpToolkitPPOptions <| constantInfoToJson cinfo
+          let json := json.mergeObj (← compilationStepToJson step)
           let json := json.mergeObj (← moduleNameToJson moduleName)
           callback processed cinfo.name json
         catch _ =>
