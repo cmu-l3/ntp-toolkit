@@ -13,11 +13,11 @@ This uses doc-gen4 and outputs approximately the same format as doc-gen4.
 The extracted declarations are usually used as potential premises to select from for a premise retriever.
 -/
 
-open Lean Elab IO Meta DocGen4.Process
+open Lean Elab IO Meta DocGen4.Process TheoremPrettyPrinting
 
 namespace DocGen4.Process
 
-open DocInfo TheoremPrettyPrinting
+open DocInfo
 
 /--
 Returns kind (string) and Info given constant.
@@ -45,9 +45,7 @@ def infoOfConstant (cinfo : ConstantInfo) : MetaM (String × Info) := do
     | .ctorInfo _ => "def"
     | .recInfo _ => "def"
     | .quotInfo _ => "def"
-  let info ←
-    withNtpToolkitPPOptions <|
-      Info.ofConstantVal' cinfo.toConstantVal
+  let info ← Info.ofConstantVal' cinfo.toConstantVal
   return (kind, info)
 
 end DocGen4.Process
@@ -78,15 +76,15 @@ def constantInfoToJson (cinfo : ConstantInfo) (step : CompilationStep) : MetaM J
   let typeBody := info.type.stripTags
   let doc? := info.doc
 
-  -- format declaration into `decl`
-  let mut decl := ""
+  -- format declaration into `signature`
+  let mut signature := ""
   if let some doc := doc? then
-    decl := decl ++ "/-- " ++ doc.stripSuffix " " ++ " -/\n"
-  decl := decl ++ kind ++ " "
-  decl := decl ++ name ++ " "
+    signature := signature ++ "/-- " ++ doc.stripSuffix " " ++ " -/\n"
+  signature := signature ++ kind ++ " "
+  signature := signature ++ name ++ " "
   for arg in args do
-    decl := decl ++ arg ++ " "
-  decl := decl ++ ": " ++ typeBody
+    signature := signature ++ arg ++ " "
+  signature := signature ++ ": " ++ typeBody
 
   let type ← ppExpr cinfo.type
   let type := type.pretty 100000000000000
@@ -100,12 +98,11 @@ def constantInfoToJson (cinfo : ConstantInfo) (step : CompilationStep) : MetaM J
     ("doc", match doc? with
       | some doc => Json.str doc
       | none => Json.null),
-    ("decl", Json.str decl),
+    ("signature", Json.str signature),
     ("line", Json.num info.declarationRange.pos.line),
     ("column", Json.num info.declarationRange.pos.column),
     ("isProp", Json.bool (← isProp cinfo.type)),
     ("src", Json.str step.src.toString),
-    ("module", Json.str step.after.mainModule.toString),
     -- Only certain declarations can be in the eval/test set
     ("isHumanTheorem", Json.bool (← Name.isHumanTheorem cinfo.name)),
   ]
@@ -142,11 +139,18 @@ def frontendStateToJson (state : Frontend.State) : CoreM Json := do
 def isBlackListedName (name : Name) : Bool :=
   name == ``sorryAx || name.isInternalDetail
 
+/-- Export module name and file name to JSON -/
+def moduleNameToJson (moduleName : Name) : IO Json := do
+  return Json.mkObj [
+    ("module", Json.str moduleName.toString),
+    -- ("fileName", Json.str (← findLean moduleName).toString),
+  ]
+
 /--
 Process all declarations from compilation steps, collecting prettified declarations.
 Calls callback on each extracted declaration.
 -/
-def allDeclarationsFromSteps (compilationSteps : List CompilationStep) (callback : Nat → Name → Json → MetaM Unit) :
+def allDeclarationsFromSteps (moduleName : Name) (compilationSteps : List CompilationStep) (callback : Nat → Name → Json → MetaM Unit) :
     IO Unit := do
   let mut processed := 0
   for step in compilationSteps do
@@ -156,9 +160,9 @@ def allDeclarationsFromSteps (compilationSteps : List CompilationStep) (callback
       let sCore : Core.State := { env := step.after }
       let _ ← MetaM.toIO (ctxCore := ctxCore) (sCore := sCore) (ctx := {}) (s := {}) do
         try
-          let json ← constantInfoToJson cinfo step
-          let json' ← frontendStateToJson step.state
-          let json := json.mergeObj json'
+          let json ← withNtpToolkitPPOptions <| constantInfoToJson cinfo step
+          let json := json.mergeObj (← frontendStateToJson step.state)
+          let json := json.mergeObj (← moduleNameToJson moduleName)
           callback processed cinfo.name json
         catch _ =>
           -- Extremely rare cases (e.g. Fin.eq_of_val_eq, Qq.Quoted.unsafeMk)
@@ -176,6 +180,6 @@ def main (args : List String) : IO UInt32 := do
   -- Process each module using compilation steps
   for module in modules do
     let compilationSteps ← compileModule module
-    allDeclarationsFromSteps compilationSteps fun _ _ json ↦ do
+    allDeclarationsFromSteps module compilationSteps fun _ _ json ↦ do
       IO.println json.compress
   return 0
