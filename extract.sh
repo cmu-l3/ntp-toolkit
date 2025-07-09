@@ -21,7 +21,7 @@ python scripts/extract_repos.py --config $CONFIG --cwd "`pwd`" --add_imports --s
 lake exe update_hammer_blacklist > Examples/mathlib/HammerBlacklist.jsonl
 python scripts/get_config_revision.py --config $CONFIG > Examples/mathlib/revision
 
-OUTPUT_DIR=/data/user_data/thomaszh
-
-rm -rf $OUTPUT_DIR/mathlib
+OUTPUT_DIR=/data/user_data/thomaszh/declarations2/mathlib
+mkdir -p $OUTPUT_DIR
+rm -rf $OUTPUT_DIR
 cp -r Examples/mathlib $OUTPUT_DIR
