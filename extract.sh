@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
-#SBATCH --cpus-per-task=16
-#SBATCH --mem=128G
+#SBATCH --cpus-per-task=256
+#SBATCH --mem=1000G
 #SBATCH --time=48:00:00
 #SBATCH --output=logs/extract.out
 #SBATCH --error=logs/extract.out
@@ -10,7 +10,7 @@ source /home/thomaszh/.bashrc
 cd /home/thomaszh/ntp-toolkit-hammer
 conda activate lm
 
-MAX_WORKERS=16 # set according to your RAM capacity
+MAX_WORKERS=256 # set according to your RAM capacity
 CONFIG=configs/config_mathlib_full.json
 rm -rf Examples/mathlib
 python scripts/extract_repos.py --config $CONFIG --cwd "`pwd`" --imports --max-workers $MAX_WORKERS
