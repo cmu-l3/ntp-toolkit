@@ -7,7 +7,7 @@
 #SBATCH --error=logs/extract.out
 
 source /home/thomaszh/.bashrc
-cd /home/thomaszh/ntp-toolkit-hammer
+cd /home/thomaszh/ntp-toolkit-declarations2
 conda activate lm
 
 MAX_WORKERS=256 # set according to your RAM capacity
