@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 #SBATCH --cpus-per-task=256
-#SBATCH --mem=1000G
+#SBATCH --mem=512G
 #SBATCH --time=48:00:00
 #SBATCH --output=logs/extract.out
 #SBATCH --error=logs/extract.out
