@@ -119,7 +119,7 @@ def compilationStepToJson (step : CompilationStep) : CoreM Json := do
 
   let savedState ← saveState
   resetMessageLog
-  liftCommandElabM do
+  liftCommandElabM (throwOnError := false) do
     set state.commandState
     Command.elabWhere (← `(command| #where))
   let messages ← getAndEmptyMessageLog
