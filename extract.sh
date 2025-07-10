@@ -1,16 +1,16 @@
 #!/usr/bin/bash
 
-#SBATCH --cpus-per-task=16
-#SBATCH --mem=128G
+#SBATCH --cpus-per-task=256
+#SBATCH --mem=512G
 #SBATCH --time=48:00:00
 #SBATCH --output=logs/extract.out
 #SBATCH --error=logs/extract.out
 
 source /home/thomaszh/.bashrc
-cd /home/thomaszh/ntp-toolkit-hammer
+cd /home/thomaszh/ntp-toolkit-declarations2
 conda activate lm
 
-MAX_WORKERS=16 # set according to your RAM capacity
+MAX_WORKERS=256 # set according to your RAM capacity
 CONFIG=configs/config_mathlib_full.json
 rm -rf Examples/mathlib
 python scripts/extract_repos.py --config $CONFIG --cwd "`pwd`" --imports --max-workers $MAX_WORKERS
@@ -21,7 +21,7 @@ python scripts/extract_repos.py --config $CONFIG --cwd "`pwd`" --add_imports --s
 lake exe update_hammer_blacklist > Examples/mathlib/HammerBlacklist.jsonl
 python scripts/get_config_revision.py --config $CONFIG > Examples/mathlib/revision
 
-OUTPUT_DIR=/data/user_data/thomaszh
-
-rm -rf $OUTPUT_DIR/mathlib
+OUTPUT_DIR=/data/user_data/thomaszh/declarations2/mathlib
+mkdir -p $OUTPUT_DIR
+rm -rf $OUTPUT_DIR
 cp -r Examples/mathlib $OUTPUT_DIR
