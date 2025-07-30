@@ -78,14 +78,25 @@ This produces information that pretty-prints each declaration in a module. The r
 {
    "name": "pow_two",
    "kind": "theorem",
-   "args": ["{M : Type u_2}", "[Monoid M]", "(a : M)"],
-   "type": "a ^ 2 = a * a",
+   "type": "∀ {M : Type u_2} [inst : Monoid M] (a : M), a ^ (2 : ℕ) = a * a",
+   "typeArgs": ["{M : Type u_2}", "[Monoid M]", "(a : M)"],
+   "typeBody": "a ^ (2 : ℕ) = a * a",
    "doc": "Note that most of the lemmas about powers of two refer to it as `sq`.",
-   "decl": "/-- Note that most of the lemmas about powers of two refer to it as `sq`. -/\ntheorem pow_two {M : Type u_2} [Monoid M] (a : M) : a ^ 2 = a * a",
-   "line": 810,
-   "column": 0
+   "signature": "/-- Note that most of the lemmas about powers of two refer to it as `sq`. -/\ntheorem pow_two {M : Type u_2} [Monoid M] (a : M) : a ^ (2 : ℕ) = a * a",
+   "module": "Mathlib.Algebra.Group.Defs",
+   "line": 602,
+   "column": 0,
+   "isProp": true,
+   "scope": "import Mathlib.Algebra.Notation.Defs\nimport Mathlib.Data.Int.Notation\nimport Mathlib.Data.Nat.BinaryRec\nimport Mathlib.Logic.Function.Defs\nimport Mathlib.Tactic.Simps.Basic\nimport Mathlib.Tactic.OfNat\nimport Batteries.Logic\n\nopen Function\n\nuniverse u v w\n\nvariable {G : Type*} {M : Type*} [Monoid M] {a b c : M}",
+   "src": "/-- Note that most of the lemmas about powers of two refer to it as `sq`. -/\n@[to_additive two_nsmul] lemma pow_two (a : M) : a ^ 2 = a * a := by rw [pow_succ, pow_one]",
+   "isHumanTheorem": true,
 }
 ```
+
+Ways to use the outputs are:
+- You may use `signature`, which is the pretty-printed version of the signature as it would show up under `#check` or Mathlib [docs](https://leanprover-community.github.io/mathlib4_docs/index.html). `signature` is built from the components `doc`, `kind`, `name`, `typeArgs`, and `typeBody`.
+- You may use `type`, which is a simpler version of the `typeArgs` and `typeBody` in `signature`. It is the format used in <https://leansearch.net>. The difference is that it does not try to introduce variables, etc. Under the hood, it uses `Meta.ppExpr type` instead of `PrettyPrinter.ppSignature name`.
+- You may use `scope` ++ `src`, which captures the declaration in the way it was written. `scope` includes the imports, namespace, open namespaces, variables, etc. at the declaration and `src` is the raw source of the declaration. For example, the `signature` of `add_comm` is `theorem add_comm ...` while the `src` is `@[to_additive] theorem mul_comm ...`. This field is useful for training a model to output source code.
 
 ### `imports`
 This outputs the imports of each module (both transitively imported modules and directly imported modules). The resulting format is

@@ -87,6 +87,7 @@ structure CompilationStep where
   after : Environment
   msgs : List Message
   trees : List InfoTree
+  state : Frontend.State
 
 namespace CompilationStep
 
@@ -104,7 +105,8 @@ def one : FrontendM (CompilationStep × Bool) := do
   let after := s'.env
   let msgs := s'.messages.toList.drop s.messages.toList.length -- not using `msgs` for v4.8.0 support
   let trees := s'.infoState.trees.drop s.infoState.trees.size
-  return ({ src, stx, before, after, msgs, trees }, done)
+  let state ← getThe Frontend.State
+  return ({ src, stx, before, after, msgs, trees, state }, done)
 
 /-- Process all commands in the input. -/
 partial def all : FrontendM (List CompilationStep) := do
@@ -154,7 +156,8 @@ Often it works, but if the compiled files do anything complicated with initializ
 nothing is gauranteed.
 -/
 def processInput' (input : String) (env? : Option Environment := none)
-    (opts : Options := {}) (fileName : Option String := none) (info : Bool := true) :
+    (opts : Options := {}) (fileName : Option String := none) (info : Bool := true)
+    (mainModule : Name := Name.anonymous) :
     MLList IO CompilationStep := unsafe do
   let fileName   := fileName.getD "<input>"
   let inputCtx   := Parser.mkInputContext input fileName
@@ -162,7 +165,7 @@ def processInput' (input : String) (env? : Option Environment := none)
   | none => do
     enableInitializersExecution
     let (header, parserState, messages) ← Parser.parseHeader inputCtx
-    let (env, messages) ← processHeader header opts messages inputCtx
+    let (env, messages) ← processHeader header opts messages inputCtx (mainModule := mainModule)
     pure (parserState, (Command.mkState env messages opts))
   | some env => do
     pure ({ : Parser.ModuleParserState }, Command.mkState env {} opts)
@@ -176,9 +179,10 @@ Otherwise, we add to the existing environment.
 Returns the resulting environment, along with a list of messages and info trees.
 -/
 def processInput (input : String) (env? : Option Environment := none)
-    (opts : Options := {}) (fileName : Option String := none) (info : Bool := true) :
+    (opts : Options := {}) (fileName : Option String := none) (info : Bool := true)
+    (mainModule : Name := Name.anonymous) :
     IO (Environment × List Message × List InfoTree) := do
-  let steps ← processInput' input env? opts fileName info |>.force
+  let steps ← processInput' input env? opts fileName info mainModule |>.force
   match steps.getLast? with
   | none => throw <| IO.userError "No commands found in input."
   | some { after, .. } =>
@@ -262,12 +266,12 @@ def moduleSourceWithImports (mod : Name) (withImportsDir : String) : IO String :
 
 /-- Implementation of `compileModule`, which is the cached version of this function. -/
 def compileModule' (mod : Name) : MLList IO CompilationStep := do
-  Lean.Elab.IO.processInput' (← moduleSource mod) none {} (← findLean mod).toString
+  Lean.Elab.IO.processInput' (← moduleSource mod) none {} (← findLean mod).toString true mod
 
 /-- Like `compileModule'` but compiles the version of the module that appears in the `Examples/WithImports` directory -/
 def compileModuleWithImports' (mod : Name) (withImportsDir : String) : MLList IO CompilationStep := do
   let modSource ← moduleSourceWithImports mod withImportsDir
-  Lean.Elab.IO.processInput' modSource none {} (← findLeanWithImports mod withImportsDir).toString
+  Lean.Elab.IO.processInput' modSource none {} (← findLeanWithImports mod withImportsDir).toString true mod
 
 initialize compilationCache : IO.Ref <| Std.HashMap Name (List CompilationStep) ←
   IO.mkRef ∅
