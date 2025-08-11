@@ -45,7 +45,7 @@ def _run_cmd(cmd, cwd, inputs, output_file):
         subprocess.run(
             ['lake', 'exe', cmd, *inputs],
             cwd=cwd,
-            check=True,
+            check=False,
             stdout=f
         )
 
