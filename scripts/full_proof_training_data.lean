@@ -94,9 +94,12 @@ def fullName (elabDeclInfo : ElabDeclInfo) : Name :=
       cmdInfo.stx[2][0].getId
     else
       Name.anonymous
-  let isRootName := (`_root_).isPrefixOf name
-  let declName := if isRootName then name.replacePrefix `_root_ Name.anonymous else elabDeclInfo.currNamespace ++ name
-  declName
+  if name.isAnonymous then
+    Name.anonymous
+  else
+    let isRootName := (`_root_).isPrefixOf name
+    let declName := if isRootName then name.replacePrefix `_root_ Name.anonymous else elabDeclInfo.currNamespace ++ name
+    declName
 
 def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : String) : IO (Bool × (String × Json)) := do
   let declId := makeElabDeclId elabDeclInfo module hash
