@@ -62,36 +62,44 @@ def ppDeclAndProof (module: ModuleName) (info: CommandInfo) : IO (Option (String
     -- let ppDecl ← ppCommandInfo module info
     -- (magic value) if this command is a declaration like theorem/def T := proof/definition
     -- then the := syntax occurs at `stx[1][3][0]`
-    if info.stx[1][3][0].getAtomVal == ":=" then
-      let declStart := info.stx.getPos?.getD 0
+    let moduleSource ← moduleSource module
+    let declStart := info.stx.getPos?.getD 0
+    let proofEnd := info.stx.getTailPos?.getD 0
+    if [":=", "where"].contains info.stx[1][3][0].getAtomVal then
       let proofStart := info.stx[1][3].getPos?.getD 0
-      let proofEnd := info.stx.getTailPos?.getD 0
-      let moduleSource ← moduleSource module
       let decl := (Substring.mk moduleSource declStart proofStart).toString
       let proof := (Substring.mk moduleSource proofStart proofEnd).toString
       return (decl, proof)
+    else if info.stx[1].getAtomVal == "proof_wanted" then
+      let decl := (Substring.mk moduleSource declStart proofEnd).toString
+      return (decl, "")
     else
       return none
 
-def validateDecl (_decl : String) (keep : Bool) : IO Bool :=
-  return keep
+def validateDecl (decl : String) (keep : Bool) : IO Bool :=
+  return keep && decl.trim != ""
 
-def validateProof (proof : String) (keep : Bool) : IO Bool :=
+def validateProof (_proof : String) (keep : Bool) : IO Bool :=
   return keep
-    && proof.trim != ""
     -- we allow "sorry" in proof (for extracting miniCTX data)
 
-def fullName (elabDeclInfo : ElabDeclInfo) : Option Name :=
+def fullName (elabDeclInfo : ElabDeclInfo) : Name :=
   let cmdInfo := elabDeclInfo.cmdInfo
   -- (magic value) if this command is a declaration (theorem, lemma, def, etc), then
   -- `stx[1][1][0]` should contain the identifier
-  if cmdInfo.stx[1][1][0].isIdent then
-    let name := cmdInfo.stx[1][1][0].getId
+  let name :=
+    if cmdInfo.stx[1][1][0].isIdent then
+      cmdInfo.stx[1][1][0].getId
+    else if cmdInfo.stx[1].getAtomVal == "proof_wanted" then
+      cmdInfo.stx[2][0].getId
+    else
+      Name.anonymous
+  if name.isAnonymous then
+    Name.anonymous
+  else
     let isRootName := (`_root_).isPrefixOf name
     let declName := if isRootName then name.replacePrefix `_root_ Name.anonymous else elabDeclInfo.currNamespace ++ name
-    some declName
-  else
-    none
+    declName
 
 def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : String) : IO (Bool × (String × Json)) := do
   let declId := makeElabDeclId elabDeclInfo module hash
@@ -101,10 +109,9 @@ def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : Str
   let declAndProof? ← ppDeclAndProof module cmdInfo
   let (decl, proof) := declAndProof?.getD default
 
-  let declName? := fullName elabDeclInfo
-  let declName := declName?.getD Name.anonymous
+  let declName := fullName elabDeclInfo
 
-  let keep := declName?.isSome && declAndProof?.isSome && !declName.isInternal
+  let keep := !declName.isAnonymous && declAndProof?.isSome && !declName.isInternal
   let keep ← validateDecl decl keep
   let keep ← validateProof proof keep
 
