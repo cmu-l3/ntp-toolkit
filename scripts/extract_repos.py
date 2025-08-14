@@ -31,18 +31,22 @@ lean_lib temp where
 
 lean_lib Examples where
 
+@[default_target]
 lean_exe training_data where
   root := `scripts.training_data
   supportInterpreter := true
 
+@[default_target]
 lean_exe full_proof_training_data where
   root := `scripts.full_proof_training_data
   supportInterpreter := true
 
+@[default_target]
 lean_exe state_comments where
   root := `scripts.state_comments
   supportInterpreter := true
 
+@[default_target]
 lean_exe premises where
   root := `scripts.premises
   supportInterpreter := true
@@ -57,6 +61,7 @@ lean_exe add_imports where
   root := `scripts.add_imports
   supportInterpreter := true
 
+@[default_target]
 lean_exe all_modules where
   root := `scripts.all_modules
   supportInterpreter := true
