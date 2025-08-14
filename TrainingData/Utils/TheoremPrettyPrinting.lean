@@ -20,7 +20,7 @@ private def prettyPrintBinder (stx : Syntax) (infos : SubExpr.PosMap Elab.Info) 
     fileMap := default,
     ngen := ← getNGen
   }
-  return Widget.tagCodeInfos ctx infos tt
+  Widget.tagCodeInfos ctx infos tt
 
 private def prettyPrintTermStx (stx : Term) (infos : SubExpr.PosMap Elab.Info) : MetaM Widget.CodeWithInfos := do
   let fmt ← PrettyPrinter.formatTerm stx
@@ -34,7 +34,7 @@ private def prettyPrintTermStx (stx : Term) (infos : SubExpr.PosMap Elab.Info) :
     fileMap := default,
     ngen := ← getNGen
   }
-  return Widget.tagCodeInfos ctx infos tt
+  Widget.tagCodeInfos ctx infos tt
 
 private def findDeclarationRanges! [Monad m] [MonadEnv m] [MonadLiftT BaseIO m] (name : Name) : m DeclarationRanges := do
   match ← findDeclarationRanges? name with

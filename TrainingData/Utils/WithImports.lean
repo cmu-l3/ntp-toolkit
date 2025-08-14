@@ -6,7 +6,7 @@ open Lean Core Meta
 def envOfImports' (imports : Array Name) : IO Environment := do
   -- needed for modules which use syntax registered with `initialize add_parser_alias ..`
   unsafe enableInitializersExecution
-  importModules (imports.map (Import.mk · false true)) Options.empty (leakEnv := true) (loadExts := true)
+  importModules (imports.map (Import.mk · false true false)) Options.empty (leakEnv := true) (loadExts := true)
 
 /-- The ' is to disambiguate with the definition in Mathlib.
 This definition is copied from the `load` function in doc-gen4.
