@@ -8,7 +8,7 @@
 #SBATCH --error=logs/extract.out
 
 source /home/thomaszh/.bashrc
-cd /home/thomaszh/ntp-toolkit-declarations2
+cd /home/thomaszh/ntp-toolkit-main
 conda activate lm
 
 MAX_WORKERS=128 # set according to your RAM capacity
@@ -22,7 +22,7 @@ python scripts/extract_repos.py --config $CONFIG --cwd "`pwd`" --add_imports --s
 lake exe update_hammer_blacklist > Examples/mathlib/HammerBlacklist.jsonl
 python scripts/get_config_revision.py --config $CONFIG > Examples/mathlib/revision
 
-OUTPUT_DIR=/data/user_data/thomaszh/declarations2/mathlib
+OUTPUT_DIR=/data/user_data/thomaszh/mathlib-declarations2
 mkdir -p $OUTPUT_DIR
 rm -rf $OUTPUT_DIR
 cp -r Examples/mathlib $OUTPUT_DIR
