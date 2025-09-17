@@ -59,8 +59,8 @@ def add_imports : Cmd := `[Cli|
     "duper";  "Add `import Duper` if the file does not already import Duper"
     "aesop"; "Add `import Aesop` if the file does not already import Aesop"
     "querySMT"; "Add `import QuerySMT` if the file does not already import QuerySMT"
-    "hammer"; "Add `import Hammer` if the file does not already import Hammer. " ++
-              "This flag is included by default if no other flags are added"
+    "hammer"; "Add `import Hammer` if the file does not already import Hammer. \
+               This flag is included by default if no other flags are added"
 
   ARGS:
     module : ModuleName; "Lean module to add the import to."
