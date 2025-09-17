@@ -4,7 +4,7 @@ open Lean
 instance : LE Position where
   le p₁ p₂ := p₁.line < p₂.line ∨ p₁.line = p₂.line ∧ p₁.column ≤ p₂.column
 
-instance : DecidableRel ((· : Position) ≤ ·) := by
+instance : DecidableRel (· ≤ · : Position → Position → Prop) := by
   change DecidableRel fun _ _ => _ ∨ _
   infer_instance
 
@@ -17,10 +17,10 @@ instance : LE Range where
 instance : LT Range where
   lt r₁ r₂ := r₁ ≤ r₂ ∧ r₁ ≠ r₂
 
-instance : DecidableRel ((· : Range) ≤ ·) := by
+instance : DecidableRel (· ≤ · : Range → Range → Prop) := by
   change DecidableRel fun _ _ => _ ∧ _
   infer_instance
 
-instance : DecidableRel ((· : Range) < ·) := by
+instance : DecidableRel (· < · : Range → Range → Prop) := by
   change DecidableRel fun _ _ => _ ∧ _
   infer_instance
