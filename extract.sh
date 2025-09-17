@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 
 #SBATCH --partition=cpu
-#SBATCH --cpus-per-task=16
-#SBATCH --mem=128G
+#SBATCH --cpus-per-task=128
+#SBATCH --mem=256G
 #SBATCH --time=48:00:00
 #SBATCH --output=logs/extract.out
 #SBATCH --error=logs/extract.out
