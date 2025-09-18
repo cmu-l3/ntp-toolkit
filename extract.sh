@@ -11,7 +11,7 @@ source /home/thomaszh/.bashrc
 cd /home/thomaszh/ntp-toolkit-hammer
 conda activate lm
 
-MAX_WORKERS=16 # set according to your RAM capacity
+MAX_WORKERS=128 # set according to your RAM capacity
 CONFIG=configs/config_mathlib_full.json
 rm -rf Examples/mathlib
 python scripts/extract_repos.py --config $CONFIG --cwd "`pwd`" --imports --max-workers $MAX_WORKERS
