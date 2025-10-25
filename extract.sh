@@ -2,7 +2,7 @@
 
 #SBATCH --partition=cpu
 #SBATCH --cpus-per-task=128
-#SBATCH --mem=256G
+#SBATCH --mem=512G
 #SBATCH --time=48:00:00
 #SBATCH --output=logs/extract.out
 #SBATCH --error=logs/extract.out
