@@ -3,7 +3,6 @@ Prints all (transitively) imported modules of a module.
 -/
 
 import Mathlib.Lean.CoreM
-import Lean.Util.SearchPath
 
 open Lean Meta
 

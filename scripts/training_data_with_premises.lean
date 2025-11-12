@@ -211,8 +211,51 @@ def mergeHammerRecommendations (hammerRecommendation1 hammerRecommendation2 : St
     hammerRecommendation1.toArray.foldl (fun acc (n, h) => updateHammerRecommendation acc n h) hammerRecommendation2
 
 /-- This function uses `Lean.Elab.Tactic.elabSimpArgs` and `Lean.Elab.Tactic.mkSimpOnly` as references. Currently, the nature of the output ignores
-    simprocs, though it may make sense to update this to include output pertaining to simprocs in the future. `simpLemmasFromTacticStx` ignores all
-    lemmas that appear in the hammer blacklist. -/
+    simprocs, though it may make sense to update this to include output pertaining to simprocs in the future. `simpLemmasFromTacticStxTSepArray` ignores
+    all lemmas that appear in the hammer blacklist. -/
+def simpLemmasFromTacticStxTSepArray (simpLemmas : Syntax.TSepArray [`Lean.Parser.Tactic.simpStar, `Lean.Parser.Tactic.simpErase, `Lean.Parser.Tactic.simpLemma] ",")
+  : MetaM (Std.HashMap Name SimpAllHint) := do
+  let simpLemmas := simpLemmas.getElems
+  let mut res : Std.HashMap Name SimpAllHint := ∅
+  for simpLemma in simpLemmas do
+    let simpLemma : Syntax := simpLemma.raw
+    if simpLemma.getKind == ``Lean.Parser.Tactic.simpErase then
+      let id := simpLemma[1]
+      match ← observing (realizeGlobalConstNoOverloadWithInfo id) with
+      | .ok declName =>
+        if (← Simp.isSimproc declName) then continue -- Ignore `declName` if it is a simproc
+        else if isBlackListed s!"{declName}" then continue -- Ignore `declName` if it appears in `hammerRecommendationBlackList`
+        res := updateHammerRecommendation res declName simpErase
+      | _ => -- If `realizeGlobalConstNoOverloadWithInfo id` failed, `id` is a local fvar or builtin simproc. We ignore it in either case.
+        continue
+    else if simpLemma.getKind == ``Lean.Parser.Tactic.simpLemma then
+      let hasLeftArrow := !simpLemma[1].isNone -- `simpLemma` contains either `←` or `<-`
+      let simpAllHint : SimpAllHint ←
+        if simpLemma[0].isNone then
+          if hasLeftArrow then pure backwardOnly
+          else pure unmodified
+        else if simpLemma[0][0].getKind == ``Parser.Tactic.simpPost then -- simpPost corresponds to `↑`
+          if hasLeftArrow then pure simpPostAndBackward
+          else pure simpPostOnly
+        else if simpLemma[0][0].getKind == ``Parser.Tactic.simpPre then -- simpPre corresponds to `↓`
+          if hasLeftArrow then pure simpPreAndBackward
+          else pure simpPreOnly
+        else
+          throwError "simpAllRecommendationFromTacticStx :: Unable to parse simpLemma syntax {simpLemma}"
+      let term := simpLemma[2]
+      match ← observing (realizeGlobalConstNoOverloadWithInfo term) with
+      | .ok declName =>
+        if (← Simp.isSimproc declName) then continue -- Ignore `declName` if it is a simproc
+        else if isBlackListed s!"{declName}" then continue -- Ignore `declName` if it appears in `hammerRecommendationBlackList`
+        res := updateHammerRecommendation res declName simpAllHint
+      | _ => -- `term` could be a local fvar, a builtin simproc, or non-identifer expression. In any of these cases, we ignore it
+        continue
+    else if simpLemma.getKind == ``Lean.Parser.Tactic.simpStar then
+      continue
+    else
+      throwUnsupportedSyntax
+  return res
+
 def simpLemmasFromTacticStx (s : Syntax) : MetaM (Std.HashMap Name SimpAllHint) := do
   if useNaiveDataExtraction then return ∅ -- If `useNaiveDataExtraction` is enabled, then we don't gather any simp lemmas
   match s with
@@ -247,47 +290,7 @@ def simpLemmasFromTacticStx (s : Syntax) : MetaM (Std.HashMap Name SimpAllHint) 
   | `(tactic| simpa?! only [$simpLemmas,*])
   | `(tactic| dsimp only [$simpLemmas,*])
   | `(tactic| dsimp? only [$simpLemmas,*])
-  | `(tactic| dsimp?! only [$simpLemmas,*]) =>
-    let simpLemmas := simpLemmas.getElems
-    let mut res : Std.HashMap Name SimpAllHint := ∅
-    for simpLemma in simpLemmas do
-      let simpLemma := simpLemma.raw
-      if simpLemma.getKind == ``Lean.Parser.Tactic.simpErase then
-        let id := simpLemma[1]
-        match ← observing (realizeGlobalConstNoOverloadWithInfo id) with
-        | .ok declName =>
-          if (← Simp.isSimproc declName) then continue -- Ignore `declName` if it is a simproc
-          else if isBlackListed s!"{declName}" then continue -- Ignore `declName` if it appears in `hammerRecommendationBlackList`
-          res := updateHammerRecommendation res declName simpErase
-        | _ => -- If `realizeGlobalConstNoOverloadWithInfo id` failed, `id` is a local fvar or builtin simproc. We ignore it in either case.
-          continue
-      else if simpLemma.getKind == ``Lean.Parser.Tactic.simpLemma then
-        let hasLeftArrow := !simpLemma[1].isNone -- `simpLemma` contains either `←` or `<-`
-        let simpAllHint ←
-          if simpLemma[0].isNone then
-            if hasLeftArrow then pure backwardOnly
-            else pure unmodified
-          else if simpLemma[0][0].getKind == ``Parser.Tactic.simpPost then -- simpPost corresponds to `↑`
-            if hasLeftArrow then pure simpPostAndBackward
-            else pure simpPostOnly
-          else if simpLemma[0][0].getKind == ``Parser.Tactic.simpPre then -- simpPre corresponds to `↓`
-            if hasLeftArrow then pure simpPreAndBackward
-            else pure simpPreOnly
-          else
-            throwError "simpAllRecommendationFromTacticStx :: Unable to parse simpLemma syntax {simpLemma}"
-        let term := simpLemma[2]
-        match ← observing (realizeGlobalConstNoOverloadWithInfo term) with
-        | .ok declName =>
-          if (← Simp.isSimproc declName) then continue -- Ignore `declName` if it is a simproc
-          else if isBlackListed s!"{declName}" then continue -- Ignore `declName` if it appears in `hammerRecommendationBlackList`
-          res := updateHammerRecommendation res declName simpAllHint
-        | _ => -- `term` could be a local fvar, a builtin simproc, or non-identifer expression. In any of these cases, we ignore it
-          continue
-      else if simpLemma.getKind == ``Lean.Parser.Tactic.simpStar then
-        continue
-      else
-        throwUnsupportedSyntax
-    return res
+  | `(tactic| dsimp?! only [$simpLemmas,*]) => simpLemmasFromTacticStxTSepArray simpLemmas
   | _ => return ∅
 
 /-- It is possible for some tactics such as `simp_rw` to invoke rewrite lemmas that do not appear in the final proof term (for instance, to direct unfolding).

@@ -39,7 +39,7 @@ def formatState (s : String) : List String :=
       l
   lines
 
-def String.indent (s : String) (k : Nat) : String := ⟨List.replicate k ' '⟩ ++ s
+def String.indent (s : String) (k : Nat) : String := (List.replicate k ' ').asString ++ s
 
 def stateComment (state: List String) (column: Nat) :=
     ("/-".indent column)

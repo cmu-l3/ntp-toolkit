@@ -33,6 +33,8 @@ def kind : Info → String
   | .ofPartialTermInfo    _ => "PartialTermInfo"
   | .ofDelabTermInfo      _ => "DelabTermInfo"
   | .ofErrorNameInfo      _ => "ErrorNameInfo"
+  | .ofDocElabInfo        _ => "DocElabInfo"
+  | .ofDocInfo            _ => "DocInfo"
 
 /-- The `Syntax` for a `Lean.Elab.Info`, if there is one. -/
 def stx? : Info → Option Syntax
@@ -51,6 +53,8 @@ def stx? : Info → Option Syntax
   | .ofPartialTermInfo    info => info.stx
   | .ofDelabTermInfo      info => info.stx
   | .ofErrorNameInfo      info => info.stx
+  | .ofDocElabInfo        info => info.stx
+  | .ofDocInfo            info => info.stx
 
 /-- Is the `Syntax` for this `Lean.Elab.Info` original, or synthetic? -/
 def isOriginal (i : Info) : Bool :=
