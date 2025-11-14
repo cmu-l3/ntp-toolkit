@@ -101,8 +101,8 @@ def one : FrontendM (CompilationStep × Bool) := do
   let src := ⟨(← read).inputCtx.input, (← get).cmdPos, (← get).parserState.pos⟩
   let s' := (← get).commandState
   let after := s'.env
-  let msgs := s'.messages.toList.drop s.messages.toList.length -- not using `msgs` for v4.8.0 support
-  let trees := s'.infoState.trees.drop s.infoState.trees.size
+  let msgs := s'.messages.toList
+  let trees := s'.infoState.trees.toList
   return ({ src, stx, before, after, msgs, trees }, done)
 
 /-- Process all commands in the input. -/
