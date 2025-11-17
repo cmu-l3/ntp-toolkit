@@ -1,5 +1,6 @@
 #!/usr/bin/bash
 
+# The following lines beginning with "# SBATCH" are automatically parsed if this script is run via sbatch 
 #SBATCH --partition=cpu
 #SBATCH --cpus-per-task=128
 #SBATCH --mem=512G
@@ -7,8 +8,8 @@
 #SBATCH --output=logs/extract.out
 #SBATCH --error=logs/extract.out
 
-source /home/thomaszh/.bashrc
-cd /home/thomaszh/ntp-toolkit-hammer
+source /home/jclune/.bashrc
+cd /home/jclune/ntp-toolkit
 conda activate lm
 
 MAX_WORKERS=128 # set according to your RAM capacity
@@ -22,7 +23,7 @@ python scripts/extract_repos.py --config $CONFIG --cwd "`pwd`" --add_imports --s
 lake exe update_hammer_blacklist > Examples/mathlib/HammerBlacklist.jsonl
 python scripts/get_config_revision.py --config $CONFIG > Examples/mathlib/revision
 
-OUTPUT_DIR=/data/user_data/thomaszh/mathlib
+OUTPUT_DIR=/data/user_data/jclune/mathlib
 mkdir -p $OUTPUT_DIR
 rm -rf $OUTPUT_DIR
 cp -r Examples/mathlib $OUTPUT_DIR
