@@ -92,12 +92,12 @@ namespace Lean.Elab.TacticInvocation
 def useNaiveDataExtraction := false
 
 def tacticPP (module : ModuleName) (i: TacticInvocation) : IO String := do
-  return (Substring.mk (← moduleSource module)
+  return (Substring.Raw.mk (← moduleSource module)
   (i.info.stx.getPos?.getD 0)
   (i.info.stx.getTailPos?.getD 0)).toString
 
 def ppCommandInfo (module: ModuleName) (info : CommandInfo) : IO String :=
-  return (Substring.mk (← moduleSource module)
+  return (Substring.Raw.mk (← moduleSource module)
   (info.stx.getPos?.getD 0)
   (info.stx.getTailPos?.getD 0)).toString
 
@@ -109,8 +109,8 @@ def ppDeclWithoutProof (module: ModuleName) (info: CommandInfo) : IO String := d
       let proofStart := info.stx[1][3].getPos?.getD 0
       let proofEnd := info.stx.getTailPos?.getD 0
       let moduleSource ← moduleSource module
-      let decl := (Substring.mk moduleSource declStart proofStart).toString
-      let proof := (Substring.mk moduleSource proofStart proofEnd).toString
+      let decl := (Substring.Raw.mk moduleSource declStart proofStart).toString
+      let proof := (Substring.Raw.mk moduleSource proofStart proofEnd).toString
       return decl
     else
       return ""
@@ -339,8 +339,8 @@ def rwLemmasFromTacticStx (s : Syntax) (hammerRecommendation : Std.HashMap Name 
     because there may be more than one tactic that must be taken into account to populate this field. -/
 def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (i : TacticInvocation) (declName : String) : IO TrainingData := do
   let declId := makeElabDeclId elabDeclInfo module hash
-  let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (i.info.stx.getPos?.getD 0)
-  let declUpToTactic := Substring.mk (← moduleSource module)
+  let sourceUpToTactic := Substring.Raw.mk (← moduleSource module) 0 (i.info.stx.getPos?.getD 0)
+  let declUpToTactic := Substring.Raw.mk (← moduleSource module)
     (elabDeclInfo.snd.stx.getPos?.getD 0) (i.info.stx.getPos?.getD 0)
 
   let state := (Format.joinSep (← i.goalState (optimizeOptions := !useNaiveDataExtraction)) "\n").pretty
@@ -404,8 +404,8 @@ def trainingDataToJson (d : TrainingData) : Json :=
 def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : ModuleName) (hash : String) (cmd : CompilationStep) (v : TheoremVal)
   (declHammerRecommendation : Option (Std.HashMap Name SimpAllHint)) : MetaM (Std.HashMap Name SimpAllHint) := do
   let numArgs ← numArgsOfConstantVal v.toConstantVal
-  let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (cmd.stx.getTailPos?.getD 0)
-  let declUpToTactic := Substring.mk (← moduleSource module) (cmd.stx.getPos?.getD 0) (cmd.stx.getTailPos?.getD 0)
+  let sourceUpToTactic := Substring.Raw.mk (← moduleSource module) 0 (cmd.stx.getTailPos?.getD 0)
+  let declUpToTactic := Substring.Raw.mk (← moduleSource module) (cmd.stx.getPos?.getD 0) (cmd.stx.getTailPos?.getD 0)
 
   let vType := v.type
   let Expr.mvar m ← mkFreshExprMVar vType

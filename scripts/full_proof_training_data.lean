@@ -67,8 +67,8 @@ def ppDeclAndProof (module: ModuleName) (info: CommandInfo) : IO (Option (String
       let proofStart := info.stx[1][3].getPos?.getD 0
       let proofEnd := info.stx.getTailPos?.getD 0
       let moduleSource ← moduleSource module
-      let decl := (Substring.mk moduleSource declStart proofStart).toString
-      let proof := (Substring.mk moduleSource proofStart proofEnd).toString
+      let decl := (Substring.Raw.mk moduleSource declStart proofStart).toString
+      let proof := (Substring.Raw.mk moduleSource proofStart proofEnd).toString
       return (decl, proof)
     else
       return none
@@ -96,7 +96,7 @@ def fullName (elabDeclInfo : ElabDeclInfo) : Option Name :=
 def trainingData' (elabDeclInfo: ElabDeclInfo) (module : ModuleName) (hash : String) : IO (Bool × (String × Json)) := do
   let declId := makeElabDeclId elabDeclInfo module hash
   let cmdInfo := elabDeclInfo.cmdInfo
-  let sourceUpToDecl := Substring.mk (← moduleSource module) 0 (cmdInfo.stx.getPos?.getD 0)
+  let sourceUpToDecl := Substring.Raw.mk (← moduleSource module) 0 (cmdInfo.stx.getPos?.getD 0)
 
   let declAndProof? ← ppDeclAndProof module cmdInfo
   let (decl, proof) := declAndProof?.getD default
