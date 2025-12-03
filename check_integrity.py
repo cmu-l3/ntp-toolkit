@@ -26,9 +26,10 @@ def check_jsonl_files(directory):
                 file_path = os.path.join(root, file)
                 if is_jsonl_well_formed(file_path):
                     pass
-                    # print(f"{file_path} is well-formed.")
+                    print(f"{file_path} is well-formed.")
                 else:
                     print(f"{file_path} is NOT well-formed.")
+                    raise Exception("File not well-formed")
 
 def check_files_exist(directory):
     with open(os.path.join(directory, "Modules.jsonl")) as f:
@@ -41,6 +42,7 @@ def check_files_exist(directory):
         for m in modules:
             if f"{m}.jsonl" not in files:
                 print(f"{m} not in {dir}")
+                raise Exception("Missing file")
 
 if __name__ == "__main__":
     print("About to begin check_integrity.py")
@@ -49,4 +51,5 @@ if __name__ == "__main__":
             check_jsonl_files(examples_dir)
         else:
             print(f"Directory {examples_dir} does not exist.")
+            raise Exception("Missing directory")
     print("Finished checking integrity")
