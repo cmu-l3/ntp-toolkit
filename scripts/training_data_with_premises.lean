@@ -155,10 +155,6 @@ def Name.isTheoremOrAxiom (name : Name) : CoreM Bool := do
   | .axiomInfo _ => return true
   | _ => return false
 
-def Name.isAuxLemma : Name → Bool
-| .num (.str _ "_auxLemma") _ => true
-| _ => false
-
 /-- Takes in a constant name and checks whether it should be unfolded using `shouldUnfold`. If the constant should be unfolded,
     then returns all of the constants that appear in the unfolded result as a nameset. Otherwise, returns a set just containing
     the constant name. `unfoldConstantName` should never return any names that are supposed to be unfolded, so if a name is
