@@ -46,7 +46,8 @@ def check_files_exist(directory):
 
 if __name__ == "__main__":
     print("About to begin check_integrity.py")
-    for examples_dir in ["Examples/mathlib", "/data/user_data/jclune/mathlib"]:
+    # for examples_dir in ["Examples/mathlib", "/data/user_data/jclune/mathlib"]:
+    for examples_dir in ["/data/user_data/jclune/mathlib"]:
         if os.path.exists(examples_dir):
             check_jsonl_files(examples_dir)
         else:
