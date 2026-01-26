@@ -34,7 +34,7 @@ def formatState (s : String) : List String :=
   if s = "" then ["🎉 no goals"] else
   let lines := (s.splitOn "\n").map fun l =>
     if l.length > 80 then
-      l.take 78 ++ " …"
+      (l.take 78).toString ++ " …"
     else
       l
   lines

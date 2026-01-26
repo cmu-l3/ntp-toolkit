@@ -353,7 +353,7 @@ def trainingDataGivenTactic (elabDeclInfo : ElabDeclInfo) (module : ModuleName) 
       -- Unfold all auxiliary lemmas in `termConstantNamesNoUnfolding`
       let mut termConstantsNameSet : NameSet := ∅
       for constName in termConstantNamesNoUnfolding do
-        termConstantsNameSet := termConstantsNameSet.append $ unfoldConstantName constName constantsMap Name.isAuxLemma
+        termConstantsNameSet := termConstantsNameSet.append $ unfoldConstantName constName constantsMap Name.isInternalDetail
       let termConstants := termConstantsNameSet.toArray
       -- Filter `termConstants` to only included constants that are lemmas (i.e. Prop-typed) and not blacklisted
       let termPremises ← termConstants.filterM (fun n => do pure ((← Name.isTheoremOrAxiom n) && (useNaiveDataExtraction || !isBlackListed s!"{n}")))
@@ -420,7 +420,7 @@ def printTrainingDataGivenTheoremVal (elabDeclInfo : ElabDeclInfo) (module : Mod
     -- Unfold all auxiliary lemmas in `termConstantNamesNoUnfolding`
     let mut termConstantsNameSet : NameSet := ∅
     for constName in termConstantNamesNoUnfolding do
-      termConstantsNameSet := termConstantsNameSet.append $ unfoldConstantName constName constantsMap Name.isAuxLemma
+      termConstantsNameSet := termConstantsNameSet.append $ unfoldConstantName constName constantsMap Name.isInternalDetail
     let termConstants := termConstantsNameSet.toArray
     -- Filter `termConstants` to only included constants that are lemmas (i.e. Prop-typed) and not blacklisted
     let termPremises ← termConstants.filterM (fun n => do pure ((← Name.isTheoremOrAxiom n) && (useNaiveDataExtraction || !isBlackListed s!"{n}")))
@@ -511,7 +511,7 @@ def trainingDataGivenModule (module : ModuleName) (includeDebugMessages : Bool) 
     for (cmd, ci) in c.diff.map (fun i => (c, i)) do
       match ci with
       | .thmInfo v =>
-        if !Name.isAuxLemma v.name then
+        if !Name.isInternalDetail v.name then
           match getElabDeclOfCompilationStep infos cmd with
           | some elabDeclInfo =>
             match declHammerRecommendations.get? v.name.toString with
