@@ -75,6 +75,15 @@ def Lean.Name.isHumanTheorem (name : Name) : CoreM Bool := do
   let notProjFn := !(← Lean.isProjectionFn name)
   return hasDeclRange && isTheorem && notProjFn
 
+
+/-- This is copied from a portion of `Lean.findSimpleDocString?` -/
+def toMarkdown : VersoDocString → String
+  | .mk bs ps => Doc.MarkdownM.run' do
+      for b in bs do
+        Doc.ToMarkdown.toMarkdown b
+      for p in ps do
+        Doc.ToMarkdown.toMarkdown p
+
 /-- Pretty-prints a constant to JSON -/
 def constantInfoToJson (cinfo : ConstantInfo) : MetaM Json := do
   let (kind, info) ← infoOfConstant cinfo
@@ -86,7 +95,9 @@ def constantInfoToJson (cinfo : ConstantInfo) : MetaM Json := do
   -- format declaration into `decl`
   let mut decl := ""
   if let some doc := doc? then
-    decl := decl ++ "/-- " ++ doc.stripSuffix " " ++ " -/\n"
+    match doc with
+    | .inl doc => decl := decl ++ "/-- " ++ doc.dropSuffix " " ++ " -/\n"
+    | .inr verso => decl := decl ++ "/-- " ++ (toMarkdown verso).dropSuffix " " ++ " -/\n"
   decl := decl ++ kind ++ " "
   decl := decl ++ name ++ " "
   for arg in args do
@@ -99,7 +110,8 @@ def constantInfoToJson (cinfo : ConstantInfo) : MetaM Json := do
     ("args", Json.arr (args.map .str)),
     ("type", Json.str type),
     ("doc", match doc? with
-      | some doc => Json.str doc
+      | some (.inl doc) => Json.str doc
+      | some (.inr verso) => Json.str (toMarkdown verso)
       | none => Json.null),
     ("decl", Json.str decl),
     ("line", Json.num info.declarationRange.pos.line),
