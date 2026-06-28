@@ -12,7 +12,7 @@ This uses doc-gen4 and outputs approximately the same format as doc-gen4.
 The extracted declarations are usually used as potential premises to select from for a premise retriever.
 -/
 
-open Lean Meta DocGen4.Process
+open Lean Core Meta DocGen4.Process
 
 namespace DocGen4.Process
 
@@ -84,8 +84,26 @@ def toMarkdown : VersoDocString → String
       for p in ps do
         Doc.ToMarkdown.toMarkdown p
 
+/-- Whether `name`'s defining module (`moduleIdx`) opted into Lean's module system,
+    and whether `name` is exposed (its body is in the public scope).
+
+    `isExposed` is only meaningful inside the module system; outside it (and for the
+    non-module import pass, where `setExporting` is a no-op) it is `false`. -/
+def moduleVisibilityFlags (env : Environment) (name : Name) (moduleIdx : ModuleIdx) : Bool × Bool :=
+  let inModuleSystem := (env.header.moduleData[moduleIdx.toNat]?).any (·.isModule)
+  let isExposed :=
+    inModuleSystem &&
+      (match (env.setExporting true).find? name with
+        | some (.defnInfo _) => true
+        | _ => false)
+  (inModuleSystem, isExposed)
+
 /-- Pretty-prints a constant to JSON -/
-def constantInfoToJson (cinfo : ConstantInfo) : MetaM Json := do
+def constantInfoToJson (cinfo : ConstantInfo) (moduleIdx : ModuleIdx) : MetaM Json := do
+  if Lean.isPrivateName cinfo.name then
+    throwError "constantInfoToJson: unexpected private declaration {cinfo.name}"
+  let env ← getEnv
+  let (inModuleSystem, isExposed) := moduleVisibilityFlags env cinfo.name moduleIdx
   let (kind, info) ← infoOfConstant cinfo
   let name := cinfo.name.toString
   let args := info.args.map (fun arg => arg.binder.stripTags)
@@ -119,6 +137,8 @@ def constantInfoToJson (cinfo : ConstantInfo) : MetaM Json := do
     ("isProp", Json.bool (← isProp cinfo.type)),
     -- Only certain declarations can be in the eval/test set
     ("isHumanTheorem", Json.bool (← Name.isHumanTheorem cinfo.name)),
+    ("inModuleSystem", Json.bool inModuleSystem),
+    ("isExposed", Json.bool isExposed),
   ]
 
 /-- If a constant should not be included (more permissive than Name.isBlackListed). -/
@@ -142,13 +162,31 @@ def allDeclarations (moduleNames : Array Name) (callback : Nat → Nat → Name 
         if let some moduleName := env.header.moduleNames[moduleIdx.toNat]? then
           if moduleNames.contains moduleName then
             try
-              let json ← constantInfoToJson cinfo
+              let json ← constantInfoToJson cinfo moduleIdx
               callback i total name json
             catch _ =>
               -- Extremely rare cases (e.g. Fin.eq_of_val_eq, Qq.Quoted.unsafeMk)
               IO.eprintln s!"warning: failed to extract constant {name}"
               continue
     i := i + 1
+
+/--
+Import `modules` at the given `OLeanLevel` (with `importAll := true`) and run
+`run` in a `CoreM` over the resulting environment. Mirrors
+`CoreM.withImportModules`, but lets us choose the import level: at `.exported` the
+environment is module-aware (`env.header.isModule = true`), so the public view is
+queryable via `setExporting` (needed for `isExposed`)
+-/
+def runImportModulesAtLevel {α : Type} (modules : Array Name) (level : OLeanLevel)
+    (options : Options := {}) (run : CoreM α) : IO α := unsafe do
+  let imports := modules.map fun m => ({ module := m, importAll := true } : Import)
+  let env ← importModules imports options (level := level)
+  try
+    let ctx := { fileName := "", options, fileMap := default }
+    let state := { env }
+    Prod.fst <$> (CoreM.toIO · ctx state) run
+  finally
+    env.freeRegions
 
 def main (args : List String) : IO UInt32 := do
   let options := Options.empty.insert `maxHeartbeats (0 : Nat)
@@ -157,14 +195,25 @@ def main (args : List String) : IO UInt32 := do
   | args => args.toArray.map fun s => s.toName
   unsafe enableInitializersExecution
   initSearchPath (← findSysroot)
-  -- Proper delaborators need also be loaded for better printing of results
-  -- (e.g., if the module is Init.Prelude which does not have delaborator for Eq yet)
-  let delaboratorModules := #[
-  ]
-  let importModules := modules ++ delaboratorModules
-  CoreM.withImportModules importModules (options := options) do
-    MetaM.run' <| allDeclarations modules fun _ _ _ json ↦ do
-      -- IO.eprint s!"\x1B[2K\rProcessing [{i}/{total}] {name.toString.take 60}"
-      IO.println json.compress
-    -- IO.eprintln ""
+  let printJson : Nat → Nat → Name → Json → MetaM Unit := fun _ _ _ json ↦ do
+    IO.println json.compress
+  -- Pass 1: Identify `moduleSystemTargets`, the set of files that opt into the
+  -- module system, and extract declarations from all other files (by running
+  -- `printJson` on them). For files that don't opt into the module system,
+  -- this pass is identical to the previous behavior which ignored the module
+  -- system entirely.
+  let moduleSystemTargets ← CoreM.withImportModules modules (options := options) do
+    let env ← getEnv
+    let isModuleSystem (m : Name) : Bool :=
+      match env.header.moduleNames.findIdx? (· == m) with
+      | some idx => (env.header.moduleData[idx]?).any (·.isModule)
+      | none => false
+    let moduleSystemTargets := modules.filter isModuleSystem
+    let nonModuleTargets := modules.filter (fun m => !isModuleSystem m)
+    MetaM.run' <| allDeclarations nonModuleTargets printJson
+    return moduleSystemTargets
+  -- Pass 2: Extract declarations of `moduleSystemTargets` at the `.exported` level.
+  unless moduleSystemTargets.isEmpty do
+    runImportModulesAtLevel moduleSystemTargets .exported options do
+      MetaM.run' <| allDeclarations moduleSystemTargets printJson
   return 0
