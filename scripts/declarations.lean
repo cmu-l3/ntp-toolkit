@@ -75,14 +75,12 @@ def Lean.Name.isHumanTheorem (name : Name) : CoreM Bool := do
   let notProjFn := !(← Lean.isProjectionFn name)
   return hasDeclRange && isTheorem && notProjFn
 
-
 /-- This is copied from a portion of `Lean.findSimpleDocString?` -/
 def toMarkdown : VersoDocString → String
   | .mk bs ps => Doc.MarkdownM.run' do
-      for b in bs do
-        Doc.ToMarkdown.toMarkdown b
-      for p in ps do
-        Doc.ToMarkdown.toMarkdown p
+      let blockLines ← bs.mapM Doc.ToMarkdown.toMarkdown
+      let partLines ← ps.mapM Doc.ToMarkdown.toMarkdown
+      return Doc.joinBlocks (blockLines ++ partLines)
 
 /-- Whether `name`'s defining module (`moduleIdx`) opted into Lean's module system,
     and whether `name` is exposed (its body is in the public scope).
