@@ -9,7 +9,7 @@
 #SBATCH --error=logs/extract.out
 
 source /home/jclune/.bashrc
-cd /home/jclune/ntp-toolkit
+cd /home/jclune/LeanPremise/ntp-toolkit
 conda activate lm
 
 MAX_WORKERS=128 # set according to your RAM capacity
