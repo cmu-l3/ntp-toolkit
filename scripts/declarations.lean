@@ -75,13 +75,6 @@ def Lean.Name.isHumanTheorem (name : Name) : CoreM Bool := do
   let notProjFn := !(← Lean.isProjectionFn name)
   return hasDeclRange && isTheorem && notProjFn
 
-/-- This is copied from a portion of `Lean.findSimpleDocString?` -/
-def toMarkdown : VersoDocString → String
-  | .mk bs ps => Doc.MarkdownM.run' do
-      let blockLines ← bs.mapM Doc.ToMarkdown.toMarkdown
-      let partLines ← ps.mapM Doc.ToMarkdown.toMarkdown
-      return Doc.joinBlocks (blockLines ++ partLines)
-
 /-- Whether `name`'s defining module (`moduleIdx`) opted into Lean's module system,
     and whether `name` is exposed (its body is in the public scope).
 
@@ -113,7 +106,7 @@ def constantInfoToJson (cinfo : ConstantInfo) (moduleIdx : ModuleIdx) : MetaM Js
   if let some doc := doc? then
     match doc with
     | .inl doc => decl := decl ++ "/-- " ++ doc.dropSuffix " " ++ " -/\n"
-    | .inr verso => decl := decl ++ "/-- " ++ (toMarkdown verso).dropSuffix " " ++ " -/\n"
+    | .inr (_, md) => decl := decl ++ "/-- " ++ md.dropSuffix " " ++ " -/\n"
   decl := decl ++ kind ++ " "
   decl := decl ++ name ++ " "
   for arg in args do
@@ -127,7 +120,7 @@ def constantInfoToJson (cinfo : ConstantInfo) (moduleIdx : ModuleIdx) : MetaM Js
     ("type", Json.str type),
     ("doc", match doc? with
       | some (.inl doc) => Json.str doc
-      | some (.inr verso) => Json.str (toMarkdown verso)
+      | some (.inr (_, md)) => Json.str md
       | none => Json.null),
     ("decl", Json.str decl),
     ("line", Json.num info.declarationRange.pos.line),
