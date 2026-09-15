@@ -1,7 +1,9 @@
 #!/usr/bin/bash
 
 # The following lines beginning with "# SBATCH" are automatically parsed if this script is run via sbatch 
-#SBATCH --partition=cpu
+#SBATCH --job-name=LeanPremise_Data_Extraction
+#SBATCH --partition=l3lab
+#SBATCH --qos=l3lab_qos
 #SBATCH --cpus-per-task=128
 #SBATCH --mem=512G
 #SBATCH --time=48:00:00
