@@ -9,6 +9,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 import Mathlib.Lean.CoreM
 import Mathlib.Control.Basic
 import Mathlib.Lean.Expr.Basic
+import Mathlib.Lean.Name
 import Batteries.Lean.HashMap
 
 /-!

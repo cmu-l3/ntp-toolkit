@@ -78,7 +78,7 @@ def validateDecl (_decl : String) (keep : Bool) : IO Bool :=
 
 def validateProof (proof : String) (keep : Bool) : IO Bool :=
   return keep
-    && proof.trim != ""
+    && proof.trimAscii.copy != ""
     -- we allow "sorry" in proof (for extracting miniCTX data)
 
 def fullName (elabDeclInfo : ElabDeclInfo) : Option Name :=
